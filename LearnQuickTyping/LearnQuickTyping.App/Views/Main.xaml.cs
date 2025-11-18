@@ -2,7 +2,7 @@ namespace LearnQuickTyping.App.Views;
 
 public partial class Main : ContentPage
 {
-	private readonly string [] words = new string []
+	private readonly string [] PracticeWords = new string []
 	{
 		"example", "typing", "quick", "learn", "keyboard", "practice", "speed", "accuracy", "challenge", "improve"
 	};
@@ -13,23 +13,25 @@ public partial class Main : ContentPage
 		DisplayRandomWord();
 	}
 
-	private void DisplayRandomWord()
-		{
+    // Display a random word from the list above
+    private void DisplayRandomWord()
+    {
 		var random = new Random();
-		int index = random.Next(words.Length);
-		ExampleWord.Text = words[index];
+		int index = random.Next(PracticeWords.Length);
+		ExampleWord.Text = PracticeWords[index];
     }
 
+    // When the user presses Enter after typing
     private void OnEntryDone(object sender, EventArgs e)
     {
         var entry = (Entry)sender;
 		string text = entry.Text ?? string.Empty;
 
 		CompareStringsOnEnter();
-		
     }
 
-	void CompareStringsOnEnter()
+    // Compare the input text with the example word
+    void CompareStringsOnEnter()
     {
 		if (InputText.Text == ExampleWord.Text)
 		{
