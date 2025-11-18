@@ -3,10 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="LearnQuickTyping.App.Views.Main"
              Title="Main">
-    <VerticalStackLayout>
-        <Label 
-            Text="Hoi"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
+    
+    <VerticalStackLayout
+        Padding="30,0"
+        Spacing="25">
+        <Label
+            x:Name="ExampleWord"
+            Text=""/>
+
+        <Entry 
+            x:Name="InputText"
+            Placeholder="Copy text above"/>
     </VerticalStackLayout>
 </ContentPage>
