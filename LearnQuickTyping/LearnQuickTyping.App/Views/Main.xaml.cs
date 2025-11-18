@@ -19,4 +19,28 @@ public partial class Main : ContentPage
 		int index = random.Next(words.Length);
 		ExampleWord.Text = words[index];
     }
+
+    private void OnEntryDone(object sender, EventArgs e)
+    {
+        var entry = (Entry)sender;
+		string text = entry.Text ?? string.Empty;
+
+		CompareStringsOnEnter();
+		
+    }
+
+	void CompareStringsOnEnter()
+    {
+		if (InputText.Text == ExampleWord.Text)
+		{
+			Result.Text = "Correct!";
+			Result.TextColor = Colors.Green;
+        }
+		else
+		{
+			Result.Text = "Try Again!";
+			Result.TextColor = Colors.Red;
+        }
+        InputText.Text = string.Empty;
+    }
 }

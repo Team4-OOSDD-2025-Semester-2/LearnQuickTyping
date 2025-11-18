@@ -6,13 +6,20 @@
     
     <VerticalStackLayout
         Padding="30,0"
-        Spacing="25">
+        Spacing="25" 
+        VerticalOptions="Center"
+        HorizontalOptions="Center">
         <Label
             x:Name="ExampleWord"
             Text=""/>
 
         <Entry 
             x:Name="InputText"
-            Placeholder="Copy text above"/>
+            Placeholder="Copy text above and press enter when finished"
+            Completed="OnEntryDone"/>
+
+        <Label
+            x:Name="Result"
+            Text=""/>
     </VerticalStackLayout>
 </ContentPage>
