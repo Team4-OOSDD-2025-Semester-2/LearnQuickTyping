@@ -10,8 +10,9 @@
         VerticalOptions="Center"
         HorizontalOptions="Center">
         <Label
-            x:Name="ExampleWord"
-            Text=""/>
+            x:Name="PracticeWord"
+            Text=""
+            HorizontalOptions="Center"/>
 
         <Entry 
             x:Name="InputText"
@@ -21,6 +22,7 @@
 
         <Label
             x:Name="Result"
-            Text=""/>
+            Text=""
+            HorizontalOptions="Center"/>
     </VerticalStackLayout>
 </ContentPage>

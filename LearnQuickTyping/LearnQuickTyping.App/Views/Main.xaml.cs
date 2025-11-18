@@ -18,7 +18,7 @@ public partial class Main : ContentPage
     {
 		var random = new Random();
 		int index = random.Next(PracticeWords.Length);
-		ExampleWord.Text = PracticeWords[index];
+        PracticeWord.Text = PracticeWords[index];
     }
 
     // When the user presses Enter after typing
@@ -33,7 +33,7 @@ public partial class Main : ContentPage
     // Compare the input text with the example word
     void CompareStringsOnEnter()
     {
-		if (InputText.Text == ExampleWord.Text)
+		if (InputText.Text == PracticeWord.Text)
 		{
 			Result.Text = "Correct!";
 			Result.TextColor = Colors.Green;
