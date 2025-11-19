@@ -6,6 +6,7 @@ public partial class Main : ContentPage
     private DateTime endTime;
     private Boolean isTiming = false;
     private TimeSpan elapsedTime = TimeSpan.Zero;
+    private IDispatcherTimer realTimeTimer;
 
     private readonly string[] PracticeWords = new string[]
     {
@@ -16,6 +17,7 @@ public partial class Main : ContentPage
     {
         InitializeComponent();
         DisplayRandomWord();
+        SetupRealTimeTimer();
     }
 
     // Display a random word from the list above
@@ -26,7 +28,9 @@ public partial class Main : ContentPage
         PracticeWord.Text = PracticeWords[index];
     }
 
-    #region WPM calculations
+#region Time Related Methods
+
+    #region START STOP RESET TIMER
     // Start timing typing
     private void StartTiming(object sender, TextChangedEventArgs e)
     {
@@ -34,6 +38,7 @@ public partial class Main : ContentPage
         {
             startTime = DateTime.Now;
             isTiming = true;
+            realTimeTimer.Start();
         }
     }
 
@@ -45,16 +50,40 @@ public partial class Main : ContentPage
             endTime = DateTime.Now;
             isTiming = false;
             elapsedTime = endTime - startTime;
+            realTimeTimer.Stop();
         }
         return elapsedTime;
     }
 
+    // Reset timer
     void ResetTiming()
     {
         isTiming = false;
         elapsedTime = TimeSpan.Zero;
+        realTimeTimer.Stop();
+    }
+    #endregion
+
+    #region REAL TIME TIMER IN SECONDS
+    private void SetupRealTimeTimer()
+    {
+        realTimeTimer = Dispatcher.CreateTimer();
+        realTimeTimer.Interval = TimeSpan.FromMilliseconds(50); // Updates every 50ms
+        realTimeTimer.Tick += OnRealTimeTimerTick;
     }
 
+    private void OnRealTimeTimerTick(object sender, EventArgs e)
+    {
+        if (isTiming)
+        {
+            // Calculate current elapsed time
+            var currentElapsed = DateTime.Now - startTime;
+            Result.Text = $"Current time: {currentElapsed.TotalSeconds:F2}s";
+        }
+    }
+    #endregion
+
+    // WPM Calculations
     double CalculateWordPerMinute(int characterCount, TimeSpan timeTaken)
     {
         if (timeTaken.TotalMinutes == 0) return 0;
