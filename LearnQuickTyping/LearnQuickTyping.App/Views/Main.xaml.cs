@@ -25,7 +25,6 @@ public partial class Main : ContentPage
     private void OnEntryDone(object sender, EventArgs e)
     {
         var entry = (Entry)sender;
-		string text = entry.Text ?? string.Empty;
 
 		CompareStringsOnEnter();
     }
