@@ -18,6 +18,7 @@
             x:Name="InputText"
             Placeholder="Copy text above and press enter when finished"
             Completed="OnEntryDone"
+            TextChanged="StartTiming"
             MinimumWidthRequest="350"/>
 
         <Label
