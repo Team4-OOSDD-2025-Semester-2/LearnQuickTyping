@@ -25,7 +25,7 @@ public partial class Main : ContentPage
         PracticeWord.Text = PracticeWords[index];
     }
 
-    #region Time calculations
+    #region WPM calculations
     // Start timing typing
     private void StartTiming(object sender, TextChangedEventArgs e)
     {
@@ -49,6 +49,17 @@ public partial class Main : ContentPage
         }
         return elapsedTime;
     }
+
+    double CalculateWordPerMinute(int characterCount, TimeSpan timeTaken)
+    {
+        if (timeTaken.TotalMinutes == 0) return 0;
+
+        // 6.8 characters = 1 word
+        double wordCount = characterCount / 6.8; // Average amount of characters in list "PracticeWords"
+
+        return wordCount / timeTaken.TotalMinutes;
+    }
+
     #endregion
 
     // When the user presses Enter after typing
@@ -62,9 +73,12 @@ public partial class Main : ContentPage
     // Compare the input text with the example word
     void CompareStringsOnEnter(TimeSpan timeTaken)
     {
+        int typedCharacters = InputText.Text.Length;
+        double wpm = CalculateWordPerMinute(typedCharacters, timeTaken);
+
         if (InputText.Text == PracticeWord.Text)
         {
-            Result.Text = $"Correct! \r\nTime: {timeTaken.TotalSeconds:F2} seconds";
+            Result.Text = $"Correct! \r\nTime: {timeTaken.TotalSeconds:F2} seconds \r\nWords Per Minute: {wpm:F2}";
             Result.TextColor = Colors.Green;
 
             DisplayRandomWord();
