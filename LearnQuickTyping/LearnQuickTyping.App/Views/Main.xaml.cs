@@ -5,6 +5,7 @@ public partial class Main : ContentPage
     private DateTime startTime;
     private DateTime endTime;
     private Boolean isTiming = false;
+    private TimeSpan elapsedTime = TimeSpan.Zero;
 
     private readonly string[] PracticeWords = new string[]
     {
@@ -29,7 +30,7 @@ public partial class Main : ContentPage
     // Start timing typing
     private void StartTiming(object sender, TextChangedEventArgs e)
     {
-        if (!isTiming)
+        if (!isTiming && !string.IsNullOrEmpty(e.NewTextValue))
         {
             startTime = DateTime.Now;
             isTiming = true;
@@ -39,8 +40,6 @@ public partial class Main : ContentPage
     // Stop timing typing
     TimeSpan StopTiming()
     {
-        TimeSpan elapsedTime = TimeSpan.Zero;
-
         if (isTiming)
         {
             endTime = DateTime.Now;
@@ -48,6 +47,12 @@ public partial class Main : ContentPage
             elapsedTime = endTime - startTime;
         }
         return elapsedTime;
+    }
+
+    void ResetTiming()
+    {
+        isTiming = false;
+        elapsedTime = TimeSpan.Zero;
     }
 
     double CalculateWordPerMinute(int characterCount, TimeSpan timeTaken)
@@ -75,6 +80,7 @@ public partial class Main : ContentPage
     {
         int typedCharacters = InputText.Text.Length;
         double wpm = CalculateWordPerMinute(typedCharacters, timeTaken);
+        ResetTiming();
 
         if (InputText.Text == PracticeWord.Text)
         {
