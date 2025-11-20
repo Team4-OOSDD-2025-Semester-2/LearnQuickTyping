@@ -26,7 +26,6 @@ public partial class Main : ContentPage
         var random = new Random();
         int index = random.Next(PracticeWords.Length);
         PracticeWord.Text = PracticeWords[index];
-        Result.Text = "Current time: 0,00s\r\nCurrent Words Per Minute: 0";
     }
 
     #region Time Related Methods
@@ -66,13 +65,18 @@ public partial class Main : ContentPage
     #endregion
 
     #region REAL TIME TIMER IN SECONDS
+    // Setup for Real-Time Timer
     private void SetupRealTimeTimer()
     {
-        realTimeTimer = Dispatcher.CreateTimer();
-        realTimeTimer.Interval = TimeSpan.FromMilliseconds(50); // Updates every 50ms
-        realTimeTimer.Tick += OnRealTimeTimerTick;
+        // Create a timer that runs on the UI thread to avoid cross-threading issues
+            realTimeTimer = Dispatcher.CreateTimer();
+        // Set the timer to trigger every 50 milliseconds (20 times per second)
+            realTimeTimer.Interval = TimeSpan.FromMilliseconds(50); // Updates every 50ms
+        // Connect the timer to our event handler method
+            realTimeTimer.Tick += OnRealTimeTimerTick;
     }
 
+    // Real-time typing performance monitor
     private void OnRealTimeTimerTick(object sender, EventArgs e)
     {
         if (isTiming)
@@ -82,7 +86,10 @@ public partial class Main : ContentPage
             // Calculate current WPM
             int typedCharacters = InputText.Text.Length;
             double tempWPM = CalculateWordPerMinute(typedCharacters, currentElapsed);
-            Result.Text = $"Current time: {currentElapsed.TotalSeconds:F2}s\r\nCurrent words per minute: {tempWPM:F2}";
+            
+            // Display seconds and WPM
+            SecondsResult.Text = $"Current time: {currentElapsed.TotalSeconds:F2}s";
+            WordsPerMinuteResult.Text = $"Current words per minute: {tempWPM:F2}";
         }
     }
     #endregion
@@ -117,15 +124,19 @@ public partial class Main : ContentPage
 
         if (InputText.Text == PracticeWord.Text)
         {
-            Result.Text = $"Correct!\r\nTime: {timeTaken.TotalSeconds:F2} seconds\r\nWords Per Minute: {wpm:F2}";
-            Result.TextColor = Colors.Green;
+            SecondsResult.Text = $"Time: {timeTaken.TotalSeconds:F2} seconds";
+            WordsPerMinuteResult.Text = $"Words Per Minute: {wpm:F2}";
+            TextResult.Text = $"Correct!";
+            TextResult.TextColor = Colors.Green;
 
             DisplayRandomWord();
         }
         else
         {
-            Result.Text = "Try Again!";
-            Result.TextColor = Colors.Red;
+            SecondsResult.Text = $"Time: {timeTaken.TotalSeconds:F2} seconds";
+            WordsPerMinuteResult.Text = $"Words Per Minute: {wpm:F2}";
+            TextResult.Text = "Try Again!";
+            TextResult.TextColor = Colors.Red;
         }
         InputText.Text = string.Empty;
     }
