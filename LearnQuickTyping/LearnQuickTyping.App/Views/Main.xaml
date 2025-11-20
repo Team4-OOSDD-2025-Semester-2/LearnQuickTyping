@@ -23,7 +23,7 @@
 
         <Label
             x:Name="Result"
-            Text="Current Words Per Minute: 0"
+            Text=""
             HorizontalOptions="Center"/>
     </VerticalStackLayout>
 </ContentPage>

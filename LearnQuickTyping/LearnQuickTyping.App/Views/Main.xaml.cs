@@ -26,9 +26,10 @@ public partial class Main : ContentPage
         var random = new Random();
         int index = random.Next(PracticeWords.Length);
         PracticeWord.Text = PracticeWords[index];
+        Result.Text = "Current time: 0,00s\r\nCurrent Words Per Minute: 0";
     }
 
-#region Time Related Methods
+    #region Time Related Methods
 
     #region START STOP RESET TIMER
     // Start timing typing
@@ -78,7 +79,10 @@ public partial class Main : ContentPage
         {
             // Calculate current elapsed time
             var currentElapsed = DateTime.Now - startTime;
-            Result.Text = $"Current time: {currentElapsed.TotalSeconds:F2}s";
+            // Calculate current WPM
+            int typedCharacters = InputText.Text.Length;
+            double tempWPM = CalculateWordPerMinute(typedCharacters, currentElapsed);
+            Result.Text = $"Current time: {currentElapsed.TotalSeconds:F2}s\r\nCurrent words per minute: {tempWPM:F2}";
         }
     }
     #endregion
@@ -113,7 +117,7 @@ public partial class Main : ContentPage
 
         if (InputText.Text == PracticeWord.Text)
         {
-            Result.Text = $"Correct! \r\nTime: {timeTaken.TotalSeconds:F2} seconds \r\nWords Per Minute: {wpm:F2}";
+            Result.Text = $"Correct!\r\nTime: {timeTaken.TotalSeconds:F2} seconds\r\nWords Per Minute: {wpm:F2}";
             Result.TextColor = Colors.Green;
 
             DisplayRandomWord();
