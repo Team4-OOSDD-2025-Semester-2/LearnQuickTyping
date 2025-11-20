@@ -18,10 +18,21 @@
             x:Name="InputText"
             Placeholder="Copy text above and press enter when finished"
             Completed="OnEntryDone"
+            TextChanged="StartTiming"
             MinimumWidthRequest="350"/>
 
         <Label
-            x:Name="Result"
+            x:Name="SecondsResult"
+            Text="Current time: 0,00s"
+            HorizontalOptions="Center"/>
+        
+        <Label
+            x:Name="WordsPerMinuteResult"
+            Text="Current Words Per Minute: 0"
+            HorizontalOptions="Center"/>
+
+        <Label
+            x:Name="TextResult"
             Text=""
             HorizontalOptions="Center"/>
     </VerticalStackLayout>
