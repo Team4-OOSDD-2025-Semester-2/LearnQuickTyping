@@ -10,7 +10,7 @@ public partial class Main : ContentPage
 
     private readonly string[] PracticeWords = new string[]
     {
-        "example", "typing", "quick", "learn", "keyboard", "practice", "speed", "accuracy", "challenge", "improve"
+        "Example", "Typing", "Quick", "Learn", "Keyboard", "Practice", "Speed", "Accuracy", "Challenge", "Improve"
     };
 
     public Main()
