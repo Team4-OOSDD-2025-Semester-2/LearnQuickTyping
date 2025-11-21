@@ -3,36 +3,35 @@ using System.Collections.Generic;
 
 namespace LearnQuickTyping.Core.Models
 {
-    public class TypeControle
+    public class TypeControl
     {
         // Data
-        public string TargetText { get; set; }  // Wat moet getypt worden
-        public string TypedText { get; set; }   // Wat is getypt
+        public string TargetText { get; set; } = string.Empty;  // What needs to be typed
+        public string TypedText { get; set; } = string.Empty;   // What has been typed
 
-        // Event om MainPage te informeren
-        public event Action<List<LetterStatus>> StatusChanged;
+        // Event to inform MainPage
+        public event Action<List<LetterStatus>>? StatusChanged;
 
-        // Deze methode roep je aan elke keer dat gebruiker typt
+        // Call this method every time the user types
         public void CheckTyping(string typedText)
         {
             TypedText = typedText;
             var statuses = GetLetterStatuses();
-            StatusChanged?.Invoke(statuses);  // Vertel MainPage
+            StatusChanged?.Invoke(statuses);  // Notify MainPage
         }
 
-        // Controleer elke letter en geef status terug
+        // Check each letter and return status
         public List<LetterStatus> GetLetterStatuses()
         {
             var statuses = new List<LetterStatus>();
 
-            // Loop door elke letter van TargetText
+            // Loop through each letter of TargetText
             for (int i = 0; i < TargetText.Length; i++)
             {
                 if (i < TypedText.Length)
                 {
-                    // Letter is al getypt - controleer of correct
+                    // Letter has already been typed - check if correct
                     bool isCorrect = TargetText[i] == TypedText[i];
-
                     statuses.Add(new LetterStatus
                     {
                         Character = TargetText[i],
@@ -41,7 +40,7 @@ namespace LearnQuickTyping.Core.Models
                 }
                 else
                 {
-                    // Letter moet nog getypt worden
+                    // Letter still needs to be typed
                     statuses.Add(new LetterStatus
                     {
                         Character = TargetText[i],
@@ -54,18 +53,18 @@ namespace LearnQuickTyping.Core.Models
         }
     }
 
-    // Info over één letter
+    // Information about one letter
     public class LetterStatus
     {
-        public char Character { get; set; }  // De letter zelf
+        public char Character { get; set; }  // The letter itself
         public Status Status { get; set; }   // Correct/Incorrect/Pending
     }
 
-    // Mogelijke statussen
+    // Possible statuses
     public enum Status
     {
-        Correct,    // Groen
-        Incorrect,  // Rood
-        Pending     // Grijs
+        Correct,    // Green
+        Incorrect,  // Red
+        Pending     // Gray
     }
 }

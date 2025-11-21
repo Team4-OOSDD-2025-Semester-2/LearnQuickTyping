@@ -6,15 +6,15 @@ public partial class Main : ContentPage
 {
     private DateTime startTime;
     private DateTime endTime;
-    private Boolean isTiming = false;
+    private bool isTiming = false;
     private TimeSpan elapsedTime = TimeSpan.Zero;
-    private IDispatcherTimer realTimeTimer;
+    private IDispatcherTimer realTimeTimer = null!;
 
-    // TypeControle for letter-by-letter checking
-    private TypeControle _typeControle;
+    // TypeControl for letter-by-letter checking
+    private TypeControl typeControl = null!;
 
     // Store the current target word
-    private string _currentTargetWord = string.Empty;
+    private string currentTargetWord = string.Empty;
 
     private readonly string[] PracticeWords = new string[]
     {
@@ -25,9 +25,9 @@ public partial class Main : ContentPage
     {
         InitializeComponent();
 
-        // FIRST: Initialize TypeControle
-        _typeControle = new TypeControle();
-        _typeControle.StatusChanged += OnTypingStatusChanged;
+        // FIRST: Initialize TypeControl
+        typeControl = new TypeControl();
+        typeControl.StatusChanged += OnTypingStatusChanged;
 
         // THEN: Call DisplayRandomWord
         DisplayRandomWord();
@@ -42,25 +42,25 @@ public partial class Main : ContentPage
         string newWord = PracticeWords[index];
 
         // Store the word in a variable
-        _currentTargetWord = newWord;
+        currentTargetWord = newWord;
 
         // Reset the visual display
         PracticeWord.FormattedText = null;
         PracticeWord.Text = newWord;
 
-        // Update TypeControle with new target word
-        if (_typeControle != null)
+        // Update TypeControl with new target word
+        if (typeControl != null)
         {
-            _typeControle.TargetText = newWord;
-            _typeControle.TypedText = string.Empty;
+            typeControl.TargetText = newWord;
+            typeControl.TypedText = string.Empty;
 
             // Update display with all letters gray (pending)
-            var statuses = _typeControle.GetLetterStatuses();
+            var statuses = typeControl.GetLetterStatuses();
             UpdateLetterDisplay(statuses);
         }
     }
 
-    // Event handler for TypeControle updates
+    // Event handler for TypeControl updates
     private void OnTypingStatusChanged(List<LetterStatus> statuses)
     {
         // Update the visual display of letters with colors
@@ -111,10 +111,10 @@ public partial class Main : ContentPage
             realTimeTimer.Start();
         }
 
-        // Check typing with TypeControle on every text change
-        if (_typeControle != null)
+        // Check typing with TypeControl on every text change
+        if (typeControl != null)
         {
-            _typeControle.CheckTyping(e.NewTextValue ?? string.Empty);
+            typeControl.CheckTyping(e.NewTextValue ?? string.Empty);
         }
     }
 
@@ -153,7 +153,7 @@ public partial class Main : ContentPage
     }
 
     // Real-time typing performance monitor
-    private void OnRealTimeTimerTick(object sender, EventArgs e)
+    private void OnRealTimeTimerTick(object? sender, EventArgs e)
     {
         if (isTiming)
         {
@@ -198,9 +198,9 @@ public partial class Main : ContentPage
         double wpm = CalculateWordPerMinute(typedCharacters, timeTaken);
         ResetTiming();
 
-        // Compare with _currentTargetWord instead of PracticeWord.Text
+        // Compare with currentTargetWord instead of PracticeWord.Text
         // (PracticeWord.Text may be empty after FormattedText is set)
-        if (InputText.Text == _currentTargetWord)
+        if (InputText.Text == currentTargetWord)
         {
             SecondsResult.Text = $"Time: {timeTaken.TotalSeconds:F2} seconds";
             WordsPerMinuteResult.Text = $"Words Per Minute: {wpm:F2}";
@@ -210,10 +210,10 @@ public partial class Main : ContentPage
             // Display new random word
             DisplayRandomWord();
 
-            // Reset TypeControle for new word
-            if (_typeControle != null)
+            // Reset TypeControl for new word
+            if (typeControl != null)
             {
-                _typeControle.TypedText = string.Empty;
+                typeControl.TypedText = string.Empty;
             }
         }
         else
