@@ -13,6 +13,15 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      SuppressNETCoreSdkPreviewMessage: true
+      MSBuildWarningsAsMessages: NETSDK1202
+    defaults:
+      run:
+        working-directory: LearnQuickTyping
+    
     steps:
       - name: Haal de repository op
         uses: actions/checkout@v4
@@ -20,11 +29,22 @@ jobs:
       - name: Installeer .NET SDK
         uses: actions/setup-dotnet@v3
         with:
+          dotnet-version: '8.0.404'
+          dotnet-quality: 'ga'
           dotnet-version: '8.0.x'
  
       - name: Installeer MAUI workloads
         run: dotnet workload install maui-android
  
+      - name: Herstel test project afhankelijkheden
+        run: dotnet restore LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj
+ 
+      - name: Bouw test project
+        run: dotnet build LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj --configuration Release --no-restore
+ 
+      - name: Voer geautomatiseerde tests uit
+        run: |
+          dotnet test LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj \
       - name: Herstel afhankelijkheden
         run: dotnet restore
  
@@ -81,6 +101,8 @@ jobs:
         with:
           name: test-resultaten
           path: |
+            LearnQuickTyping/TestResults/TestResults.trx
+            LearnQuickTyping/TestResults/test-log.txt
             TestResults/TestResults.trx
             TestResults/test-log.txt
         if: always()
