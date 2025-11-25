@@ -35,10 +35,6 @@
                 Text="Karaoke Mode"
                 Clicked="OnKaraokeModeClicked" />
 
-            <Button
-                Text="Create Profile"
-                Clicked="OnCreateProfileClicked" />
-
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

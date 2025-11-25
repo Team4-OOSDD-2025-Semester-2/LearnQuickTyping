@@ -26,9 +26,4 @@ public partial class StartPage : ContentPage
     {
         await DisplayAlert("Info", "Not yet implemented.", "OK");
     }
-
-    private async void OnCreateProfileClicked(object sender, EventArgs e)
-    {
-        await DisplayAlert("Info", "Not yet implemented.", "OK");
-    }
 }
