@@ -49,7 +49,7 @@ jobs:
  
       - name: Voer geautomatiseerde tests uit
         run: |
-          dotnet test LearnQuickTyping/LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj \
+          dotnet test LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj \
             --configuration Release \
             --no-restore --no-build \
             --logger "trx;LogFileName=TestResults.trx" \
