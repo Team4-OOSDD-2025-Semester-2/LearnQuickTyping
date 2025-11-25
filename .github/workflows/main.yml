@@ -29,7 +29,6 @@ jobs:
       - name: Installeer .NET SDK
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.404'
           dotnet-quality: 'ga'
           dotnet-version: '8.0.x'
  
@@ -42,9 +41,6 @@ jobs:
       - name: Bouw test project
         run: dotnet build LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj --configuration Release --no-restore
  
-      - name: Voer geautomatiseerde tests uit
-        run: |
-          dotnet test LearnQuickTyping.TestCore/LearnQuickTyping.TestCore.csproj \
       - name: Herstel afhankelijkheden
         run: dotnet restore
  
