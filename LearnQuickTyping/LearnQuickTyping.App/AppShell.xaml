@@ -8,8 +8,8 @@
     Title="LearnQuickTyping.App">
 
     <ShellContent
-        Title="LearnQuickTyping"
-        ContentTemplate="{DataTemplate local:Main}"
-        Route="MainPage" />
+        Title="HomePage"
+        ContentTemplate="{DataTemplate local:StartPage}"
+        Route="StartPage" />
 
 </Shell>
