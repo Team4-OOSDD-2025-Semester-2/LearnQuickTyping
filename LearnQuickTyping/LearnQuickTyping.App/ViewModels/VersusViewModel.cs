@@ -126,7 +126,6 @@ public partial class VersusViewModel : BaseViewModel
     [RelayCommand]
     private async Task CompleteTyping()
     {
-        StopTimer();
         var elapsed = DateTime.Now - _startTime;
 
         // Validate text
@@ -136,6 +135,7 @@ public partial class VersusViewModel : BaseViewModel
             ResultColor = Colors.Red;
             return;
         }
+        StopTimer();
 
         // Calculate result
         double wpm = _statsService.CalculateWordPerMinute(InputText.Length, elapsed);
