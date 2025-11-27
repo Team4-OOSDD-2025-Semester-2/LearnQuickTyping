@@ -13,8 +13,9 @@
         HorizontalOptions="Center">
 
         <Label
-            x:Name="PracticeWordLabel"
-            HorizontalOptions="Center"/>
+            x:Name="PracticeTextLabel"
+            HorizontalOptions="Center"
+            MaximumWidthRequest="500"/>
 
         <Entry 
             Text="{Binding InputText}"

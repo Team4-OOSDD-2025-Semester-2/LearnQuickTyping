@@ -31,7 +31,7 @@ public partial class TextExercise : ContentPage
             var span = new Span
             {
                 Text = letterStatus.Character.ToString(),
-                FontSize = PracticeWordLabel.FontSize
+                FontSize = PracticeTextLabel.FontSize
             };
 
             span.TextColor = letterStatus.Status switch
@@ -45,6 +45,6 @@ public partial class TextExercise : ContentPage
             formattedString.Spans.Add(span);
         }
 
-        PracticeWordLabel.FormattedText = formattedString;
+        PracticeTextLabel.FormattedText = formattedString;
     }
 }
