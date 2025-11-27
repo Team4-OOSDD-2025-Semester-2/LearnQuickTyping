@@ -6,33 +6,61 @@
              x:DataType="vm:VersusViewModel"
              Title="Versus Mode">
 
-    <ScrollView>
-        <VerticalStackLayout
-            Padding="30,0"
-            Spacing="25" 
-            VerticalOptions="Center"
-            HorizontalOptions="Center">
+    <Grid>
 
+        <ScrollView IsVisible="{Binding IsNotTurnOverlayVisible}">
+            <VerticalStackLayout
+                Padding="30,0"
+                Spacing="25" 
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
 
-            <Label
-                x:Name="PracticeWordLabel"
-                HorizontalOptions="Center"/>
+                <Label
+                    x:Name="PracticeWordLabel"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalOptions="Center"/>
 
-            <Entry 
-                Text="{Binding InputText}"
-                Placeholder="Copy text above and press enter when finished"
-                ReturnCommand="{Binding CompleteTypingCommand}"
-                MinimumWidthRequest="350"/>
+                <Entry 
+                    Text="{Binding InputText}"
+                    Placeholder="Copy text above and press enter when finished"
+                    ReturnCommand="{Binding CompleteTypingCommand}"
+                    MinimumWidthRequest="350"
+                    HorizontalTextAlignment="Center"/>
 
-            <Label
-                Text="{Binding TimeDisplay}"
-                HorizontalOptions="Center"/>
+                <Label
+                    Text="{Binding TimeDisplay}"
+                    HorizontalOptions="Center"/>
 
-            <Label
-                Text="{Binding ResultMessage}"
-                TextColor="{Binding ResultColor}"
-                HorizontalOptions="Center"/>
+                <Label
+                    Text="{Binding ResultMessage}"
+                    TextColor="{Binding ResultColor}"
+                    HorizontalOptions="Center"
+                    FontAttributes="Bold"/>
 
-        </VerticalStackLayout>
-    </ScrollView>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsTurnOverlayVisible}"
+              ZIndex="1">
+
+            <VerticalStackLayout 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Spacing="20">
+
+                <Label 
+                    Text="{Binding TurnMessage}"
+                    Style="{StaticResource Headline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Button 
+                    Text="Start Turn"
+                    Command="{Binding StartTurnCommand}"
+                    HorizontalOptions="Center"
+                    WidthRequest="200"/>
+
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
 </ContentPage>
