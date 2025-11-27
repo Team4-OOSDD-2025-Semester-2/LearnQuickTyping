@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             x:Class="LearnQuickTyping.App.Views.VersusView"
+             x:DataType="vm:VersusViewModel"
+             Title="Versus Mode">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="30,0"
+            Spacing="25" 
+            VerticalOptions="Center"
+            HorizontalOptions="Center">
+
+
+            <Label
+                x:Name="PracticeWordLabel"
+                HorizontalOptions="Center"/>
+
+            <Entry 
+                Text="{Binding InputText}"
+                Placeholder="Copy text above and press enter when finished"
+                ReturnCommand="{Binding CompleteTypingCommand}"
+                MinimumWidthRequest="350"/>
+
+            <Label
+                Text="{Binding TimeDisplay}"
+                HorizontalOptions="Center"/>
+
+            <Label
+                Text="{Binding ResultMessage}"
+                TextColor="{Binding ResultColor}"
+                HorizontalOptions="Center"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
