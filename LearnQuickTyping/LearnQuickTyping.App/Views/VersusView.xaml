@@ -17,7 +17,6 @@
 
                 <Label
                     x:Name="PracticeWordLabel"
-                    Style="{StaticResource SubHeadline}"
                     HorizontalOptions="Center"/>
 
                 <Entry 
@@ -35,8 +34,7 @@
                 <Label
                     Text="{Binding ResultMessage}"
                     TextColor="{Binding ResultColor}"
-                    HorizontalOptions="Center"
-                    FontAttributes="Bold"/>
+                    HorizontalOptions="Center"/>
 
             </VerticalStackLayout>
         </ScrollView>
