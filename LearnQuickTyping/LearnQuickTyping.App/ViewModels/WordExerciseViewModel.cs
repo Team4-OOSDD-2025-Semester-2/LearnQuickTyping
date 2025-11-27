@@ -7,7 +7,7 @@ using LearnQuickTyping.Core.Models;
 
 namespace LearnQuickTyping.App.ViewModels;
 
-public partial class WordExerciseViewModel : ObservableObject
+public partial class WordExerciseViewModel : BaseViewModel
 {
     private readonly IWordRepository _wordRepository;
     private readonly ITypingStatsService _statsService;
