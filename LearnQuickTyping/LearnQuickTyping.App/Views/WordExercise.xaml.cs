@@ -5,12 +5,21 @@ namespace LearnQuickTyping.App.Views;
 
 public partial class WordExercise : ContentPage
 {
+    private readonly WordExerciseViewModel _viewModel;
+
     public WordExercise(WordExerciseViewModel viewModel)
     {
         InitializeComponent();
-        BindingContext = viewModel;
+        _viewModel = viewModel;
+        BindingContext = _viewModel;
 
-        viewModel.RequestLetterUpdate += UpdateLetterDisplay;
+        _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
+    }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        _viewModel.InitializeExerciseCommand.Execute(null);
     }
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)

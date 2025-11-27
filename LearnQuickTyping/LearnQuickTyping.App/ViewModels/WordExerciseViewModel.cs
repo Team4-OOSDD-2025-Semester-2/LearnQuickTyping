@@ -49,6 +49,16 @@ public partial class WordExerciseViewModel : BaseViewModel
         _timer = Application.Current.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(50);
         _timer.Tick += OnTimerTick;
+    }
+
+    [RelayCommand]
+    public void InitializeExercise()
+    {
+        StopTimer();
+        TimeDisplay = "Current time: 0,00s";
+        WpmDisplay = "Current Words Per Minute: 0";
+        InputText = string.Empty;
+        ResultMessage = string.Empty;
 
         LoadNewWord();
     }
