@@ -44,6 +44,15 @@ public partial class VersusViewModel : BaseViewModel
 
     private bool _isPlayerOneTurn = true;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsNotTurnOverlayVisible))]
+    private bool _isTurnOverlayVisible;
+
+    public bool IsNotTurnOverlayVisible => !IsTurnOverlayVisible;
+
+    [ObservableProperty]
+    private string _turnMessage = string.Empty;
+
     public event Action<List<LetterStatus>>? RequestLetterUpdate;
 
     public VersusViewModel(
@@ -74,6 +83,12 @@ public partial class VersusViewModel : BaseViewModel
         SetupTurn("Player 1");
     }
 
+    [RelayCommand]
+    private void StartTurn() // Start turn connected to overlay
+    {
+        IsTurnOverlayVisible = false;
+    }
+
     private void SetupTurn(string playerName)
     {
         StopTimer();
@@ -88,10 +103,15 @@ public partial class VersusViewModel : BaseViewModel
         TimeDisplay = "Time: 0.00s";
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+
+        TurnMessage = $"{playerName}'s Turn \nPress enter to begin.";
+        IsTurnOverlayVisible = true;
     }
 
     partial void OnInputTextChanged(string value)
     {
+        if (IsTurnOverlayVisible) return;
+
         if (!_isTiming && !string.IsNullOrEmpty(value))
         {
             StartTimer();
