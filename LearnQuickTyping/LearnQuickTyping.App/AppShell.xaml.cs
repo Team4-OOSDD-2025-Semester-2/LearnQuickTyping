@@ -1,12 +1,11 @@
-﻿namespace LearnQuickTyping.App
-{
-    public partial class AppShell : Shell
-    {
-        public AppShell()
-        {
-            InitializeComponent();
+﻿namespace LearnQuickTyping.App;
 
-            Routing.RegisterRoute("WordPractice", typeof(Views.Main));
-        }
+public partial class AppShell : Shell
+{
+    public AppShell()
+    {
+        InitializeComponent();
+
+        Routing.RegisterRoute(nameof(Views.WordExercise), typeof(Views.WordExercise));
     }
 }
