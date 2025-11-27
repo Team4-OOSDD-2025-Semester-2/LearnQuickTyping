@@ -9,7 +9,7 @@ public partial class StartPage : ContentPage
 
     private async void OnWordPracticeClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync("WordPractice");
+        await Shell.Current.GoToAsync(nameof(WordExercise));
     }
 
     private async void OnTextPracticeClicked(object sender, EventArgs e)
