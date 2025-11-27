@@ -9,7 +9,7 @@ namespace LearnQuickTyping.App.ViewModels;
 
 public partial class TextExerciseViewModel : BaseViewModel
 {
-    private readonly IWordRepository _wordRepository;
+    private readonly ITextRepository _textRepository;
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
@@ -18,7 +18,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     private bool _isTiming;
 
     [ObservableProperty]
-    private string _targetWord;
+    private string _targetText;
 
     [ObservableProperty]
     private string _inputText;
@@ -38,11 +38,11 @@ public partial class TextExerciseViewModel : BaseViewModel
     public event Action<List<LetterStatus>> RequestLetterUpdate;
 
     public TextExerciseViewModel(
-        IWordRepository wordRepository,
+        ITextRepository textRepository,
         ITypingStatsService statsService,
         ITypeControlService typeControl)
     {
-        _wordRepository = wordRepository;
+        _textRepository = textRepository;
         _statsService = statsService;
         _typeControl = typeControl;
 
@@ -60,13 +60,13 @@ public partial class TextExerciseViewModel : BaseViewModel
         InputText = string.Empty;
         ResultMessage = string.Empty;
 
-        LoadNewWord();
+        LoadNewText();
     }
 
-    private void LoadNewWord()
+    private void LoadNewText()
     {
-        TargetWord = _wordRepository.GetRandomWord();
-        _typeControl.TargetText = TargetWord;
+        TargetText = _textRepository.GetRandomText();
+        _typeControl.TargetText = TargetText;
         _typeControl.TypedText = string.Empty;
         InputText = string.Empty;
 
@@ -120,12 +120,12 @@ public partial class TextExerciseViewModel : BaseViewModel
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
 
-        if (InputText == TargetWord)
+        if (InputText == TargetText)
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
 
-            LoadNewWord();
+            LoadNewText();
         }
         else
         {
