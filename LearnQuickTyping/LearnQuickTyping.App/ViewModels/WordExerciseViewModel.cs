@@ -11,7 +11,7 @@ public partial class WordExerciseViewModel : BaseViewModel
 {
     private readonly IWordRepository _wordRepository;
     private readonly ITypingStatsService _statsService;
-    private readonly ITypeControl _typeControl;
+    private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
 
     private DateTime _startTime;
@@ -40,7 +40,7 @@ public partial class WordExerciseViewModel : BaseViewModel
     public WordExerciseViewModel(
         IWordRepository wordRepository,
         ITypingStatsService statsService,
-        ITypeControl typeControl)
+        ITypeControlService typeControl)
     {
         _wordRepository = wordRepository;
         _statsService = statsService;

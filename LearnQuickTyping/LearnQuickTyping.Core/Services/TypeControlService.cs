@@ -1,8 +1,9 @@
 ﻿using LearnQuickTyping.Core.Interfaces;
+using LearnQuickTyping.Core.Models;
 
-namespace LearnQuickTyping.Core.Models;
+namespace LearnQuickTyping.Core.Services;
 
-public class TypeControl : ITypeControl
+public class TypeControlService : ITypeControlService
 {
     public string TargetText { get; set; } = string.Empty;
     public string TypedText { get; set; } = string.Empty;

@@ -4,7 +4,6 @@ using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Data.Repositories;
-using LearnQuickTyping.Core.Models;
 using LearnQuickTyping.Core.Services;
 using LearnQuickTyping.App.ViewModels;
 using LearnQuickTyping.App.Views;
@@ -28,7 +27,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<IWordRepository, WordRepository>();
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
 
-        builder.Services.AddTransient<ITypeControl, TypeControl>();
+        builder.Services.AddTransient<ITypeControlService, TypeControlService>();
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();

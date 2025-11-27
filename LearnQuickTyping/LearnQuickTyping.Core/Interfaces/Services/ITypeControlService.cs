@@ -2,7 +2,7 @@
 
 namespace LearnQuickTyping.Core.Interfaces;
 
-public interface ITypeControl
+public interface ITypeControlService
 {
     string TargetText { get; set; }
     string TypedText { get; set; }
