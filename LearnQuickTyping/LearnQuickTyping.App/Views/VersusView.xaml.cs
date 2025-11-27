@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using LearnQuickTyping.App.ViewModels;
 using LearnQuickTyping.Core.Models;
 
@@ -14,12 +15,32 @@ public partial class VersusView : ContentPage
         BindingContext = _viewModel;
 
         _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
+
+        _viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
         _viewModel.InitializeVersusCommand.Execute(null);
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(VersusViewModel.IsTurnOverlayVisible))
+        {
+            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
+            {
+                if (_viewModel.IsTurnOverlayVisible)
+                {
+                    Invisible.Focus();
+                }
+                else
+                {
+                    TypingEntry.Focus();
+                }
+            });
+        }
     }
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)

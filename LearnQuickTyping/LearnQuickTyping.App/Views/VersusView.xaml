@@ -21,6 +21,7 @@
                     HorizontalOptions="Center"/>
 
                 <Entry 
+                    x:Name="TypingEntry"
                     Text="{Binding InputText}"
                     Placeholder="Copy text above and press enter when finished"
                     ReturnCommand="{Binding CompleteTypingCommand}"
@@ -53,9 +54,10 @@
                     Style="{StaticResource Headline}"
                     HorizontalTextAlignment="Center"/>
 
-                <Button 
-                    Text="Start Turn"
-                    Command="{Binding StartTurnCommand}"
+                <Entry 
+                    x:Name="Invisible"
+                    Opacity="0"
+                    ReturnCommand="{Binding StartTurnCommand}"
                     HorizontalOptions="Center"
                     WidthRequest="200"/>
 
