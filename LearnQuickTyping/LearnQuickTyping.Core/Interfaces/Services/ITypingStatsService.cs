@@ -2,5 +2,7 @@
 
 public interface ITypingStatsService
 {
-    double CalculateWordPerMinute(int characterCount, TimeSpan timeTaken);
+    double CalculateWordsPerMinuteSingleWord(int characterCount, TimeSpan timeTaken);
+    double CalculateWordsPerMinuteText(string text, TimeSpan timeTaken);
+    int GetTotalPracticeWordCount();
 }

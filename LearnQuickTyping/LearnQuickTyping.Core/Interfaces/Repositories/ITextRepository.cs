@@ -3,4 +3,6 @@
 public interface ITextRepository
 {
     string GetRandomText();
+    int GetWordCount();
+    int CountWords(string text);
 }

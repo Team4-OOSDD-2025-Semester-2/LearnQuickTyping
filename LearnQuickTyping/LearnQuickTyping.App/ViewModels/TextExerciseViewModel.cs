@@ -105,7 +105,7 @@ public partial class TextExerciseViewModel : BaseViewModel
             var elapsed = DateTime.Now - _startTime;
             TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-            double wpm = _statsService.CalculateWordPerMinute(InputText?.Length ?? 0, elapsed);
+            double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
             WpmDisplay = $"Current words per minute: {wpm:F2}";
         }
     }
@@ -115,7 +115,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
-        double wpm = _statsService.CalculateWordPerMinute(InputText?.Length ?? 0, elapsed);
+        double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
