@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
@@ -179,7 +180,13 @@ public partial class VersusViewModel : BaseViewModel
             // End player 2 turn
             _playerTwoResult = result;
 
-            await Shell.Current.GoToAsync("..");
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "Player1Result", _playerOneResult! },
+                { "Player2Result", _playerTwoResult! }
+            };
+
+            await Shell.Current.GoToAsync(nameof(VersusResultView), navigationParameter);
         }
     }
 }
