@@ -18,37 +18,39 @@ public partial class VersusResultViewModel : BaseViewModel
     private VersusResult _player2Result;
 
     [ObservableProperty]
-    private string _winnerMessage;
+    private bool _isPlayer1Winner;
 
     [ObservableProperty]
-    private Color _winnerColor;
+    private bool _isPlayer2Winner;
+
+    [ObservableProperty]
+    private bool _isTie;
 
     public VersusResultViewModel(IVersusScoreService scoreService)
     {
         _scoreService = scoreService;
     }
 
-    // When final player has finished determine winner
-    partial void OnPlayer2ResultChanged(VersusResult value)
-    {
-        DetermineWinner();
-    }
+    partial void OnPlayer1ResultChanged(VersusResult value) => CheckWinner();
+    partial void OnPlayer2ResultChanged(VersusResult value) => CheckWinner();
 
-    private void DetermineWinner()
+    private void CheckWinner()
     {
         if (Player1Result == null || Player2Result == null) return;
 
-        string winnerName = _scoreService.DetermineWinner(Player1Result, Player2Result);
+        var winnerName = _scoreService.DetermineWinner(Player1Result, Player2Result);
 
         if (winnerName == "Tie")
         {
-            WinnerMessage = "It's a Tie!";
-            WinnerColor = Colors.Orange;
+            IsTie = true;
+            IsPlayer1Winner = false;
+            IsPlayer2Winner = false;
         }
         else
         {
-            WinnerMessage = $"{winnerName} Wins!";
-            WinnerColor = Colors.Green;
+            IsTie = false;
+            IsPlayer1Winner = winnerName == Player1Result.PlayerName;
+            IsPlayer2Winner = winnerName == Player2Result.PlayerName;
         }
     }
 

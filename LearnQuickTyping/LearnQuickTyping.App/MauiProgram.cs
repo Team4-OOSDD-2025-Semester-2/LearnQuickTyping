@@ -28,6 +28,7 @@ public static class MauiProgram
 
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();
+        builder.Services.AddTransient<IVersusScoreService, VersusScoreService>();
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
