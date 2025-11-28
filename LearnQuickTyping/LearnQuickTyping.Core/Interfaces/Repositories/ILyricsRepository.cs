@@ -2,7 +2,7 @@
 {
     public interface ILyricsRepository
     {
-        string GetLyrics();
-
+        IEnumerable<string> GetAllLyricsTitles();
+        string[] GetLyricsByIndex(int index);
     }
 }

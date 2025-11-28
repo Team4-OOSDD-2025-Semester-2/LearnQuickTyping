@@ -4,18 +4,40 @@ namespace LearnQuickTyping.Core.Data.Repositories;
 
 public class lyricsRepository : ILyricsRepository
 {
-    private readonly string[] _practiceLyrics = new string[]
+    private readonly List<string[]> _lyricsCollection = new List<string[]>
     {
-        "When you walk through a storm, hold your head up high" +
-        "And don't be afraid of the dark" +
-        "At the end of the storm is a golden sky" +
-        "And the sweet silver song of the lark " 
+        new string[]
+        {
+            "When you walk through a storm, hold your head up high",
+            "And don't be afraid of the dark",
+            "At the end of the storm is a golden sky",
+            "And the sweet silver song of the lark "
+        },
+
+        new string[]
+        {
+            "Is this the real life?",
+            "Is this just fantasy?",
+            "Caught in a landslide,",
+            "No escape from reality"
+
+        }
     };
 
-    public string GetLyrics()
+    public IEnumerable<string> GetAllLyricsTitles()
     {
-        var random = new Random();
-        int index = random.Next(_practiceLyrics.Length);
-        return _practiceLyrics[index];
+        return new List<string>
+        {
+            "You'll Never Walk Alone",
+            "Bohemian Rhapsody"
+        };
     }
+    public string[] GetLyricsByIndex(int index)
+    {
+        if (index < 0 || index >= _lyricsCollection.Count)
+            throw new ArgumentOutOfRangeException(nameof(index));
+
+        return _lyricsCollection[index];
+    }
+
 }

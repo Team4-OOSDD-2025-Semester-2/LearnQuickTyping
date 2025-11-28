@@ -15,24 +15,32 @@
         x:Name="PracticeTextLabel"
         HorizontalOptions="Center"/>
 
+        <Picker
+            Title="Kies een tekst"
+            ItemsSource="{Binding LyricsTitles}"
+            SelectedItem="{Binding SelectedLyricsTitle}"
+            WidthRequest="300"
+            HorizontalOptions="Center" />
+
+
         <Entry 
-        Text="{Binding InputText}"
-        Placeholder="Copy text above and press enter when finished"
-        ReturnCommand="{Binding CompleteTypingCommand}"
-        MinimumWidthRequest="350"/>
+            Text="{Binding InputText}"
+            Placeholder="Copy text above and press enter when finished"
+            ReturnCommand="{Binding CompleteTypingCommand}"
+            MinimumWidthRequest="350"/>
 
         <Label
-        Text="{Binding TimeDisplay}"
-        HorizontalOptions="Center"/>
+            Text="{Binding TimeDisplay}"
+            HorizontalOptions="Center"/>
 
         <Label
-        Text="{Binding WpmDisplay}"
-        HorizontalOptions="Center"/>
+            Text="{Binding WpmDisplay}"
+            HorizontalOptions="Center"/>
 
         <Label
-        Text="{Binding ResultMessage}"
-        TextColor="{Binding ResultColor}"
-        HorizontalOptions="Center"/>
+            Text="{Binding ResultMessage}"
+            TextColor="{Binding ResultColor}"
+            HorizontalOptions="Center"/>
     </VerticalStackLayout>
 
 </ContentPage>

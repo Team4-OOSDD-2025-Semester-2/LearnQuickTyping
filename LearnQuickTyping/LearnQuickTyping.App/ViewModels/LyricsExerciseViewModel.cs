@@ -5,6 +5,7 @@ using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
+using System.Collections.ObjectModel;
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -17,6 +18,19 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
     private DateTime _startTime;
     private bool _isTiming;
+
+    // Houdt alle regels van de geselecteerde tekst
+    private string[] _currentLyricsLines;
+
+    // Houdt bij welke regel momenteel getoond wordt
+    private int _currentLineIndex = 0;
+
+
+    [ObservableProperty]
+    private ObservableCollection<string> _lyricsTitles;
+
+    [ObservableProperty]
+    private string _selectedLyricsTitle;
 
     [ObservableProperty]
     private string _targetWord;
@@ -41,7 +55,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     public event Action<List<LetterStatus>> RequestLetterUpdate;
 
     public LyricsExerciseViewModel(
-        ILyricsRepository lyricsRepository, 
+        ILyricsRepository lyricsRepository,
         ITypingStatsService statsService,
         ITypeControlService typeControl)
     {
@@ -49,31 +63,58 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _statsService = statsService;
         _typeControl = typeControl;
 
+        LyricsTitles = new ObservableCollection<string>(_lyricsRepository.GetAllLyricsTitles());
+
         _timer = Application.Current.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(50);
         _timer.Tick += OnTimerTick;
     }
 
+    partial void OnSelectedLyricsTitleChanged(string value)
+    {
+        if (value == null)
+            return;
+
+        int index = LyricsTitles.IndexOf(value);
+
+        var lines = _lyricsRepository.GetLyricsByIndex(index);
+
+        // Haal alle regels van de gekozen tekst op
+        _currentLyricsLines = _lyricsRepository.GetLyricsByIndex(index);
+        _currentLineIndex = 0;
+
+        // Toon alleen de eerste regel
+        TargetWord = _currentLyricsLines[_currentLineIndex];
+
+        _typeControl.TargetText = TargetWord;
+        InputText = string.Empty;
+
+        RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+    }
+
+
     [RelayCommand]
     public void InitializeExercise()
     {
+        if (SelectedLyricsTitle == null)
+        {
+            ResultMessage = "Select a text first!";
+            ResultColor = Colors.Red;
+            return;
+        }
+
         StopTimer();
         TimeDisplay = "Current time: 0,00s";
         WpmDisplay = "Current Words Per Minute: 0";
         InputText = string.Empty;
         ResultMessage = string.Empty;
 
-        LoadNewlyric();
+        LoadNewLyric();
     }
 
-    private void LoadNewlyric()
+    private void LoadNewLyric()
     {
-        TargetWord = _lyricsRepository.GetLyrics();
-        _typeControl.TargetText = TargetWord;
-        _typeControl.TypedText = string.Empty;
-        InputText = string.Empty;
-
-        RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+        OnSelectedLyricsTitleChanged(SelectedLyricsTitle);
     }
 
 
@@ -128,15 +169,31 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
+            InputText = string.Empty;
+            _currentLineIndex++;
 
-            LoadNewlyric();
+            if (_currentLineIndex < _currentLyricsLines.Length)
+            {
+                // volgende regel tonen
+                TargetWord = _currentLyricsLines[_currentLineIndex];
+                _typeControl.TargetText = TargetWord;
+
+                RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+            }
+            else
+            {
+                // tekst is klaar
+                ResultMessage = "Text complete!";
+                ResultColor = Colors.Green;
+            }
         }
         else
         {
             ResultMessage = "Try Again!";
             ResultColor = Colors.Red;
             InputText = string.Empty;
-            _isTiming = false;
         }
+
     }
+
 }
