@@ -7,7 +7,7 @@ public interface ITypingStatsService
     int GetTotalPracticeWordCount();
     int GetMistakeCount();
     void TrackMistakes(string typedText, string targetText);
-
     void ResetMistakes();
+    int CalculateAccuracy();
 
 }

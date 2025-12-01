@@ -33,6 +33,9 @@ public partial class TextExerciseViewModel : BaseViewModel
     private string _mistakeCountDisplay = "Mistakes: 0";
 
     [ObservableProperty]
+    private string _accuracyDisplay = "Accuracy: 100%";
+
+    [ObservableProperty]
     private string _resultMessage;
 
     [ObservableProperty]
@@ -129,6 +132,9 @@ public partial class TextExerciseViewModel : BaseViewModel
 
             int mistakeCount = _statsService.GetMistakeCount();
             MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+
+            int accuracy = _statsService.CalculateAccuracy();
+            AccuracyDisplay = $"Accuracy: {accuracy}%";
         }
     }
 
@@ -139,23 +145,26 @@ public partial class TextExerciseViewModel : BaseViewModel
         var elapsed = DateTime.Now - _startTime;
         double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
         int mistakeCount = _statsService.GetMistakeCount();
+        int accuracy = _statsService.CalculateAccuracy();
+
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
         MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+        AccuracyDisplay = $"Accuracy: {accuracy}%";
 
         if (InputText == TargetText)
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
-            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\n\nPress Enter to continue";
+            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
             _wasCorrect = true;
         }
         else
         {
             ResultMessage = "Try Again!";
             ResultColor = Colors.Red;
-            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\n\nPress Enter to try again";
+            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to try again";
             _wasCorrect = false;
         }
 

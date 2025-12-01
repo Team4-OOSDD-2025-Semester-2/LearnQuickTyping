@@ -67,4 +67,11 @@ public class TypingStatsService : ITypingStatsService
         _totalMistakes = 0;
         _previousTypedLength = 0;
     }
+
+    public int CalculateAccuracy()
+        {
+        if (_previousTypedLength == 0) return 100;
+        int correctChars = _previousTypedLength - _totalMistakes;
+        return (int)((correctChars / (double)_previousTypedLength) * 100);
+    }
 }

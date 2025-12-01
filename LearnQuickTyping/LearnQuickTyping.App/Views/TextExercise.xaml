@@ -36,6 +36,10 @@
                 <Label
                     Text="{Binding MistakeCountDisplay}"
                     HorizontalOptions="Center"/>
+
+                <Label
+                    Text="{Binding AccuracyDisplay}"
+                    HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>
 
