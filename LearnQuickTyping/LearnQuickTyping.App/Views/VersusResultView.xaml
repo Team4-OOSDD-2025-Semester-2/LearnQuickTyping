@@ -24,8 +24,8 @@
             <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
                 <VerticalStackLayout Padding="15" Spacing="10">
                     <VerticalStackLayout IsVisible="{Binding IsPlayer1Winner}" HorizontalOptions="Center">
-                        <Image Source="dotnet_bot.png" HeightRequest="60" Aspect="AspectFit"/>
                         <Label Text="WINNER!" TextColor="Green" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Image Source="winner.jpg" HeightRequest="100" Aspect="AspectFit"/>
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player1Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
@@ -38,8 +38,8 @@
             <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
                 <VerticalStackLayout Padding="15" Spacing="10">
                     <VerticalStackLayout IsVisible="{Binding IsPlayer2Winner}" HorizontalOptions="Center">
-                        <Image Source="dotnet_bot.png" HeightRequest="60" Aspect="AspectFit"/>
                         <Label Text="Winner!" TextColor="Green" FontAttributes="Bold" FontSize="Large" HorizontalOptions="Center"/>
+                        <Image Source="winner.jpg" HeightRequest="100" Aspect="AspectFit"/>
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player2Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
