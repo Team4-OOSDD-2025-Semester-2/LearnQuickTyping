@@ -19,12 +19,11 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private DateTime _startTime;
     private bool _isTiming;
 
-    // Holds all lines of the selected lyric
+    // Holds all lines of the selected text
     private string[] _currentLyricsLines;
 
     // Tracks which line is currently being displayed
     private int _currentLineIndex = 0;
-
 
     [ObservableProperty]
     private ObservableCollection<string> _lyricsTitles;
@@ -50,7 +49,11 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
 
-    public object InitializeVersusCommand { get; internal set; }
+    [ObservableProperty]
+    private bool _isStartButtonVisible = false;
+
+    [ObservableProperty]
+    private bool _isExerciseVisible = false;
 
     public event Action<List<LetterStatus>> RequestLetterUpdate;
     public event Action ExerciseStarted;
@@ -91,16 +94,19 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _typeControl.TargetText = TargetWord;
         InputText = string.Empty;
 
+        // Show start button and hide exercise
+        IsStartButtonVisible = true;
+        IsExerciseVisible = false;
+
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
-
 
     [RelayCommand]
     public void InitializeExercise()
     {
         if (SelectedLyricsTitle == null)
         {
-            ResultMessage = "Select a lyric first!";
+            ResultMessage = "Select a text first!";
             ResultColor = Colors.Red;
             return;
         }
@@ -114,11 +120,21 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         LoadNewLyric();
     }
 
+    [RelayCommand]
+    public void StartExercise()
+    {
+        // Hide picker and start button
+        IsStartButtonVisible = false;
+        IsExerciseVisible = true;
+
+        System.Diagnostics.Debug.WriteLine("StartExercise called - hiding picker");
+        ExerciseStarted?.Invoke();
+    }
+
     private void LoadNewLyric()
     {
         OnSelectedLyricsTitleChanged(SelectedLyricsTitle);
     }
-
 
     partial void OnInputTextChanged(string value)
     {
@@ -130,7 +146,6 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _typeControl.CheckTyping(value ?? string.Empty);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
-        ExerciseStarted?.Invoke();
     }
 
     private void StartTimer()
@@ -177,7 +192,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
             if (_currentLineIndex < _currentLyricsLines.Length)
             {
-                // show next line 
+                // Show next line
                 TargetWord = _currentLyricsLines[_currentLineIndex];
                 _typeControl.TargetText = TargetWord;
 
@@ -185,8 +200,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             }
             else
             {
-                ResultMessage = "Lyric complete!";
+                ResultMessage = "Text complete!";
                 ResultColor = Colors.Green;
+                IsExerciseVisible = false;
                 ExerciseCompleted?.Invoke();
             }
         }
@@ -196,7 +212,5 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             ResultColor = Colors.Red;
             InputText = string.Empty;
         }
-
     }
-
 }

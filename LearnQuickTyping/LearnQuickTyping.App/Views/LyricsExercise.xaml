@@ -4,44 +4,54 @@
              xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
              x:Class="LearnQuickTyping.App.Views.LyricsExercise"
              x:DataType="vm:LyricsExerciseViewModel">
-    
+
     <VerticalStackLayout 
         Padding="30,0"
         Spacing="25" 
         VerticalOptions="Center"
         HorizontalOptions="Center">
 
-        <Label
-        x:Name="PracticeTextLabel"
-        HorizontalOptions="Center"/>
-
         <Picker
             x:Name="TextPicker"
-            Title="Choose a lyric"
+            Title="Kies een tekst"
             ItemsSource="{Binding LyricsTitles}"
             SelectedItem="{Binding SelectedLyricsTitle}"
             WidthRequest="300"
             HorizontalOptions="Center" />
 
+        <Button
+            Text="Start"
+            Command="{Binding StartExerciseCommand}"
+            IsVisible="{Binding IsStartButtonVisible}"
+            WidthRequest="200"
+            HorizontalOptions="Center" />
 
-        <Entry 
-            Text="{Binding InputText}"
-            Placeholder="Copy text above and press enter when finished"
-            ReturnCommand="{Binding CompleteTypingCommand}"
-            MinimumWidthRequest="350"/>
+        <VerticalStackLayout
+            IsVisible="{Binding IsExerciseVisible}"
+            Spacing="15">
 
-        <Label
-            Text="{Binding TimeDisplay}"
-            HorizontalOptions="Center"/>
+            <Label
+                x:Name="PracticeTextLabel"
+                HorizontalOptions="Center"/>
 
-        <Label
-            Text="{Binding WpmDisplay}"
-            HorizontalOptions="Center"/>
+            <Entry 
+                Text="{Binding InputText}"
+                Placeholder="Copy text above and press enter when finished"
+                ReturnCommand="{Binding CompleteTypingCommand}"
+                MinimumWidthRequest="350"/>
 
-        <Label
-            Text="{Binding ResultMessage}"
-            TextColor="{Binding ResultColor}"
-            HorizontalOptions="Center"/>
+            <Label
+                Text="{Binding TimeDisplay}"
+                HorizontalOptions="Center"/>
+
+            <Label
+                Text="{Binding WpmDisplay}"
+                HorizontalOptions="Center"/>
+
+            <Label
+                Text="{Binding ResultMessage}"
+                TextColor="{Binding ResultColor}"
+                HorizontalOptions="Center"/>
+        </VerticalStackLayout>
     </VerticalStackLayout>
-
 </ContentPage>
