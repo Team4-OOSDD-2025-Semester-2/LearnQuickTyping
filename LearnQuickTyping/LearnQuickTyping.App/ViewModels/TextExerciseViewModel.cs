@@ -28,6 +28,9 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     [ObservableProperty]
     private string _wpmDisplay = "Current Words Per Minute: 0";
+    
+    [ObservableProperty]
+    private string _mistakeCountDisplay = "Mistakes: 0";
 
     [ObservableProperty]
     private string _resultMessage;
@@ -81,6 +84,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         TargetText = _textRepository.GetRandomText();
         _typeControl.TargetText = TargetText;
         _typeControl.TypedText = string.Empty;
+        _statsService.ResetMistakes();
         InputText = string.Empty;
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
@@ -94,7 +98,9 @@ public partial class TextExerciseViewModel : BaseViewModel
         }
 
         _typeControl.CheckTyping(value ?? string.Empty);
-
+        
+        // Track mistakes as the user types
+        _statsService.TrackMistakes(value ?? string.Empty, TargetText);
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
 
@@ -120,6 +126,9 @@ public partial class TextExerciseViewModel : BaseViewModel
 
             double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
             WpmDisplay = $"Current words per minute: {wpm:F2}";
+
+            int mistakeCount = _statsService.GetMistakeCount();
+            MistakeCountDisplay = $"Mistakes: {mistakeCount}";
         }
     }
 
@@ -129,9 +138,11 @@ public partial class TextExerciseViewModel : BaseViewModel
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
         double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
+        int mistakeCount = _statsService.GetMistakeCount();
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
+        MistakeCountDisplay = $"Mistakes: {mistakeCount}";
 
         if (InputText == TargetText)
         {
@@ -144,7 +155,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         {
             ResultMessage = "Try Again!";
             ResultColor = Colors.Red;
-            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\n\nPress Enter to try again";
+            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\n\nPress Enter to try again";
             _wasCorrect = false;
         }
 

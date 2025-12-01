@@ -26,16 +26,15 @@
                     MinimumWidthRequest="350"/>
 
                 <Label
-                Text="{Binding TimeDisplay}"
-                HorizontalOptions="Center"/>
+                    Text="{Binding TimeDisplay}"
+                    HorizontalOptions="Center"/>
 
                 <Label
                     Text="{Binding WpmDisplay}"
                     HorizontalOptions="Center"/>
 
                 <Label
-                    Text="{Binding ResultMessage}"
-                    TextColor="{Binding ResultColor}"
+                    Text="{Binding MistakeCountDisplay}"
                     HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>
