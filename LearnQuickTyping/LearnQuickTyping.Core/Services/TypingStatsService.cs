@@ -26,7 +26,7 @@ public class TypingStatsService : ITypingStatsService
         if (timeTaken.TotalMinutes == 0) return 0;
 
         int wordCount = _textRepository.CountWords(text);
-        return (int)(wordCount / timeTaken.TotalMinutes);
+        return wordCount / timeTaken.TotalMinutes;
     }
 
     public int GetTotalPracticeWordCount()

@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="LearnQuickTyping.App.Views.TextExercise"
              x:DataType="vm:TextExerciseViewModel"
              Title="LearnQuickTyping">
@@ -20,24 +19,15 @@
                     HorizontalOptions="Center"
                     MaximumWidthRequest="500"/>
 
-                <Editor 
-                     Text="{Binding InputText}"
-                     Placeholder="Copy text above and press enter when finished"
-                     MinimumWidthRequest="350" 
-                     MinimumHeightRequest="200"
-                     MaximumWidthRequest="500"
-                     AutoSize="TextChanges"
-                     VerticalOptions="Start">
-                    <Editor.Behaviors>
-                        <toolkit:EventToCommandBehavior 
-                            EventName="Completed" 
-                            Command="{Binding CompleteTypingCommand}"/>
-                    </Editor.Behaviors>
-                </Editor>
+                <Entry 
+                    Text="{Binding InputText}"
+                    Placeholder="Copy text above and press enter when finished"
+                    ReturnCommand="{Binding CompleteTypingCommand}"
+                    MinimumWidthRequest="350"/>
 
-                    <Label
-                    Text="{Binding TimeDisplay}"
-                    HorizontalOptions="Center"/>
+                <Label
+                Text="{Binding TimeDisplay}"
+                HorizontalOptions="Center"/>
 
                 <Label
                     Text="{Binding WpmDisplay}"
