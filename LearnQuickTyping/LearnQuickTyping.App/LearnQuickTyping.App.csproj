@@ -79,6 +79,8 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Views\LyricsExercise.xaml">
+        <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\VersusResultView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
