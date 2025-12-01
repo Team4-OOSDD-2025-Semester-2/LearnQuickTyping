@@ -2,16 +2,17 @@
 
 namespace LearnQuickTyping.Core.Data.Repositories;
 
-public class lyricsRepository : ILyricsRepository
+public class LyricsRepository : ILyricsRepository
 {
     private readonly List<string[]> _lyricsCollection = new List<string[]>
     {
         new string[]
         {
-            "When you walk through a storm, hold your head up high",
+            "When you walk through a storm,",
+            "hold your head up high",
             "And don't be afraid of the dark",
-            "At the end of the storm is a golden sky",
-            "And the sweet silver song of the lark "
+            "At the end of the storm is a golden sky", 
+            "And the sweet silver song of the lark"
         },
 
         new string[]

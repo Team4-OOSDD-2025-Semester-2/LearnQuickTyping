@@ -1,4 +1,4 @@
-using LearnQuickTyping.App.ViewModels;
+﻿using LearnQuickTyping.App.ViewModels;
 using LearnQuickTyping.Core.Models;
 
 namespace LearnQuickTyping.App.Views;
@@ -11,6 +11,8 @@ public partial class LyricsExercise : ContentPage
         _viewModel = viewModel;
         BindingContext = _viewModel;
 
+        _viewModel.ExerciseStarted += OnExerciseStarted;
+        _viewModel.ExerciseCompleted += OnExerciseCompleted;
         _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
     }
     protected override void OnAppearing()
@@ -18,6 +20,23 @@ public partial class LyricsExercise : ContentPage
         base.OnAppearing();
         _viewModel.InitializeExerciseCommand.Execute(null);
     }
+    private void OnExerciseStarted()
+    {
+        // When the lyric is chosen, the picker disapperead 
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            TextPicker.IsVisible = false;
+        });
+    }
+    private void OnExerciseCompleted()
+    {
+        // When the lyric is completed, the picker appeared 
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            TextPicker.IsVisible = true;
+        });
+    }
+
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
@@ -43,5 +62,12 @@ public partial class LyricsExercise : ContentPage
         }
 
         PracticeTextLabel.FormattedText = formattedString;
+    }
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        _viewModel.ExerciseStarted += OnExerciseStarted;
+        _viewModel.ExerciseCompleted += OnExerciseCompleted;
+        _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
     }
 }

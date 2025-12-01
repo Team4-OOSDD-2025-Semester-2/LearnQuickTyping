@@ -19,10 +19,10 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private DateTime _startTime;
     private bool _isTiming;
 
-    // Houdt alle regels van de geselecteerde tekst
+    // Holds all lines of the selected lyric
     private string[] _currentLyricsLines;
 
-    // Houdt bij welke regel momenteel getoond wordt
+    // Tracks which line is currently being displayed
     private int _currentLineIndex = 0;
 
 
@@ -53,6 +53,8 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     public object InitializeVersusCommand { get; internal set; }
 
     public event Action<List<LetterStatus>> RequestLetterUpdate;
+    public event Action ExerciseStarted;
+    public event Action ExerciseCompleted;
 
     public LyricsExerciseViewModel(
         ILyricsRepository lyricsRepository,
@@ -79,11 +81,11 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
         var lines = _lyricsRepository.GetLyricsByIndex(index);
 
-        // Haal alle regels van de gekozen tekst op
+        // Fetch all lines of the chosen text
         _currentLyricsLines = _lyricsRepository.GetLyricsByIndex(index);
         _currentLineIndex = 0;
 
-        // Toon alleen de eerste regel
+        // Display only the first line
         TargetWord = _currentLyricsLines[_currentLineIndex];
 
         _typeControl.TargetText = TargetWord;
@@ -98,7 +100,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     {
         if (SelectedLyricsTitle == null)
         {
-            ResultMessage = "Select a text first!";
+            ResultMessage = "Select a lyric first!";
             ResultColor = Colors.Red;
             return;
         }
@@ -128,6 +130,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _typeControl.CheckTyping(value ?? string.Empty);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+        ExerciseStarted?.Invoke();
     }
 
     private void StartTimer()
@@ -174,7 +177,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
             if (_currentLineIndex < _currentLyricsLines.Length)
             {
-                // volgende regel tonen
+                // show next line 
                 TargetWord = _currentLyricsLines[_currentLineIndex];
                 _typeControl.TargetText = TargetWord;
 
@@ -182,9 +185,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             }
             else
             {
-                // tekst is klaar
-                ResultMessage = "Text complete!";
+                ResultMessage = "Lyric complete!";
                 ResultColor = Colors.Green;
+                ExerciseCompleted?.Invoke();
             }
         }
         else

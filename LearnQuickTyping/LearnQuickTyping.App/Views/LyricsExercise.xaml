@@ -16,7 +16,8 @@
         HorizontalOptions="Center"/>
 
         <Picker
-            Title="Kies een tekst"
+            x:Name="TextPicker"
+            Title="Choose a lyric"
             ItemsSource="{Binding LyricsTitles}"
             SelectedItem="{Binding SelectedLyricsTitle}"
             WidthRequest="300"
