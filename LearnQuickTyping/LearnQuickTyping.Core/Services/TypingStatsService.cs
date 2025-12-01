@@ -48,17 +48,12 @@ public class TypingStatsService : ITypingStatsService
     {
         int currentLength = typedText?.Length ?? 0;
 
-        // If text was deleted (backspace), update the tracking position
-        if (currentLength < _previousTypedLength)
-        {
-            _previousTypedLength = currentLength;
-            return;
-        }
+        // Recalculate total mistakes from scratch each time
+        _totalMistakes = 0;
 
-        // Check only new characters typed by user since last check
-        for (int i = _previousTypedLength; i < currentLength; i++)
+        for (int i = 0; i < currentLength && i < targetText.Length; i++)
         {
-            if (i < targetText.Length && typedText[i] != targetText[i])
+            if (typedText[i] != targetText[i])
             {
                 _totalMistakes++;
             }

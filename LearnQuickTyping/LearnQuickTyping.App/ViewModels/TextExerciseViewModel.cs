@@ -148,7 +148,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
-            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\n\nPress Enter to continue";
+            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\n\nPress Enter to continue";
             _wasCorrect = true;
         }
         else
