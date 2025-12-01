@@ -23,7 +23,8 @@
                     Text="{Binding InputText}"
                     Placeholder="Copy text above and press enter when finished"
                     ReturnCommand="{Binding CompleteTypingCommand}"
-                    MinimumWidthRequest="350"/>
+                    MinimumWidthRequest="350"
+                    MaximumWidthRequest="350"/>
 
                 <Label
                     Text="{Binding TimeDisplay}"
@@ -50,6 +51,11 @@
                 VerticalOptions="Center" 
                 HorizontalOptions="Center"
                 Spacing="20">
+
+                <Label 
+                    Text="{Binding ResultMessage}"
+                    Style="{StaticResource Headline}"
+                    HorizontalTextAlignment="Center"/>
 
                 <Label 
                     Text="{Binding CompleteMessage}"

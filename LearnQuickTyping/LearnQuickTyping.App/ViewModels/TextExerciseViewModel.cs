@@ -153,20 +153,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         MistakeCountDisplay = $"Mistakes: {mistakeCount}";
         AccuracyDisplay = $"Accuracy: {accuracy}%";
 
-        if (InputText == TargetText)
-        {
-            ResultMessage = "Correct!";
-            ResultColor = Colors.Green;
-            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
-            _wasCorrect = true;
-        }
-        else
-        {
-            ResultMessage = "Try Again!";
-            ResultColor = Colors.Red;
-            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to try again";
-            _wasCorrect = false;
-        }
+        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
 
         // Always show result overlay
         IsTurnOverlayVisible = true;
@@ -180,16 +167,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         IsTurnOverlayVisible = false;
         IsNotTurnOverlayVisible = true;
 
-        if (_wasCorrect)
-        {
-            // Load new text for next exercise
-            LoadNewText();
-        }
-        else
-        {
-            // Clear input to try again
-            InputText = string.Empty;
-        }
+        // Load new text for next exercise
+        LoadNewText();
 
         _isTiming = false;
         ResultMessage = string.Empty;
