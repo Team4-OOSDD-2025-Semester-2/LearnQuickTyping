@@ -6,34 +6,62 @@
              x:DataType="vm:TextExerciseViewModel"
              Title="LearnQuickTyping">
 
-    <VerticalStackLayout
-        Padding="30,0"
-        Spacing="25" 
-        VerticalOptions="Center"
-        HorizontalOptions="Center">
+    <Grid>
+        <ScrollView IsVisible="{Binding IsNotTurnOverlayVisible}">
+            <VerticalStackLayout
+                Padding="30,0"
+                Spacing="25" 
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
 
-        <Label
-            x:Name="PracticeTextLabel"
-            HorizontalOptions="Center"
-            MaximumWidthRequest="500"/>
+                <Label
+                    x:Name="PracticeTextLabel"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="500"/>
 
-        <Entry 
-            Text="{Binding InputText}"
-            Placeholder="Copy text above and press enter when finished"
-            ReturnCommand="{Binding CompleteTypingCommand}"
-            MinimumWidthRequest="350"/>
+                <Entry 
+                    Text="{Binding InputText}"
+                    Placeholder="Copy text above and press enter when finished"
+                    ReturnCommand="{Binding CompleteTypingCommand}"
+                    MinimumWidthRequest="350"/>
 
-        <Label
-            Text="{Binding TimeDisplay}"
-            HorizontalOptions="Center"/>
+                <Label
+                    Text="{Binding TimeDisplay}"
+                    HorizontalOptions="Center"/>
 
-        <Label
-            Text="{Binding WpmDisplay}"
-            HorizontalOptions="Center"/>
+                <Label
+                    Text="{Binding WpmDisplay}"
+                    HorizontalOptions="Center"/>
 
-        <Label
-            Text="{Binding ResultMessage}"
-            TextColor="{Binding ResultColor}"
-            HorizontalOptions="Center"/>
-    </VerticalStackLayout>
+                <Label
+                    Text="{Binding ResultMessage}"
+                    TextColor="{Binding ResultColor}"
+                    HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsTurnOverlayVisible}"
+              ZIndex="1">
+
+            <VerticalStackLayout 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Spacing="20">
+
+                <Label 
+                    Text="{Binding CompleteMessage}"
+                    Style="{StaticResource Headline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Entry 
+                    x:Name="Invisible"
+                    Opacity="0"
+                    ReturnCommand="{Binding StartExerciseCommand}"
+                    HorizontalOptions="Center"
+                    WidthRequest="200"/>
+
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
 </ContentPage>

@@ -35,6 +35,17 @@ public partial class TextExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
 
+    [ObservableProperty]
+    private bool _isTurnOverlayVisible = false;
+
+    [ObservableProperty]
+    private bool _isNotTurnOverlayVisible = true;
+
+    [ObservableProperty]
+    private string _completeMessage;
+
+    private bool _wasCorrect;
+
     public event Action<List<LetterStatus>> RequestLetterUpdate;
 
     public TextExerciseViewModel(
@@ -59,6 +70,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         WpmDisplay = "Current Words Per Minute: 0";
         InputText = string.Empty;
         ResultMessage = string.Empty;
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
 
         LoadNewText();
     }
@@ -124,15 +137,41 @@ public partial class TextExerciseViewModel : BaseViewModel
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
-
-            LoadNewText();
+            CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\n\nPress Enter to continue";
+            _wasCorrect = true;
         }
         else
         {
             ResultMessage = "Try Again!";
             ResultColor = Colors.Red;
-            InputText = string.Empty;
-            _isTiming = false;
+            CompleteMessage = $"Incorrect!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\n\nPress Enter to try again";
+            _wasCorrect = false;
         }
+
+        // Always show result overlay
+        IsTurnOverlayVisible = true;
+        IsNotTurnOverlayVisible = false;
+    }
+
+    [RelayCommand]
+    private void StartExercise()
+    {
+        // Hide overlay
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
+
+        if (_wasCorrect)
+        {
+            // Load new text for next exercise
+            LoadNewText();
+        }
+        else
+        {
+            // Clear input to try again
+            InputText = string.Empty;
+        }
+
+        _isTiming = false;
+        ResultMessage = string.Empty;
     }
 }
