@@ -6,4 +6,5 @@ public class VersusResult
     public double WordsPerMinute { get; set; }
     public TimeSpan TimeTaken { get; set; }
     public int Errors { get; set; }
+    public double FinalScore => WordsPerMinute - Errors;
 }

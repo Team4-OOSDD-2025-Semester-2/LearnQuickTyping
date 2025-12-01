@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
@@ -12,6 +13,7 @@ public partial class VersusViewModel : BaseViewModel
     private readonly IWordRepository _wordRepository;
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
+    private readonly IVersusScoreService _scoreService;
     private readonly IDispatcherTimer _timer;
 
     private DateTime _startTime;
@@ -41,7 +43,6 @@ public partial class VersusViewModel : BaseViewModel
     private Color _resultColor = Colors.Black;
 
     [ObservableProperty]
-
     private bool _isPlayerOneTurn = true;
 
     [ObservableProperty]
@@ -58,11 +59,13 @@ public partial class VersusViewModel : BaseViewModel
     public VersusViewModel(
         IWordRepository wordRepository,
         ITypingStatsService statsService,
-        ITypeControlService typeControl)
+        ITypeControlService typeControl,
+        IVersusScoreService scoreService)
     {
         _wordRepository = wordRepository;
         _statsService = statsService;
         _typeControl = typeControl;
+        _scoreService = scoreService;
 
         _timer = Application.Current.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(50);
@@ -146,25 +149,16 @@ public partial class VersusViewModel : BaseViewModel
     [RelayCommand]
     private async Task CompleteTyping()
     {
+
+        StopTimer();
         var elapsed = DateTime.Now - _startTime;
 
-        // Validate text
-        if (InputText != TargetWord)
-        {
-            ResultMessage = "Try again!.";
-            ResultColor = Colors.Red;
-            return;
-        }
-        StopTimer();
-
-        // Calculate result
-        double wpm = _statsService.CalculateWordPerMinute(InputText.Length, elapsed);
-        var result = new VersusResult
-        {
-            PlayerName = CurrentPlayerName,
-            TimeTaken = elapsed,
-            WordsPerMinute = wpm,
-        };
+        var result = _scoreService.CalculateResult(
+            CurrentPlayerName,
+            TargetWord,
+            InputText ?? string.Empty,
+            elapsed
+        );
 
         if (_isPlayerOneTurn)
         {
@@ -179,7 +173,13 @@ public partial class VersusViewModel : BaseViewModel
             // End player 2 turn
             _playerTwoResult = result;
 
-            await Shell.Current.GoToAsync("..");
+            var navigationParameter = new Dictionary<string, object>
+            {
+                { "Player1Result", _playerOneResult! },
+                { "Player2Result", _playerTwoResult! }
+            };
+
+            await Shell.Current.GoToAsync(nameof(VersusResultView), navigationParameter);
         }
     }
 }

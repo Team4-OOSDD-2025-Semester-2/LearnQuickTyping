@@ -29,15 +29,15 @@ public partial class VersusView : ContentPage
     {
         if (e.PropertyName == nameof(VersusViewModel.IsTurnOverlayVisible))
         {
-            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
+            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () => //Delay overlay
             {
                 if (_viewModel.IsTurnOverlayVisible)
                 {
-                    Invisible.Focus();
+                    Invisible.Focus(); //Entry to start turn is selected
                 }
                 else
                 {
-                    TypingEntry.Focus();
+                    TypingEntry.Focus(); //Entry to write exercise is selected
                 }
             });
         }
