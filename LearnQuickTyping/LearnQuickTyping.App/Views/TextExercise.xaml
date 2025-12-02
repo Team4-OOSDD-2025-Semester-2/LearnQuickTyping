@@ -20,20 +20,28 @@
                     HorizontalOptions="Center"
                     MaximumWidthRequest="500"/>
 
+                <Label
+                    x:Name="TypedTextLabel"
+                    Text=""
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="700"
+                    BackgroundColor="#2e2e2e"
+                    Padding="100,5,100,5"/>
+
                 <Entry 
+                    x:Name="InputEntry"
+                    TextChanged="OnTextChanged"
+                    Opacity="0"
                     Text="{Binding InputText}"
                     Placeholder="Copy text above and press enter when finished"
                     ReturnCommand="{Binding CompleteTypingCommand}"
-                    MinimumWidthRequest="350"
-                    MaximumWidthRequest="350">
-                    <Entry.Behaviors>
-                        <local:DisableBackspaceBehavior />
-                    </Entry.Behaviors>
+                    MaximumHeightRequest="1">
                 </Entry>
 
                 <Label
                     Text="{Binding TimeDisplay}"
-                    HorizontalOptions="Center"/>
+                    HorizontalOptions="Center"
+                    Margin="0,-75,0,0"/>
 
                 <Label
                     Text="{Binding WpmDisplay}"

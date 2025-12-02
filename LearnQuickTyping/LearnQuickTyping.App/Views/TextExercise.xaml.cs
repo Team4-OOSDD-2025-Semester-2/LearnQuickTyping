@@ -22,6 +22,7 @@ public partial class TextExercise : ContentPage
     {
         base.OnAppearing();
         _viewModel.InitializeExerciseCommand.Execute(null);
+        FocusEntry(InputEntry);
     }
 
     private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
@@ -30,12 +31,11 @@ public partial class TextExercise : ContentPage
         {
             if (_viewModel.IsTurnOverlayVisible)
             {
-                // Focus the invisible entry when overlay becomes visible
-                Dispatcher.Dispatch(async () =>
-                {
-                    await Task.Delay(100); // Small delay to ensure UI is rendered
-                    Invisible.Focus();
-                });
+                FocusEntry(Invisible);
+            }
+            else
+            {
+                FocusEntry(InputEntry);
             }
         }
     }
@@ -71,5 +71,33 @@ public partial class TextExercise : ContentPage
         }
 
         PracticeTextLabel.FormattedText = formattedString;
+    }
+
+    private void FocusEntry(Entry entry)
+    {
+        Dispatcher.Dispatch(async () =>
+        {
+            await Task.Delay(100); // Small delay to ensure UI is rendered
+            entry.Focus();
+        });
+    }
+
+    private void OnTextChanged(object sender, TextChangedEventArgs e)
+    {
+        string currentText = e.NewTextValue ?? string.Empty;
+        string oldText = e.OldTextValue ?? string.Empty;
+
+        // Check if text was added 
+        if (currentText.Length > oldText.Length)
+        {
+            // Get the newly added characters
+            string addedText = currentText.Substring(oldText.Length);
+
+            // Append to the label
+            TypedTextLabel.Text += addedText;
+        }
+
+        // Update ViewModel to compare based on TypedTextLabel content
+        _viewModel.TypedText = TypedTextLabel.Text ?? string.Empty;
     }
 }

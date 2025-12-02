@@ -24,6 +24,9 @@ public partial class TextExerciseViewModel : BaseViewModel
     private string _inputText;
 
     [ObservableProperty]
+    private string _typedText;
+
+    [ObservableProperty]
     private string _timeDisplay = "Current time: 0,00s";
 
     [ObservableProperty]
@@ -75,6 +78,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         TimeDisplay = "Current time: 0,00s";
         WpmDisplay = "Current Words Per Minute: 0";
         InputText = string.Empty;
+        TypedText = string.Empty;
         ResultMessage = string.Empty;
         IsTurnOverlayVisible = false;
         IsNotTurnOverlayVisible = true;
@@ -89,11 +93,12 @@ public partial class TextExerciseViewModel : BaseViewModel
         _typeControl.TypedText = string.Empty;
         _statsService.ResetMistakes();
         InputText = string.Empty;
+        TypedText = string.Empty;
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
 
-    partial void OnInputTextChanged(string value)
+    partial void OnTypedTextChanged(string value)
     {
         if (!_isTiming && !string.IsNullOrEmpty(value))
         {
@@ -127,7 +132,7 @@ public partial class TextExerciseViewModel : BaseViewModel
             var elapsed = DateTime.Now - _startTime;
             TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-            double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
+            double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
             WpmDisplay = $"Current words per minute: {wpm:F2}";
 
             int mistakeCount = _statsService.GetMistakeCount();
@@ -143,7 +148,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
-        double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
+        double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
         int mistakeCount = _statsService.GetMistakeCount();
         int accuracy = _statsService.CalculateAccuracy();
 
