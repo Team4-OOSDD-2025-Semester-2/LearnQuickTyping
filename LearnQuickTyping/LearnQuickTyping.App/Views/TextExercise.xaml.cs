@@ -1,5 +1,7 @@
 using LearnQuickTyping.App.ViewModels;
 using LearnQuickTyping.Core.Models;
+using Microsoft.UI.Xaml.Documents;
+using Span = Microsoft.Maui.Controls.Span;
 
 namespace LearnQuickTyping.App.Views;
 
@@ -57,6 +59,13 @@ public partial class TextExercise : ContentPage
                 Status.Incorrect => Colors.Red,
                 Status.Pending => Colors.Gray,
                 _ => Colors.Black
+            };
+
+            span.TextDecorations = letterStatus.Status switch
+            {
+                Status.Correct => TextDecorations.None,
+                Status.Incorrect => TextDecorations.Underline,
+                _ => TextDecorations.None
             };
 
             formattedString.Spans.Add(span);
