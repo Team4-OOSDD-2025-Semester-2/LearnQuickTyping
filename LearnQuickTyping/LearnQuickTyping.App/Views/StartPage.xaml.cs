@@ -19,7 +19,7 @@ public partial class StartPage : ContentPage
 
     private async void OnVersusModeClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Not yet implemented.", "OK");
+        await Shell.Current.GoToAsync(nameof(VersusView));
     }
 
     private async void OnKaraokeModeClicked(object sender, EventArgs e)

@@ -28,13 +28,20 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITextRepository, TextRepository>();
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
 
+        builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();
+        builder.Services.AddTransient<IVersusScoreService, VersusScoreService>();
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
 
         builder.Services.AddTransient<TextExerciseViewModel>();
         builder.Services.AddTransient<TextExercise>();
+        builder.Services.AddTransient<VersusViewModel>();
+        builder.Services.AddTransient<VersusView>();
+
+        builder.Services.AddTransient<VersusResultViewModel>();
+        builder.Services.AddTransient<VersusResultView>();
 
 #if DEBUG
         builder.Logging.AddDebug();

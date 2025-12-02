@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             x:Class="LearnQuickTyping.App.Views.VersusResultView"
+             x:DataType="vm:VersusResultViewModel"
+             Title="Versus Results"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource OffBlack}">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="20">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="Versus Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
+            <Label Text="It's a Tie!" IsVisible="{Binding IsTie}" TextColor="Orange" 
+                   Style="{StaticResource SubHeadline}" HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
+
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <VerticalStackLayout Padding="15" Spacing="10">
+                    <VerticalStackLayout IsVisible="{Binding IsPlayer1Winner}" HorizontalOptions="Center">
+                        <Label Text="WINNER!" TextColor="Green" FontAttributes="Bold" HorizontalOptions="Center"/>
+                        <Image Source="winner.jpg" HeightRequest="100" Aspect="AspectFit"/>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding Player1Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
+                    <Label Text="{Binding Player1Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player1Result.Errors, StringFormat='Errors: {0}'}"/>
+                    <Label Text="{Binding Player1Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <VerticalStackLayout Padding="15" Spacing="10">
+                    <VerticalStackLayout IsVisible="{Binding IsPlayer2Winner}" HorizontalOptions="Center">
+                        <Label Text="Winner!" TextColor="Green" FontAttributes="Bold" FontSize="Large" HorizontalOptions="Center"/>
+                        <Image Source="winner.jpg" HeightRequest="100" Aspect="AspectFit"/>
+                    </VerticalStackLayout>
+
+                    <Label Text="{Binding Player2Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
+                    <Label Text="{Binding Player2Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player2Result.Errors, StringFormat='Errors: {0}'}"/>
+                    <Label Text="{Binding Player2Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Button Grid.Row="2" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+                HorizontalOptions="Center" WidthRequest="200"/>
+    </Grid>
+</ContentPage>
