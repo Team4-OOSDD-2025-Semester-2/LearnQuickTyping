@@ -28,6 +28,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<ILyricsRepository, LyricsRepository>(); 
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddSingleton<IWordRepository, WordRepository>();
+        builder.Services.AddSingleton<ITextRepository, TextRepository>();
+        builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
 
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();

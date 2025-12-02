@@ -14,7 +14,7 @@ public partial class StartPage : ContentPage
 
     private async void OnTextPracticeClicked(object sender, EventArgs e)
     {
-        await DisplayAlert("Info", "Not yet implemented.", "OK");
+        await Shell.Current.GoToAsync(nameof(TextExercise));
     }
 
     private async void OnVersusModeClicked(object sender, EventArgs e)
