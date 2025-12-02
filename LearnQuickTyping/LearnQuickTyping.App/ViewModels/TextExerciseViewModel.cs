@@ -7,9 +7,9 @@ using LearnQuickTyping.Core.Models;
 
 namespace LearnQuickTyping.App.ViewModels;
 
-public partial class WordExerciseViewModel : BaseViewModel
+public partial class TextExerciseViewModel : BaseViewModel
 {
-    private readonly IWordRepository _wordRepository;
+    private readonly ITextRepository _textRepository;
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
@@ -18,16 +18,25 @@ public partial class WordExerciseViewModel : BaseViewModel
     private bool _isTiming;
 
     [ObservableProperty]
-    private string _targetWord;
+    private string _targetText;
 
     [ObservableProperty]
     private string _inputText;
+
+    [ObservableProperty]
+    private string _typedText;
 
     [ObservableProperty]
     private string _timeDisplay = "Current time: 0,00s";
 
     [ObservableProperty]
     private string _wpmDisplay = "Current Words Per Minute: 0";
+    
+    [ObservableProperty]
+    private string _mistakeCountDisplay = "Mistakes: 0";
+
+    [ObservableProperty]
+    private string _accuracyDisplay = "Accuracy: 100%";
 
     [ObservableProperty]
     private string _resultMessage;
@@ -35,14 +44,25 @@ public partial class WordExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
 
+    [ObservableProperty]
+    private bool _isTurnOverlayVisible = false;
+
+    [ObservableProperty]
+    private bool _isNotTurnOverlayVisible = true;
+
+    [ObservableProperty]
+    private string _completeMessage;
+
+    private bool _wasCorrect;
+
     public event Action<List<LetterStatus>> RequestLetterUpdate;
 
-    public WordExerciseViewModel(
-        IWordRepository wordRepository,
+    public TextExerciseViewModel(
+        ITextRepository textRepository,
         ITypingStatsService statsService,
         ITypeControlService typeControl)
     {
-        _wordRepository = wordRepository;
+        _textRepository = textRepository;
         _statsService = statsService;
         _typeControl = typeControl;
 
@@ -58,22 +78,27 @@ public partial class WordExerciseViewModel : BaseViewModel
         TimeDisplay = "Current time: 0,00s";
         WpmDisplay = "Current Words Per Minute: 0";
         InputText = string.Empty;
+        TypedText = string.Empty;
         ResultMessage = string.Empty;
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
 
-        LoadNewWord();
+        LoadNewText();
     }
 
-    private void LoadNewWord()
+    private void LoadNewText()
     {
-        TargetWord = _wordRepository.GetRandomWord();
-        _typeControl.TargetText = TargetWord;
+        TargetText = _textRepository.GetRandomText();
+        _typeControl.TargetText = TargetText;
         _typeControl.TypedText = string.Empty;
+        _statsService.ResetMistakes();
         InputText = string.Empty;
+        TypedText = string.Empty;
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
 
-    partial void OnInputTextChanged(string value)
+    partial void OnTypedTextChanged(string value)
     {
         if (!_isTiming && !string.IsNullOrEmpty(value))
         {
@@ -81,7 +106,9 @@ public partial class WordExerciseViewModel : BaseViewModel
         }
 
         _typeControl.CheckTyping(value ?? string.Empty);
-
+        
+        // Track mistakes as the user types
+        _statsService.TrackMistakes(value ?? string.Empty, TargetText);
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
 
@@ -105,8 +132,14 @@ public partial class WordExerciseViewModel : BaseViewModel
             var elapsed = DateTime.Now - _startTime;
             TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-            double wpm = _statsService.CalculateWordsPerMinuteSingleWord(InputText?.Length ?? 0, elapsed);
+            double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
             WpmDisplay = $"Current words per minute: {wpm:F2}";
+
+            int mistakeCount = _statsService.GetMistakeCount();
+            MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+
+            int accuracy = _statsService.CalculateAccuracy();
+            AccuracyDisplay = $"Accuracy: {accuracy}%";
         }
     }
 
@@ -115,24 +148,34 @@ public partial class WordExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
-        double wpm = _statsService.CalculateWordsPerMinuteSingleWord(InputText?.Length ?? 0, elapsed);
+        double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
+        int mistakeCount = _statsService.GetMistakeCount();
+        int accuracy = _statsService.CalculateAccuracy();
+
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
+        MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+        AccuracyDisplay = $"Accuracy: {accuracy}%";
 
-        if (InputText == TargetWord)
-        {
-            ResultMessage = "Correct!";
-            ResultColor = Colors.Green;
+        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
 
-            LoadNewWord();
-        }
-        else
-        {
-            ResultMessage = "Try Again!";
-            ResultColor = Colors.Red;
-            InputText = string.Empty;
-            _isTiming = false;
-        }
+        // Always show result overlay
+        IsTurnOverlayVisible = true;
+        IsNotTurnOverlayVisible = false;
+    }
+
+    [RelayCommand]
+    private void StartExercise()
+    {
+        // Hide overlay
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
+
+        // Load new text for next exercise
+        LoadNewText();
+
+        _isTiming = false;
+        ResultMessage = string.Empty;
     }
 }

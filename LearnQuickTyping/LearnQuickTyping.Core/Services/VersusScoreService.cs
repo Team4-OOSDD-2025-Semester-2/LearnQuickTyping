@@ -21,7 +21,7 @@ namespace LearnQuickTyping.Core.Services
             }
             errors += Math.Abs(targetText.Length - typedText.Length); //If text is too long or short add errors
 
-            double wpm = _typingStatsService.CalculateWordPerMinute(typedText.Length, timeTaken);
+            double wpm = _typingStatsService.CalculateWordsPerMinuteSingleWord(typedText.Length, timeTaken);
 
             return new VersusResult
             {

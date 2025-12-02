@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             xmlns:local="clr-namespace:LearnQuickTyping.App.Behaviors"
+             x:Class="LearnQuickTyping.App.Views.TextExercise"
+             x:DataType="vm:TextExerciseViewModel"
+             Title="LearnQuickTyping">
+
+    <Grid>
+        <ScrollView IsVisible="{Binding IsNotTurnOverlayVisible}">
+            <VerticalStackLayout
+                Padding="30,0"
+                Spacing="25" 
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
+
+                <Label
+                    x:Name="PracticeTextLabel"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="500"/>
+
+                <Label
+                    x:Name="TypedTextLabel"
+                    Text=""
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="700"
+                    BackgroundColor="#2e2e2e"
+                    Padding="100,5,100,5"/>
+
+                <Entry 
+                    x:Name="InputEntry"
+                    TextChanged="OnTextChanged"
+                    Opacity="0"
+                    Text="{Binding InputText}"
+                    Placeholder="Copy text above and press enter when finished"
+                    ReturnCommand="{Binding CompleteTypingCommand}"
+                    MaximumHeightRequest="1">
+                </Entry>
+
+                <Label
+                    Text="{Binding TimeDisplay}"
+                    HorizontalOptions="Center"
+                    Margin="0,-75,0,0"/>
+
+                <Label
+                    Text="{Binding WpmDisplay}"
+                    HorizontalOptions="Center"/>
+
+                <Label
+                    Text="{Binding MistakeCountDisplay}"
+                    HorizontalOptions="Center"/>
+
+                <Label
+                    Text="{Binding AccuracyDisplay}"
+                    HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid IsVisible="{Binding IsTurnOverlayVisible}"
+              ZIndex="1">
+
+            <VerticalStackLayout 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Spacing="20">
+
+                <Label 
+                    Text="{Binding ResultMessage}"
+                    Style="{StaticResource Headline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Label 
+                    Text="{Binding CompleteMessage}"
+                    Style="{StaticResource Headline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Entry 
+                    x:Name="Invisible"
+                    Opacity="0"
+                    ReturnCommand="{Binding StartExerciseCommand}"
+                    HorizontalOptions="Center"
+                    WidthRequest="200"/>
+
+            </VerticalStackLayout>
+        </Grid>
+
+    </Grid>
+</ContentPage>
