@@ -13,7 +13,7 @@
 
         <Picker
             x:Name="TextPicker"
-            Title="Kies een tekst"
+            Title="Choose a lyric"
             ItemsSource="{Binding LyricsTitles}"
             SelectedItem="{Binding SelectedLyricsTitle}"
             WidthRequest="300"
@@ -53,5 +53,33 @@
                 TextColor="{Binding ResultColor}"
                 HorizontalOptions="Center"/>
         </VerticalStackLayout>
+
+        <VerticalStackLayout
+            IsVisible="{Binding IsResultVisible}" 
+            Spacing="20"
+            Padding="20">
+
+            <Label
+                Text="Result" 
+                FontSize="24"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"/>
+
+            <Label
+                Text="{Binding ResultMessage}"
+                TextColor="{Binding ResultColor}"
+                FontSize="16"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                LineBreakMode="WordWrap"/>
+
+            <Button
+                Text="Choose Next Lyric"
+                Command="{Binding ContinueToNextTextCommand}"
+                WidthRequest="250"
+                HorizontalOptions="Center"
+                Margin="0,20,0,0"/>
+        </VerticalStackLayout>
+
     </VerticalStackLayout>
 </ContentPage>

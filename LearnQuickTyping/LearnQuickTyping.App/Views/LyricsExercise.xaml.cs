@@ -66,8 +66,8 @@ public partial class LyricsExercise : ContentPage
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        _viewModel.ExerciseStarted += OnExerciseStarted;
-        _viewModel.ExerciseCompleted += OnExerciseCompleted;
-        _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
+        _viewModel.ExerciseStarted -= OnExerciseStarted;
+        _viewModel.ExerciseCompleted -= OnExerciseCompleted;
+        _viewModel.RequestLetterUpdate -= UpdateLetterDisplay;
     }
 }

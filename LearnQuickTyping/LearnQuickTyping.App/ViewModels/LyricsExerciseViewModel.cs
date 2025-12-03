@@ -25,6 +25,10 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     // Tracks which line is currently being displayed
     private int _currentLineIndex = 0;
 
+    // Tracks score
+    private int _correctLines = 0;
+    private int _totalLines = 0;
+
     [ObservableProperty]
     private ObservableCollection<string> _lyricsTitles;
 
@@ -54,6 +58,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
     [ObservableProperty]
     private bool _isExerciseVisible = false;
+
+    [ObservableProperty]
+    private bool _isResultVisible = false;
 
     public event Action<List<LetterStatus>> RequestLetterUpdate;
     public event Action ExerciseStarted;
@@ -88,6 +95,10 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _currentLyricsLines = _lyricsRepository.GetLyricsByIndex(index);
         _currentLineIndex = 0;
 
+        // Reset score tracking
+        _correctLines = 0;
+        _totalLines = _currentLyricsLines.Length;
+
         // Display only the first line
         TargetWord = _currentLyricsLines[_currentLineIndex];
 
@@ -106,7 +117,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     {
         if (SelectedLyricsTitle == null)
         {
-            ResultMessage = "Select a text first!";
+            ResultMessage = "Select a lyric first!";
             ResultColor = Colors.Red;
             return;
         }
@@ -116,6 +127,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         WpmDisplay = "Current Words Per Minute: 0";
         InputText = string.Empty;
         ResultMessage = string.Empty;
+        IsStartButtonVisible = false;
+        IsExerciseVisible = false;
+        IsResultVisible = false;
 
         LoadNewLyric();
     }
@@ -126,8 +140,6 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         // Hide picker and start button
         IsStartButtonVisible = false;
         IsExerciseVisible = true;
-
-        System.Diagnostics.Debug.WriteLine("StartExercise called - hiding picker");
         ExerciseStarted?.Invoke();
     }
 
@@ -168,7 +180,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             var elapsed = DateTime.Now - _startTime;
             TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-            double wpm = _statsService.CalculateWordPerMinute(InputText?.Length ?? 0, elapsed);
+            double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
             WpmDisplay = $"Current words per minute: {wpm:F2}";
         }
     }
@@ -178,39 +190,95 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
-        double wpm = _statsService.CalculateWordPerMinute(InputText?.Length ?? 0, elapsed);
+        double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
 
-        if (InputText == TargetWord)
+        // Check if input matches target
+        bool isCorrect = InputText == TargetWord;
+
+        if (isCorrect)
         {
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
-            InputText = string.Empty;
-            _currentLineIndex++;
-
-            if (_currentLineIndex < _currentLyricsLines.Length)
-            {
-                // Show next line
-                TargetWord = _currentLyricsLines[_currentLineIndex];
-                _typeControl.TargetText = TargetWord;
-
-                RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
-            }
-            else
-            {
-                ResultMessage = "Text complete!";
-                ResultColor = Colors.Green;
-                IsExerciseVisible = false;
-                ExerciseCompleted?.Invoke();
-            }
+            _correctLines++;
         }
         else
         {
-            ResultMessage = "Try Again!";
-            ResultColor = Colors.Red;
-            InputText = string.Empty;
+            ResultMessage = "Incorrect - but moving to next line";
+            ResultColor = Colors.Orange;
+        }
+
+        // Always move to next line, regardless of correctness
+        InputText = string.Empty;
+        _currentLineIndex++;
+
+        if (_currentLineIndex < _currentLyricsLines.Length)
+        {
+            // Show next line
+            TargetWord = _currentLyricsLines[_currentLineIndex];
+            _typeControl.TargetText = TargetWord;
+
+            RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+
+            // Clear result message after a short delay and restart timer
+            ResultMessage = string.Empty;
+        }
+        else
+        {
+            // All lines completed - show result
+            ShowResult(elapsed, wpm);
+
+            IsExerciseVisible = false;
+            IsResultVisible = true;
+
+            ExerciseCompleted?.Invoke();
         }
     }
+
+    private void ShowResult(TimeSpan totalTime, double averageWpm)
+    {
+        double accuracy = (_correctLines / (double)_totalLines) * 100;
+
+        string grade = accuracy switch
+        {
+            >= 90 => "Excellent! 🌟",
+            >= 75 => "Great job! 👍",
+            >= 60 => "Good effort! 💪",
+            >= 40 => "Keep practicing! 📝",
+            _ => "Try again! 🎯"
+        };
+
+        // Single line version for better display
+        ResultMessage = $"Score: {_correctLines}/{_totalLines} ({accuracy:F1}%) | Time: {totalTime.TotalSeconds:F2}s | WPM: {averageWpm:F2} | {grade}";
+
+        ResultColor = accuracy >= 75 ? Colors.Green :
+                      accuracy >= 50 ? Colors.Orange : Colors.Red;
+    }
+
+    [RelayCommand]
+    public void ContinueToNextText()
+    {
+        // Hide result
+        IsResultVisible = false;
+
+        // Reset status
+        ResultMessage = string.Empty;
+        TargetWord = string.Empty;
+        InputText = string.Empty;
+
+        // Show picker and Start button again
+        IsStartButtonVisible = true;
+        IsExerciseVisible = false;
+
+        // Reset current line index
+        _currentLineIndex = 0;
+        _currentLyricsLines = null;
+
+        // Event for UI if needed
+        ExerciseCompleted?.Invoke();
+    }
+
+
 }
