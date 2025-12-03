@@ -38,6 +38,9 @@ public static class MauiProgram
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
 
+        builder.Services.AddTransient<TextExerciseViewModel>();
+        builder.Services.AddTransient<TextExercise>();
+
         builder.Services.AddTransient<LyricsExerciseViewModel>();
         builder.Services.AddTransient<LyricsExercise>();
         builder.Services.AddTransient<VersusViewModel>();
