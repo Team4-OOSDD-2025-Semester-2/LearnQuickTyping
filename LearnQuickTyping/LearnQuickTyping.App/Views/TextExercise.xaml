@@ -16,9 +16,21 @@
                 HorizontalOptions="Center">
 
                 <Label
-                    x:Name="PracticeTextLabel"
+                    x:Name="PreviousLineLabel"
                     HorizontalOptions="Center"
-                    MaximumWidthRequest="500"/>
+                    TextColor="Transparent"
+                    MaximumWidthRequest="700"/>
+
+                <Label
+                    x:Name="CurrentLineLabel"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="700"/>
+
+                <Label
+                    x:Name="NextLineLabel"
+                    HorizontalOptions="Center"
+                    TextColor="DimGray"
+                    MaximumWidthRequest="700"/>
 
                 <Label
                     x:Name="TypedTextLabel"
@@ -32,8 +44,8 @@
                     x:Name="InputEntry"
                     TextChanged="OnTextChanged"
                     Opacity="0"
-                    Text="{Binding InputText}"
-                    Placeholder="Copy text above and press enter when finished"
+                    Text="{Binding InputText, Mode=TwoWay}"
+                    Placeholder="Type text..."
                     ReturnCommand="{Binding CompleteTypingCommand}"
                     MaximumHeightRequest="1">
                 </Entry>
@@ -53,6 +65,10 @@
 
                 <Label
                     Text="{Binding AccuracyDisplay}"
+                    HorizontalOptions="Center"/>
+
+                <Label
+                    Text="{Binding ProgressDisplay}"
                     HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>

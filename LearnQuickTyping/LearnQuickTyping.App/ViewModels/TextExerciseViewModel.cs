@@ -4,6 +4,7 @@ using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
+using System.Text.RegularExpressions;
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -16,6 +17,13 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private DateTime _startTime;
     private bool _isTiming;
+
+    private List<string> _sentences = new();
+    private int _currentSentenceIndex;
+
+    private int _accumulatedMistakes;
+    private int _accumulatedWords;
+    private string _allTypedText = string.Empty;
 
     [ObservableProperty]
     private string _targetText;
@@ -31,12 +39,15 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     [ObservableProperty]
     private string _wpmDisplay = "Current Words Per Minute: 0";
-    
+
     [ObservableProperty]
     private string _mistakeCountDisplay = "Mistakes: 0";
 
     [ObservableProperty]
     private string _accuracyDisplay = "Accuracy: 100%";
+
+    [ObservableProperty]
+    private string _progressDisplay = "Sentence: 0/0";
 
     [ObservableProperty]
     private string _resultMessage;
@@ -53,9 +64,8 @@ public partial class TextExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private string _completeMessage;
 
-    private bool _wasCorrect;
-
     public event Action<List<LetterStatus>> RequestLetterUpdate;
+    public event Action<string, string, string> OnLineChanged;
 
     public TextExerciseViewModel(
         ITextRepository textRepository,
@@ -83,33 +93,104 @@ public partial class TextExerciseViewModel : BaseViewModel
         IsTurnOverlayVisible = false;
         IsNotTurnOverlayVisible = true;
 
+        _accumulatedMistakes = 0;
+        _accumulatedWords = 0;
+        _allTypedText = string.Empty;
+        _statsService.ResetMistakes();
+
         LoadNewText();
     }
 
     private void LoadNewText()
     {
-        TargetText = _textRepository.GetRandomText();
-        _typeControl.TargetText = TargetText;
-        _typeControl.TypedText = string.Empty;
-        _statsService.ResetMistakes();
-        InputText = string.Empty;
-        TypedText = string.Empty;
+        string fullText = _textRepository.GetRandomText();
+        _sentences = SplitTextIntoSentences(fullText);
 
-        RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+        if (_sentences.Count == 0)
+        {
+            _sentences.Add("Error loading text. Please try again.");
+        }
+
+        _currentSentenceIndex = 0;
+        LoadCurrentSentence();
+    }
+
+    private List<string> SplitTextIntoSentences(string text)
+    {
+        var sentences = new List<string>();
+        string pattern = @"(?<=[.!?])\s+";
+        var parts = Regex.Split(text, pattern);
+
+        foreach (var part in parts)
+        {
+            if (!string.IsNullOrWhiteSpace(part))
+                sentences.Add(part.Trim());
+        }
+        return sentences;
+    }
+
+    private void LoadCurrentSentence()
+    {
+        if (_currentSentenceIndex < _sentences.Count)
+        {
+            TargetText = _sentences[_currentSentenceIndex];
+            _typeControl.TargetText = TargetText;
+            _typeControl.TypedText = string.Empty;
+
+            InputText = string.Empty;
+            TypedText = string.Empty;
+
+            string prev = _currentSentenceIndex > 0 ? _sentences[_currentSentenceIndex - 1] : "";
+            string next = _currentSentenceIndex + 1 < _sentences.Count ? _sentences[_currentSentenceIndex + 1] : "";
+
+            OnLineChanged?.Invoke(prev, TargetText, next);
+            ProgressDisplay = $"Sentence: {_currentSentenceIndex + 1}/{_sentences.Count}";
+
+            RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+        }
+        else
+        {
+            CompleteTyping();
+        }
     }
 
     partial void OnTypedTextChanged(string value)
     {
+        if (string.IsNullOrEmpty(TargetText)) return;
+
         if (!_isTiming && !string.IsNullOrEmpty(value))
         {
             StartTimer();
         }
 
-        _typeControl.CheckTyping(value ?? string.Empty);
-        
-        // Track mistakes as the user types
-        _statsService.TrackMistakes(value ?? string.Empty, TargetText);
+        string safeValue = value ?? string.Empty;
+
+        _typeControl.CheckTyping(safeValue);
+        _statsService.TrackMistakes(safeValue, TargetText);
+
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
+
+        if (safeValue.Length >= TargetText.Length)
+        {
+            CompleteSentence();
+        }
+    }
+
+    private void CompleteSentence()
+    {
+        _accumulatedMistakes += _statsService.GetMistakeCount();
+        _accumulatedWords += CountWords(TargetText);
+        _allTypedText += TypedText + " ";
+
+        _statsService.ResetMistakes();
+
+        _currentSentenceIndex++;
+        LoadCurrentSentence();
+    }
+
+    private int CountWords(string text)
+    {
+        return string.IsNullOrWhiteSpace(text) ? 0 : text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
 
     private void StartTimer()
@@ -132,13 +213,23 @@ public partial class TextExerciseViewModel : BaseViewModel
             var elapsed = DateTime.Now - _startTime;
             TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-            double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
+            int currentWords = CountWords(TypedText);
+            int totalWords = _accumulatedWords + currentWords;
+            double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
+
             WpmDisplay = $"Current words per minute: {wpm:F2}";
 
-            int mistakeCount = _statsService.GetMistakeCount();
-            MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+            int currentMistakes = _statsService.GetMistakeCount();
+            int totalMistakes = _accumulatedMistakes + currentMistakes;
+            MistakeCountDisplay = $"Mistakes: {totalMistakes}";
 
-            int accuracy = _statsService.CalculateAccuracy();
+            int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
+            int accuracy = 100;
+            if (totalChars > 0)
+            {
+                double errorRate = (double)totalMistakes / totalChars;
+                accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
+            }
             AccuracyDisplay = $"Accuracy: {accuracy}%";
         }
     }
@@ -148,17 +239,23 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
-        double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
-        int mistakeCount = _statsService.GetMistakeCount();
-        int accuracy = _statsService.CalculateAccuracy();
 
+        double wpm = elapsed.TotalMinutes > 0 ? _accumulatedWords / elapsed.TotalMinutes : 0;
+
+        int totalChars = _allTypedText.Length;
+        int accuracy = 100;
+        if (totalChars > 0)
+        {
+            double errorRate = (double)_accumulatedMistakes / totalChars;
+            accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
+        }
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
         WpmDisplay = $"Words Per Minute: {wpm:F2}";
-        MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+        MistakeCountDisplay = $"Mistakes: {_accumulatedMistakes}";
         AccuracyDisplay = $"Accuracy: {accuracy}%";
 
-        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
+        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {_accumulatedMistakes}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
 
         // Always show result overlay
         IsTurnOverlayVisible = true;
@@ -171,11 +268,6 @@ public partial class TextExerciseViewModel : BaseViewModel
         // Hide overlay
         IsTurnOverlayVisible = false;
         IsNotTurnOverlayVisible = true;
-
-        // Load new text for next exercise
-        LoadNewText();
-
-        _isTiming = false;
-        ResultMessage = string.Empty;
+        InitializeExercise();
     }
 }

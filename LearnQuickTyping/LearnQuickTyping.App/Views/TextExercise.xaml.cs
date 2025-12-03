@@ -8,6 +8,9 @@ public partial class TextExercise : ContentPage
 {
     private readonly TextExerciseViewModel _viewModel;
 
+    private List<Span> _currentLineSpans = new();
+    private FormattedString _currentLineFormatted;
+
     public TextExercise(TextExerciseViewModel viewModel)
     {
         InitializeComponent();
@@ -15,6 +18,7 @@ public partial class TextExercise : ContentPage
         BindingContext = _viewModel;
 
         _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
+        _viewModel.OnLineChanged += UpdateLineDisplay;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
@@ -30,47 +34,74 @@ public partial class TextExercise : ContentPage
         if (e.PropertyName == nameof(_viewModel.IsTurnOverlayVisible))
         {
             if (_viewModel.IsTurnOverlayVisible)
-            {
                 FocusEntry(Invisible);
-            }
             else
-            {
                 FocusEntry(InputEntry);
-            }
         }
+    }
+
+    private void UpdateLineDisplay(string prev, string curr, string next)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            PreviousLineLabel.Text = prev;
+            NextLineLabel.Text = next;
+
+            _currentLineFormatted = new FormattedString();
+            _currentLineSpans.Clear();
+
+            if (!string.IsNullOrEmpty(curr))
+            {
+                foreach (char c in curr)
+                {
+                    var span = new Span
+                    {
+                        Text = c.ToString(),
+                        TextColor = Colors.Gray,
+                        FontSize = CurrentLineLabel.FontSize
+                    };
+                    _currentLineSpans.Add(span);
+                    _currentLineFormatted.Spans.Add(span);
+                }
+            }
+
+            CurrentLineLabel.FormattedText = _currentLineFormatted;
+            TypedTextLabel.Text = string.Empty;
+        });
     }
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
-        var formattedString = new FormattedString();
-
-        foreach (var letterStatus in statuses)
+        MainThread.BeginInvokeOnMainThread(() =>
         {
-            var span = new Span
+            if (_currentLineSpans == null || _currentLineSpans.Count == 0) return;
+            if (statuses == null) return;
+
+            int limit = Math.Min(statuses.Count, _currentLineSpans.Count);
+
+            for (int i = 0; i < limit; i++)
             {
-                Text = letterStatus.Character.ToString(),
-                FontSize = PracticeTextLabel.FontSize
-            };
+                var status = statuses[i];
+                var span = _currentLineSpans[i];
 
-            span.TextColor = letterStatus.Status switch
-            {
-                Status.Correct => Colors.Green,
-                Status.Incorrect => Colors.Red,
-                Status.Pending => Colors.Gray,
-                _ => Colors.Black
-            };
+                var targetColor = status.Status switch
+                {
+                    Status.Correct => Colors.Green,
+                    Status.Incorrect => Colors.Red,
+                    _ => Colors.Gray
+                };
 
-            span.TextDecorations = letterStatus.Status switch
-            {
-                Status.Correct => TextDecorations.None,
-                Status.Incorrect => TextDecorations.Underline,
-                _ => TextDecorations.None
-            };
+                var targetDecoration = status.Status == Status.Incorrect
+                    ? TextDecorations.Underline
+                    : TextDecorations.None;
 
-            formattedString.Spans.Add(span);
-        }
+                if (span.TextColor != targetColor)
+                    span.TextColor = targetColor;
 
-        PracticeTextLabel.FormattedText = formattedString;
+                if (span.TextDecorations != targetDecoration)
+                    span.TextDecorations = targetDecoration;
+            }
+        });
     }
 
     private void FocusEntry(Entry entry)
@@ -88,11 +119,14 @@ public partial class TextExercise : ContentPage
         string oldText = e.OldTextValue ?? string.Empty;
 
         // Check if text was added 
-        if (currentText.Length > oldText.Length)
+        if (currentText.Length == 0)
+        {
+            TypedTextLabel.Text = "";
+        }
+        else if (currentText.Length > oldText.Length)
         {
             // Get the newly added characters
             string addedText = currentText.Substring(oldText.Length);
-
             // Append to the label
             TypedTextLabel.Text += addedText;
         }
