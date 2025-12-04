@@ -43,9 +43,9 @@ public partial class TextExercise : ContentPage
 
     private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        if (e.PropertyName == nameof(_viewModel.IsTurnOverlayVisible))
+        if (e.PropertyName == nameof(_viewModel.IsStartScreenVisible))
         {
-            if (_viewModel.IsTurnOverlayVisible)
+            if (_viewModel.IsStartScreenVisible)
                 FocusEntry(Invisible);
             else
                 FocusEntry(InputEntry);
