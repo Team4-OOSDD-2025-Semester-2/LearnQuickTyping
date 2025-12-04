@@ -29,7 +29,7 @@
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player1Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
-                    <Label Text="{Binding Player1Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player1Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontAttributes="Bold"/>
                     <Label Text="{Binding Player1Result.Errors, StringFormat='Errors: {0}'}"/>
                     <Label Text="{Binding Player1Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
                 </VerticalStackLayout>
@@ -43,7 +43,7 @@
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player2Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
-                    <Label Text="{Binding Player2Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player2Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontAttributes="Bold"/>
                     <Label Text="{Binding Player2Result.Errors, StringFormat='Errors: {0}'}"/>
                     <Label Text="{Binding Player2Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
                 </VerticalStackLayout>
