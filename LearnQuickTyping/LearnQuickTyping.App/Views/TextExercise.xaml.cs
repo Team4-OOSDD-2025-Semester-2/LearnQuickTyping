@@ -11,6 +11,7 @@ public partial class TextExercise : ContentPage
     private List<LetterStatus>? _pendingStatuses;
     private List<Span> _currentLineSpans = new();
     private FormattedString? _currentLineFormatted;
+    private string _currentLineText = string.Empty;
     private bool _isUpdatingLetters; // Prevent concurrent updates
 
     public TextExercise(TextExerciseViewModel viewModel)
@@ -60,28 +61,13 @@ public partial class TextExercise : ContentPage
                 PreviousLineLabel.Text = prev;
                 NextLineLabel.Text = next;
 
-                // Pre-allocate with capacity for better performance
-                _currentLineFormatted = new FormattedString();
-                _currentLineSpans = new List<Span>(curr?.Length ?? 0);
+                // Store the text in our variable
+                _currentLineText = curr ?? string.Empty;
 
-                if (!string.IsNullOrEmpty(curr))
-                {
-                    double fontSize = CurrentLineLabel.FontSize;
+                // Clear FormattedText first to ensure Text displays
+                CurrentLineLabel.FormattedText = null;
+                CurrentLineLabel.Text = _currentLineText;
 
-                    foreach (char c in curr)
-                    {
-                        var span = new Span
-                        {
-                            Text = c.ToString(),
-                            TextColor = Colors.Gray,
-                            FontSize = fontSize
-                        };
-                        _currentLineSpans.Add(span);
-                        _currentLineFormatted.Spans.Add(span);
-                    }
-                }
-
-                CurrentLineLabel.FormattedText = _currentLineFormatted;
                 TypedTextLabel.Text = string.Empty;
             }
             catch (Exception ex)
@@ -93,58 +79,59 @@ public partial class TextExercise : ContentPage
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
-        // If an update is already running, save this one for later and return
-        if (_isUpdatingLetters)
-        {
-            _pendingStatuses = statuses;
-            return;
-        }
-
+        if (_isUpdatingLetters) return;
         _isUpdatingLetters = true;
-        _pendingStatuses = null; // Clear pending since we are processing one now
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
             try
             {
-                if (_currentLineSpans == null || _currentLineSpans.Count == 0 || statuses == null)
+                // USE THE VARIABLE HERE, NOT THE LABEL
+                string fullText = _currentLineText;
+
+                if (string.IsNullOrEmpty(fullText) || statuses == null || statuses.Count == 0)
                 {
-                    // _isUpdatingLetters will be reset in finally block
+                    // If we have text but no statuses yet, just show the plain text
+                    if (!string.IsNullOrEmpty(fullText))
+                    {
+                        CurrentLineLabel.FormattedText = null;
+                        CurrentLineLabel.Text = fullText;
+                    }
                     return;
                 }
 
-                int limit = Math.Min(statuses.Count, _currentLineSpans.Count);
+                var newFormattedString = new FormattedString();
 
-                for (int i = 0; i < limit; i++)
+                var currentStatus = statuses[0].Status;
+                int startIndex = 0;
+
+                for (int i = 1; i < statuses.Count; i++)
                 {
-                    var status = statuses[i];
-                    var span = _currentLineSpans[i];
-
-                    // Optimization from Step 2
-                    if (status.Status == Status.Pending &&
-                        span.TextColor == Colors.Gray &&
-                        span.TextDecorations == TextDecorations.None)
+                    if (statuses[i].Status != currentStatus)
                     {
-                        break;
+                        int length = i - startIndex;
+                        // Safely extract substring
+                        if (startIndex + length <= fullText.Length)
+                        {
+                            string segment = fullText.Substring(startIndex, length);
+                            newFormattedString.Spans.Add(CreateSpan(segment, currentStatus));
+                        }
+
+                        currentStatus = statuses[i].Status;
+                        startIndex = i;
                     }
-
-                    Color targetColor = status.Status switch
-                    {
-                        Status.Correct => Colors.Green,
-                        Status.Incorrect => Colors.Red,
-                        _ => Colors.Gray
-                    };
-
-                    TextDecorations targetDecoration = status.Status == Status.Incorrect
-                        ? TextDecorations.Underline
-                        : TextDecorations.None;
-
-                    if (span.TextColor != targetColor)
-                        span.TextColor = targetColor;
-
-                    if (span.TextDecorations != targetDecoration)
-                        span.TextDecorations = targetDecoration;
                 }
+
+                // Add remaining text
+                if (startIndex < fullText.Length)
+                {
+                    string remainingText = fullText.Substring(startIndex);
+                    newFormattedString.Spans.Add(CreateSpan(remainingText, currentStatus));
+                }
+
+                // Apply the new formatting
+                CurrentLineLabel.Text = null; // Clear plain text
+                CurrentLineLabel.FormattedText = newFormattedString;
             }
             catch (Exception ex)
             {
@@ -153,17 +140,29 @@ public partial class TextExercise : ContentPage
             finally
             {
                 _isUpdatingLetters = false;
-
-                // Check if a new update arrived while we were busy
-                if (_pendingStatuses != null)
-                {
-                    var nextUpdate = _pendingStatuses;
-                    _pendingStatuses = null;
-                    // Recursively call to process the pending update
-                    UpdateLetterDisplay(nextUpdate);
-                }
             }
         });
+    }
+
+    // Helper method to keep style consistent
+    private Span CreateSpan(string text, Status status)
+    {
+        var span = new Span { Text = text, FontSize = CurrentLineLabel.FontSize };
+
+        switch (status)
+        {
+            case Status.Correct:
+                span.TextColor = Colors.Green;
+                break;
+            case Status.Incorrect:
+                span.TextColor = Colors.Red;
+                span.TextDecorations = TextDecorations.Underline;
+                break;
+            default: // Pending
+                span.TextColor = Colors.Gray;
+                break;
+        }
+        return span;
     }
 
     private void FocusEntry(Entry entry)
