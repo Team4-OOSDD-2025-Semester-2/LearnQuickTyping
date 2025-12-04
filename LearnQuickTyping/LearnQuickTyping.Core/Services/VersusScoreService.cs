@@ -34,8 +34,12 @@ namespace LearnQuickTyping.Core.Services
 
         public string DetermineWinner(VersusResult player1, VersusResult player2)
         {
-            if (player1.FinalScore > player2.FinalScore) return player1.PlayerName;
+            if (player1.Errors < player2.Errors) return player1.PlayerName; //First check for fewest errors
+            if (player2.Errors < player1.Errors) return player2.PlayerName;
+
+            if (player1.FinalScore > player2.FinalScore) return player1.PlayerName; //Then check for finalscore
             if (player2.FinalScore > player1.FinalScore) return player2.PlayerName;
+
             return "Tie";
         }
     }
