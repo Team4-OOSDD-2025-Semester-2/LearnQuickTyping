@@ -6,79 +6,52 @@
              x:DataType="vm:LyricsExerciseViewModel">
 
     <VerticalStackLayout 
-        Padding="30,0"
+        Padding="30" 
         Spacing="25" 
-        VerticalOptions="Center"
+        VerticalOptions="Center" 
         HorizontalOptions="Center">
 
-        <Picker
+        <Picker 
             x:Name="TextPicker"
             Title="Choose a lyric"
             ItemsSource="{Binding LyricsTitles}"
             SelectedItem="{Binding SelectedLyricsTitle}"
             WidthRequest="300"
-            HorizontalOptions="Center"/> 
+            HorizontalOptions="Center"/>
 
-        <Button
+        <Button 
             Text="Start"
             Command="{Binding StartExerciseCommand}"
             IsVisible="{Binding IsStartButtonVisible}"
             WidthRequest="200"
             HorizontalOptions="Center"/>
 
-        <VerticalStackLayout
-            IsVisible="{Binding IsExerciseVisible}"
+        <VerticalStackLayout 
+            IsVisible="{Binding IsExerciseVisible}" 
             Spacing="15">
 
-            <Label
-                x:Name="PracticeTextLabel"
+            <Label 
+                x:Name="PracticeTextLabel" 
                 HorizontalOptions="Center"/>
 
             <Entry 
                 Text="{Binding InputText}"
-                Placeholder="Copy text above and press enter when finished"
+                Placeholder="Type the text above and press enter"
                 ReturnCommand="{Binding CompleteTypingCommand}"
                 MinimumWidthRequest="350"/>
 
-            <Label
-                Text="{Binding TimeDisplay}"
+            <Label 
+                Text="{Binding TimeDisplay}" 
                 HorizontalOptions="Center"/>
 
-            <Label
-                Text="{Binding WpmDisplay}"
+            <Label 
+                Text="{Binding WpmDisplay}" 
                 HorizontalOptions="Center"/>
 
-            <Label
-                Text="{Binding ResultMessage}"
-                TextColor="{Binding ResultColor}"
+            <Label 
+                Text="{Binding ResultMessage}" 
+                TextColor="{Binding ResultColor}" 
                 HorizontalOptions="Center"/>
-        </VerticalStackLayout>
-
-        <VerticalStackLayout
-            IsVisible="{Binding IsResultVisible}" 
-            Spacing="20"
-            Padding="20">
-
-            <Label
-                Text="Result" 
-                FontSize="24"
-                FontAttributes="Bold"
-                HorizontalOptions="Center"/>
-
-            <Label
-                Text="{Binding ResultMessage}"
-                TextColor="{Binding ResultColor}"
-                FontSize="16"
-                HorizontalOptions="Center"
-                HorizontalTextAlignment="Center"
-                LineBreakMode="WordWrap"/>
-
-            <Button
-                Text="Choose Next Lyric"
-                Command="{Binding ContinueToNextTextCommand}"
-                WidthRequest="250"
-                HorizontalOptions="Center"
-                Margin="0,20,0,0"/>
         </VerticalStackLayout>
 
     </VerticalStackLayout>

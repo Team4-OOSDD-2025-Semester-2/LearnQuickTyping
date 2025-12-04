@@ -43,6 +43,7 @@ public static class MauiProgram
 
         builder.Services.AddTransient<LyricsExerciseViewModel>();
         builder.Services.AddTransient<LyricsExercise>();
+        builder.Services.AddTransient<LyricsResult>();
         builder.Services.AddTransient<VersusViewModel>();
         builder.Services.AddTransient<VersusView>();
 
