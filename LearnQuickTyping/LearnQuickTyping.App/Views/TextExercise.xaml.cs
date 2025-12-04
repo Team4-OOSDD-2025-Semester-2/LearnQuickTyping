@@ -9,7 +9,8 @@ public partial class TextExercise : ContentPage
     private readonly TextExerciseViewModel _viewModel;
 
     private List<Span> _currentLineSpans = new();
-    private FormattedString _currentLineFormatted;
+    private FormattedString? _currentLineFormatted;
+    private bool _isUpdatingLetters; // Prevent concurrent updates
 
     public TextExercise(TextExerciseViewModel viewModel)
     {
@@ -29,7 +30,16 @@ public partial class TextExercise : ContentPage
         FocusEntry(InputEntry);
     }
 
-    private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        // Clean up event handlers to prevent memory leaks
+        _viewModel.RequestLetterUpdate -= UpdateLetterDisplay;
+        _viewModel.OnLineChanged -= UpdateLineDisplay;
+        _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
+    }
+
+    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(_viewModel.IsTurnOverlayVisible))
         {
@@ -44,62 +54,94 @@ public partial class TextExercise : ContentPage
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            PreviousLineLabel.Text = prev;
-            NextLineLabel.Text = next;
-
-            _currentLineFormatted = new FormattedString();
-            _currentLineSpans.Clear();
-
-            if (!string.IsNullOrEmpty(curr))
+            try
             {
-                foreach (char c in curr)
-                {
-                    var span = new Span
-                    {
-                        Text = c.ToString(),
-                        TextColor = Colors.Gray,
-                        FontSize = CurrentLineLabel.FontSize
-                    };
-                    _currentLineSpans.Add(span);
-                    _currentLineFormatted.Spans.Add(span);
-                }
-            }
+                PreviousLineLabel.Text = prev;
+                NextLineLabel.Text = next;
 
-            CurrentLineLabel.FormattedText = _currentLineFormatted;
-            TypedTextLabel.Text = string.Empty;
+                // Pre-allocate with capacity for better performance
+                _currentLineFormatted = new FormattedString();
+                _currentLineSpans = new List<Span>(curr?.Length ?? 0);
+
+                if (!string.IsNullOrEmpty(curr))
+                {
+                    double fontSize = CurrentLineLabel.FontSize;
+
+                    foreach (char c in curr)
+                    {
+                        var span = new Span
+                        {
+                            Text = c.ToString(),
+                            TextColor = Colors.Gray,
+                            FontSize = fontSize
+                        };
+                        _currentLineSpans.Add(span);
+                        _currentLineFormatted.Spans.Add(span);
+                    }
+                }
+
+                CurrentLineLabel.FormattedText = _currentLineFormatted;
+                TypedTextLabel.Text = string.Empty;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateLineDisplay error: {ex.Message}");
+            }
         });
     }
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
+        // Prevent concurrent updates which can cause freezing
+        if (_isUpdatingLetters)
+            return;
+
+        _isUpdatingLetters = true;
+
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            if (_currentLineSpans == null || _currentLineSpans.Count == 0) return;
-            if (statuses == null) return;
-
-            int limit = Math.Min(statuses.Count, _currentLineSpans.Count);
-
-            for (int i = 0; i < limit; i++)
+            try
             {
-                var status = statuses[i];
-                var span = _currentLineSpans[i];
-
-                var targetColor = status.Status switch
+                if (_currentLineSpans == null || _currentLineSpans.Count == 0 || statuses == null)
                 {
-                    Status.Correct => Colors.Green,
-                    Status.Incorrect => Colors.Red,
-                    _ => Colors.Gray
-                };
+                    _isUpdatingLetters = false;
+                    return;
+                }
 
-                var targetDecoration = status.Status == Status.Incorrect
-                    ? TextDecorations.Underline
-                    : TextDecorations.None;
+                int limit = Math.Min(statuses.Count, _currentLineSpans.Count);
 
-                if (span.TextColor != targetColor)
-                    span.TextColor = targetColor;
+                for (int i = 0; i < limit; i++)
+                {
+                    var status = statuses[i];
+                    var span = _currentLineSpans[i];
 
-                if (span.TextDecorations != targetDecoration)
-                    span.TextDecorations = targetDecoration;
+                    // Determine target values
+                    Color targetColor = status.Status switch
+                    {
+                        Status.Correct => Colors.Green,
+                        Status.Incorrect => Colors.Red,
+                        _ => Colors.Gray
+                    };
+
+                    TextDecorations targetDecoration = status.Status == Status.Incorrect
+                        ? TextDecorations.Underline
+                        : TextDecorations.None;
+
+                    // Only update if changed - reduces UI work
+                    if (span.TextColor != targetColor)
+                        span.TextColor = targetColor;
+
+                    if (span.TextDecorations != targetDecoration)
+                        span.TextDecorations = targetDecoration;
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"UpdateLetterDisplay error: {ex.Message}");
+            }
+            finally
+            {
+                _isUpdatingLetters = false;
             }
         });
     }
@@ -108,30 +150,30 @@ public partial class TextExercise : ContentPage
     {
         Dispatcher.Dispatch(async () =>
         {
-            await Task.Delay(100); // Small delay to ensure UI is rendered
+            await Task.Delay(100);
             entry.Focus();
         });
     }
 
-    private void OnTextChanged(object sender, TextChangedEventArgs e)
+    private void OnTextChanged(object? sender, TextChangedEventArgs e)
     {
         string currentText = e.NewTextValue ?? string.Empty;
         string oldText = e.OldTextValue ?? string.Empty;
 
-        // Check if text was added 
+        // Update TypedTextLabel based on what was added
         if (currentText.Length == 0)
         {
             TypedTextLabel.Text = "";
         }
         else if (currentText.Length > oldText.Length)
         {
-            // Get the newly added characters
+            // Append only the newly added characters
             string addedText = currentText.Substring(oldText.Length);
-            // Append to the label
             TypedTextLabel.Text += addedText;
         }
+        // Note: We don't handle deletion in TypedTextLabel since it's display-only
 
-        // Update ViewModel to compare based on TypedTextLabel content
+        // Update ViewModel - this triggers the typing check
         _viewModel.TypedText = TypedTextLabel.Text ?? string.Empty;
     }
 }

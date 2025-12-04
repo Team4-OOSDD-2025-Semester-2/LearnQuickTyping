@@ -17,6 +17,7 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private DateTime _startTime;
     private bool _isTiming;
+    private bool _isTransitioning; // Prevent updates during sentence transition
 
     private List<string> _sentences = new();
     private int _currentSentenceIndex;
@@ -26,13 +27,13 @@ public partial class TextExerciseViewModel : BaseViewModel
     private string _allTypedText = string.Empty;
 
     [ObservableProperty]
-    private string _targetText;
+    private string _targetText = string.Empty;
 
     [ObservableProperty]
-    private string _inputText;
+    private string _inputText = string.Empty;
 
     [ObservableProperty]
-    private string _typedText;
+    private string _typedText = string.Empty;
 
     [ObservableProperty]
     private string _timeDisplay = "Current time: 0,00s";
@@ -50,7 +51,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     private string _progressDisplay = "Sentence: 0/0";
 
     [ObservableProperty]
-    private string _resultMessage;
+    private string _resultMessage = string.Empty;
 
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
@@ -62,10 +63,10 @@ public partial class TextExerciseViewModel : BaseViewModel
     private bool _isNotTurnOverlayVisible = true;
 
     [ObservableProperty]
-    private string _completeMessage;
+    private string _completeMessage = string.Empty;
 
-    public event Action<List<LetterStatus>> RequestLetterUpdate;
-    public event Action<string, string, string> OnLineChanged;
+    public event Action<List<LetterStatus>>? RequestLetterUpdate;
+    public event Action<string, string, string>? OnLineChanged;
 
     public TextExerciseViewModel(
         ITextRepository textRepository,
@@ -76,17 +77,21 @@ public partial class TextExerciseViewModel : BaseViewModel
         _statsService = statsService;
         _typeControl = typeControl;
 
-        _timer = Application.Current.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromMilliseconds(50);
+        _timer = Application.Current!.Dispatcher.CreateTimer();
+        _timer.Interval = TimeSpan.FromMilliseconds(100); // Reduced frequency: 100ms instead of 50ms
         _timer.Tick += OnTimerTick;
     }
 
     [RelayCommand]
     public void InitializeExercise()
     {
+        _isTransitioning = true;
+
         StopTimer();
         TimeDisplay = "Current time: 0,00s";
         WpmDisplay = "Current Words Per Minute: 0";
+        MistakeCountDisplay = "Mistakes: 0";
+        AccuracyDisplay = "Accuracy: 100%";
         InputText = string.Empty;
         TypedText = string.Empty;
         ResultMessage = string.Empty;
@@ -99,6 +104,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         _statsService.ResetMistakes();
 
         LoadNewText();
+
+        _isTransitioning = false;
     }
 
     private void LoadNewText()
@@ -137,15 +144,13 @@ public partial class TextExerciseViewModel : BaseViewModel
             _typeControl.TargetText = TargetText;
             _typeControl.TypedText = string.Empty;
 
-            InputText = string.Empty;
-            TypedText = string.Empty;
-
             string prev = _currentSentenceIndex > 0 ? _sentences[_currentSentenceIndex - 1] : "";
             string next = _currentSentenceIndex + 1 < _sentences.Count ? _sentences[_currentSentenceIndex + 1] : "";
 
-            OnLineChanged?.Invoke(prev, TargetText, next);
             ProgressDisplay = $"Sentence: {_currentSentenceIndex + 1}/{_sentences.Count}";
 
+            // Notify view to update display - do this before clearing input
+            OnLineChanged?.Invoke(prev, TargetText, next);
             RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
         }
         else
@@ -156,20 +161,23 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     partial void OnTypedTextChanged(string value)
     {
-        if (string.IsNullOrEmpty(TargetText)) return;
+        // Skip processing during transitions to prevent cascading updates
+        if (_isTransitioning || string.IsNullOrEmpty(TargetText))
+            return;
 
-        if (!_isTiming && !string.IsNullOrEmpty(value))
+        string safeValue = value ?? string.Empty;
+
+        if (!_isTiming && !string.IsNullOrEmpty(safeValue))
         {
             StartTimer();
         }
-
-        string safeValue = value ?? string.Empty;
 
         _typeControl.CheckTyping(safeValue);
         _statsService.TrackMistakes(safeValue, TargetText);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
 
+        // Check for sentence completion
         if (safeValue.Length >= TargetText.Length)
         {
             CompleteSentence();
@@ -178,6 +186,8 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private void CompleteSentence()
     {
+        _isTransitioning = true;
+
         _accumulatedMistakes += _statsService.GetMistakeCount();
         _accumulatedWords += CountWords(TargetText);
         _allTypedText += TypedText + " ";
@@ -185,7 +195,17 @@ public partial class TextExerciseViewModel : BaseViewModel
         _statsService.ResetMistakes();
 
         _currentSentenceIndex++;
-        LoadCurrentSentence();
+
+        // Clear input fields before loading new sentence
+        InputText = string.Empty;
+        TypedText = string.Empty;
+
+        // Small delay to let UI settle before loading next sentence
+        Application.Current?.Dispatcher.Dispatch(() =>
+        {
+            LoadCurrentSentence();
+            _isTransitioning = false;
+        });
     }
 
     private int CountWords(string text)
@@ -206,32 +226,32 @@ public partial class TextExerciseViewModel : BaseViewModel
         _timer.Stop();
     }
 
-    private void OnTimerTick(object sender, EventArgs e)
+    private void OnTimerTick(object? sender, EventArgs e)
     {
-        if (_isTiming)
+        if (!_isTiming || _isTransitioning)
+            return;
+
+        var elapsed = DateTime.Now - _startTime;
+        TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
+
+        int currentWords = CountWords(TypedText);
+        int totalWords = _accumulatedWords + currentWords;
+        double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
+
+        WpmDisplay = $"Current words per minute: {wpm:F0}"; // Reduced decimal places
+
+        int currentMistakes = _statsService.GetMistakeCount();
+        int totalMistakes = _accumulatedMistakes + currentMistakes;
+        MistakeCountDisplay = $"Mistakes: {totalMistakes}";
+
+        int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
+        int accuracy = 100;
+        if (totalChars > 0)
         {
-            var elapsed = DateTime.Now - _startTime;
-            TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
-
-            int currentWords = CountWords(TypedText);
-            int totalWords = _accumulatedWords + currentWords;
-            double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
-
-            WpmDisplay = $"Current words per minute: {wpm:F2}";
-
-            int currentMistakes = _statsService.GetMistakeCount();
-            int totalMistakes = _accumulatedMistakes + currentMistakes;
-            MistakeCountDisplay = $"Mistakes: {totalMistakes}";
-
-            int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
-            int accuracy = 100;
-            if (totalChars > 0)
-            {
-                double errorRate = (double)totalMistakes / totalChars;
-                accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
-            }
-            AccuracyDisplay = $"Accuracy: {accuracy}%";
+            double errorRate = (double)totalMistakes / totalChars;
+            accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
         }
+        AccuracyDisplay = $"Accuracy: {accuracy}%";
     }
 
     [RelayCommand]
@@ -257,7 +277,6 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {_accumulatedMistakes}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
 
-        // Always show result overlay
         IsTurnOverlayVisible = true;
         IsNotTurnOverlayVisible = false;
     }
@@ -265,7 +284,6 @@ public partial class TextExerciseViewModel : BaseViewModel
     [RelayCommand]
     private void StartExercise()
     {
-        // Hide overlay
         IsTurnOverlayVisible = false;
         IsNotTurnOverlayVisible = true;
         InitializeExercise();
