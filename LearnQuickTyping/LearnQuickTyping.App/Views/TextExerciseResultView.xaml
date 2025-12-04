@@ -4,12 +4,14 @@
              xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
              x:Class="LearnQuickTyping.App.Views.TextExerciseResultView"
              x:DataType="vm:TextExerciseResultViewModel"
-             Title="TextExerciseResultView">
+             Title="Text Results"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource OffBlack}">
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="20">
+    <Grid RowDefinitions="Auto, *, Auto, Auto" Padding="20" RowSpacing="20">
 
         <VerticalStackLayout Grid.Row="0" Spacing="10">
             <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
@@ -18,21 +20,26 @@
         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
 
             <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
-                <VerticalStackLayout Padding="15" Spacing="10">
+                <VerticalStackLayout Padding="15" Spacing="10" MaximumHeightRequest="300">
                     <Label Text="User Text"/>
                 </VerticalStackLayout>
             </Border>
 
             <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
-                <VerticalStackLayout Padding="15" Spacing="10">
+                <VerticalStackLayout Padding="15" Spacing="10" MaximumHeightRequest="300">
                     <Label Text="TypedText"/>
                 </VerticalStackLayout>
             </Border>
         </Grid>
 
-        <Label Grid.Row="2" Text="{Binding WpmDisplay}" HorizontalOptions="Center"/>
+        <HorizontalStackLayout Grid.Row="2" Spacing="20" HorizontalOptions="Center">
+            <Label Text="{Binding Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.Accuracy, StringFormat='Accuracy: {0}%'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.Errors, StringFormat='Errors: {0}'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}" FontSize="16" FontAttributes="Bold"/>
+        </HorizontalStackLayout>
 
-        <Button Grid.Row="2" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+        <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
             HorizontalOptions="Center" WidthRequest="200"/>
     </Grid>
 </ContentPage>

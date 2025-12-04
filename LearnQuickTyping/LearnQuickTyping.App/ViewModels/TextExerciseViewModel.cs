@@ -28,6 +28,9 @@ public partial class TextExerciseViewModel : BaseViewModel
     private int _accumulatedWords;
     private string _allTypedText = string.Empty;
 
+    // Temporary result
+    private TextResult? _result;
+
     [ObservableProperty]
     private string _targetText = string.Empty;
 
@@ -257,17 +260,41 @@ public partial class TextExerciseViewModel : BaseViewModel
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
 
-        double wpm = elapsed.TotalMinutes > 0 ? _accumulatedWords / elapsed.TotalMinutes : 0;
+        // Include current sentence's words in the final count
+        int currentWords = _textRepository.CountWords(TypedText);
+        int totalWords = _accumulatedWords + currentWords;
+        
+        double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
 
-        int totalChars = _allTypedText.Length;
+        // Include current sentence's mistakes in the final count
+        int currentMistakes = _statsService.GetMistakeCount();
+        int totalMistakes = _accumulatedMistakes + currentMistakes;
+        
+        // Include current sentence's characters in the final count
+        int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
         int accuracy = 100;
         if (totalChars > 0)
         {
-            double errorRate = (double)_accumulatedMistakes / totalChars;
+            double errorRate = (double)totalMistakes / totalChars;
             accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
         }
 
-        await Shell.Current.GoToAsync(nameof(TextExerciseResultView));
+        var result = new TextResult
+        {
+            WordsPerMinute = wpm,
+            TimeTaken = elapsed,
+            Errors = totalMistakes,
+            Accuracy = accuracy
+        };
+
+        _result = result;
+
+        var navigationParameter = new Dictionary<string, object>
+        {
+            { "Result", _result! }
+        };
+
+        await Shell.Current.GoToAsync(nameof(TextExerciseResultView), navigationParameter);
     }
 
     [RelayCommand]

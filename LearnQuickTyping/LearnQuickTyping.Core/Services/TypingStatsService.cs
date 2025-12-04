@@ -26,11 +26,9 @@ public class TypingStatsService : ITypingStatsService
         return wordCount / timeTaken.TotalMinutes;
     }
 
-    public double CalculateWordsPerMinuteText(string text, TimeSpan timeTaken)
+    public double CalculateWordsPerMinuteText(int wordCount, TimeSpan timeTaken)
     {
         if (timeTaken.TotalMinutes == 0) return 0;
-
-        int wordCount = _textRepository.CountWords(text);
         return wordCount / timeTaken.TotalMinutes;
     }
 
