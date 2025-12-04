@@ -6,5 +6,7 @@ public class TextResult
     public TimeSpan TimeTaken { get; set; }
     public int Errors { get; set; }
     public int Accuracy { get; set; }
+    public string OriginalText { get; set; } = string.Empty;
+    public string TypedText { get; set; } = string.Empty;
 }
 

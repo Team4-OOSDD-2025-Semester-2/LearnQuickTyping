@@ -20,15 +20,21 @@
         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
 
             <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
-                <VerticalStackLayout Padding="15" Spacing="10" MaximumHeightRequest="300">
-                    <Label Text="User Text"/>
-                </VerticalStackLayout>
+                <ScrollView MaximumHeightRequest="300">
+                    <VerticalStackLayout Padding="15" Spacing="10">
+                        <Label Text="Your Typed Text" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource White}"/>
+                        <Label FormattedText="{Binding TypedTextFormatted}" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </ScrollView>
             </Border>
 
             <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
-                <VerticalStackLayout Padding="15" Spacing="10" MaximumHeightRequest="300">
-                    <Label Text="TypedText"/>
-                </VerticalStackLayout>
+                <ScrollView MaximumHeightRequest="300">
+                    <VerticalStackLayout Padding="15" Spacing="10">
+                        <Label Text="Original Text" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource White}"/>
+                        <Label FormattedText="{Binding OriginalTextFormatted}" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </ScrollView>
             </Border>
         </Grid>
 

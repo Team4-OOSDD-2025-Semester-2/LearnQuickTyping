@@ -279,12 +279,18 @@ public partial class TextExerciseViewModel : BaseViewModel
             accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
         }
 
+        // Combine all text (accumulated + current)
+        string fullTypedText = _allTypedText + (TypedText ?? string.Empty);
+        string fullOriginalText = string.Join(" ", _sentences);
+
         var result = new TextResult
         {
             WordsPerMinute = wpm,
             TimeTaken = elapsed,
             Errors = totalMistakes,
-            Accuracy = accuracy
+            Accuracy = accuracy,
+            OriginalText = fullOriginalText,
+            TypedText = fullTypedText
         };
 
         _result = result;
