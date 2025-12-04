@@ -233,7 +233,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         int totalWords = _accumulatedWords + currentWords;
         double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
 
-        WpmDisplay = $"Current words per minute: {wpm:F0}"; // Reduced decimal places
+        WpmDisplay = $"Current words per minute: {wpm:F2}";
 
         int currentMistakes = _statsService.GetMistakeCount();
         int totalMistakes = _accumulatedMistakes + currentMistakes;
