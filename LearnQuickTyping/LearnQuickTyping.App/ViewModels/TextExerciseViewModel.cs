@@ -189,7 +189,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         _isTransitioning = true;
 
         _accumulatedMistakes += _statsService.GetMistakeCount();
-        _accumulatedWords += CountWords(TargetText);
+        _accumulatedWords += _textRepository.CountWords(TargetText);
         _allTypedText += TypedText + " ";
 
         _statsService.ResetMistakes();
@@ -206,11 +206,6 @@ public partial class TextExerciseViewModel : BaseViewModel
             LoadCurrentSentence();
             _isTransitioning = false;
         });
-    }
-
-    private int CountWords(string text)
-    {
-        return string.IsNullOrWhiteSpace(text) ? 0 : text.Split(' ', StringSplitOptions.RemoveEmptyEntries).Length;
     }
 
     private void StartTimer()
@@ -234,7 +229,7 @@ public partial class TextExerciseViewModel : BaseViewModel
         var elapsed = DateTime.Now - _startTime;
         TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
-        int currentWords = CountWords(TypedText);
+        int currentWords = _textRepository.CountWords(TypedText);
         int totalWords = _accumulatedWords + currentWords;
         double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
 

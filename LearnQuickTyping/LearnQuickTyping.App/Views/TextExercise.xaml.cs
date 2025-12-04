@@ -8,6 +8,7 @@ public partial class TextExercise : ContentPage
 {
     private readonly TextExerciseViewModel _viewModel;
 
+    private List<LetterStatus>? _pendingStatuses;
     private List<Span> _currentLineSpans = new();
     private FormattedString? _currentLineFormatted;
     private bool _isUpdatingLetters; // Prevent concurrent updates
@@ -92,11 +93,15 @@ public partial class TextExercise : ContentPage
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
-        // Prevent concurrent updates which can cause freezing
+        // If an update is already running, save this one for later and return
         if (_isUpdatingLetters)
+        {
+            _pendingStatuses = statuses;
             return;
+        }
 
         _isUpdatingLetters = true;
+        _pendingStatuses = null; // Clear pending since we are processing one now
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -104,7 +109,7 @@ public partial class TextExercise : ContentPage
             {
                 if (_currentLineSpans == null || _currentLineSpans.Count == 0 || statuses == null)
                 {
-                    _isUpdatingLetters = false;
+                    // _isUpdatingLetters will be reset in finally block
                     return;
                 }
 
@@ -115,7 +120,14 @@ public partial class TextExercise : ContentPage
                     var status = statuses[i];
                     var span = _currentLineSpans[i];
 
-                    // Determine target values
+                    // Optimization from Step 2
+                    if (status.Status == Status.Pending &&
+                        span.TextColor == Colors.Gray &&
+                        span.TextDecorations == TextDecorations.None)
+                    {
+                        break;
+                    }
+
                     Color targetColor = status.Status switch
                     {
                         Status.Correct => Colors.Green,
@@ -127,7 +139,6 @@ public partial class TextExercise : ContentPage
                         ? TextDecorations.Underline
                         : TextDecorations.None;
 
-                    // Only update if changed - reduces UI work
                     if (span.TextColor != targetColor)
                         span.TextColor = targetColor;
 
@@ -142,6 +153,15 @@ public partial class TextExercise : ContentPage
             finally
             {
                 _isUpdatingLetters = false;
+
+                // Check if a new update arrived while we were busy
+                if (_pendingStatuses != null)
+                {
+                    var nextUpdate = _pendingStatuses;
+                    _pendingStatuses = null;
+                    // Recursively call to process the pending update
+                    UpdateLetterDisplay(nextUpdate);
+                }
             }
         });
     }
