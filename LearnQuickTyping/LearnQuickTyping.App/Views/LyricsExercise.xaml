@@ -17,14 +17,14 @@
             ItemsSource="{Binding LyricsTitles}"
             SelectedItem="{Binding SelectedLyricsTitle}"
             WidthRequest="300"
-            HorizontalOptions="Center" />
+            HorizontalOptions="Center"/> 
 
         <Button
             Text="Start"
             Command="{Binding StartExerciseCommand}"
             IsVisible="{Binding IsStartButtonVisible}"
             WidthRequest="200"
-            HorizontalOptions="Center" />
+            HorizontalOptions="Center"/>
 
         <VerticalStackLayout
             IsVisible="{Binding IsExerciseVisible}"

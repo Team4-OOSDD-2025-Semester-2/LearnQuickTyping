@@ -29,26 +29,29 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private int _correctLines = 0;
     private int _totalLines = 0;
 
+    // Track total time across all lines
+    private TimeSpan _totalElapsedTime = TimeSpan.Zero;
+
     [ObservableProperty]
     private ObservableCollection<string> _lyricsTitles;
 
     [ObservableProperty]
-    private string _selectedLyricsTitle;
+    private string? _selectedLyricsTitle;
 
     [ObservableProperty]
-    private string _targetWord;
+    private string? _targetWord;
 
     [ObservableProperty]
-    private string _inputText;
+    private string? _inputText;
 
     [ObservableProperty]
-    private string _timeDisplay = "Current time: 0,00s";
+    private string? _timeDisplay = "Current time: 0,00s";
 
     [ObservableProperty]
-    private string _wpmDisplay = "Current Words Per Minute: 0";
+    private string? _wpmDisplay = "Current Words Per Minute: 0";
 
     [ObservableProperty]
-    private string _resultMessage;
+    private string? _resultMessage;
 
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
@@ -140,6 +143,10 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         // Hide picker and start button
         IsStartButtonVisible = false;
         IsExerciseVisible = true;
+
+        // Reset total time when starting new exercise
+        _totalElapsedTime = TimeSpan.Zero;
+
         ExerciseStarted?.Invoke();
     }
 
@@ -190,6 +197,10 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
+
+        // Add this line's time to total
+        _totalElapsedTime += elapsed;
+
         double wpm = _statsService.CalculateWordsPerMinuteText(InputText ?? string.Empty, elapsed);
 
         TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
@@ -228,7 +239,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         else
         {
             // All lines completed - show result
-            ShowResult(elapsed, wpm);
+            ShowResult(_totalElapsedTime, wpm);
 
             IsExerciseVisible = false;
             IsResultVisible = true;
@@ -279,6 +290,4 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         // Event for UI if needed
         ExerciseCompleted?.Invoke();
     }
-
-
 }
