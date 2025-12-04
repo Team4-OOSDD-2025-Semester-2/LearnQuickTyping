@@ -34,11 +34,11 @@ namespace LearnQuickTyping.App.ViewModels
         {
             if (value != null)
             {
-                GenerateFormattedStrings(value);
+                GenerateMarkedTexts(value);
             }
         }
 
-        private void GenerateFormattedStrings(TextResult result)
+        private void GenerateMarkedTexts(TextResult result)
         {
             // Set up the type control service
             _typeControl.TargetText = result.OriginalText ?? string.Empty;
@@ -52,7 +52,6 @@ namespace LearnQuickTyping.App.ViewModels
 
             string typed = result.TypedText ?? string.Empty;
 
-            // Generate formatted original text using LetterStatus
             foreach (var letterStatus in letterStatuses)
             {
                 var span = new Span { Text = letterStatus.Character.ToString() };
@@ -68,7 +67,6 @@ namespace LearnQuickTyping.App.ViewModels
                 originalFormatted.Spans.Add(span);
             }
 
-            // Generate formatted typed text
             for (int i = 0; i < typed.Length; i++)
             {
                 var span = new Span { Text = typed[i].ToString() };
