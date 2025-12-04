@@ -12,5 +12,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(Views.TextExercise), typeof(Views.TextExercise));
         Routing.RegisterRoute(nameof(Views.VersusView), typeof(Views.VersusView));
         Routing.RegisterRoute(nameof(Views.VersusResultView), typeof(Views.VersusResultView));
+        Routing.RegisterRoute(nameof(Views.TextExerciseResultView), typeof(Views.TextExerciseResultView));
     }
 }

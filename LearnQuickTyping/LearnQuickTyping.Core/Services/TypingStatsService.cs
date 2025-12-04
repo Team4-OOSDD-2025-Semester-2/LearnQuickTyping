@@ -69,7 +69,7 @@ public class TypingStatsService : ITypingStatsService
     }
 
     public int CalculateAccuracy()
-        {
+    {
         if (_previousTypedLength == 0) return 100;
         int correctChars = _previousTypedLength - _totalMistakes;
         return (int)((correctChars / (double)_previousTypedLength) * 100);

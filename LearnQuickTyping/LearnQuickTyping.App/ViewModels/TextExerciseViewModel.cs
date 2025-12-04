@@ -5,6 +5,8 @@ using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 using System.Text.RegularExpressions;
+using LearnQuickTyping.App.Views;
+
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -57,10 +59,10 @@ public partial class TextExerciseViewModel : BaseViewModel
     private Color _resultColor = Colors.Black;
 
     [ObservableProperty]
-    private bool _isTurnOverlayVisible = false;
+    private bool _isStartScreenVisible = false;
 
     [ObservableProperty]
-    private bool _isNotTurnOverlayVisible = true;
+    private bool _isNotStartScreenVisible = true;
 
     [ObservableProperty]
     private string _completeMessage = string.Empty;
@@ -95,8 +97,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         InputText = string.Empty;
         TypedText = string.Empty;
         ResultMessage = string.Empty;
-        IsTurnOverlayVisible = false;
-        IsNotTurnOverlayVisible = true;
+        IsStartScreenVisible = false;
+        IsNotStartScreenVisible = true;
 
         _accumulatedMistakes = 0;
         _accumulatedWords = 0;
@@ -250,7 +252,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void CompleteTyping()
+    private async Task CompleteTyping()
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
@@ -265,22 +267,14 @@ public partial class TextExerciseViewModel : BaseViewModel
             accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
         }
 
-        TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
-        WpmDisplay = $"Words Per Minute: {wpm:F2}";
-        MistakeCountDisplay = $"Mistakes: {_accumulatedMistakes}";
-        AccuracyDisplay = $"Accuracy: {accuracy}%";
-
-        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {_accumulatedMistakes}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
-
-        IsTurnOverlayVisible = true;
-        IsNotTurnOverlayVisible = false;
+        await Shell.Current.GoToAsync(nameof(TextExerciseResultView));
     }
 
     [RelayCommand]
     private void StartExercise()
     {
-        IsTurnOverlayVisible = false;
-        IsNotTurnOverlayVisible = true;
+        IsStartScreenVisible = false;
+        IsNotStartScreenVisible = true;
         InitializeExercise();
     }
 }

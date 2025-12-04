@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             x:Class="LearnQuickTyping.App.Views.TextExerciseResultView"
+             x:DataType="vm:TextExerciseResultViewModel"
+             Title="TextExerciseResultView">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="20">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
+
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <VerticalStackLayout Padding="15" Spacing="10">
+                    <Label Text="User Text"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <VerticalStackLayout Padding="15" Spacing="10">
+                    <Label Text="TypedText"/>
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+
+        <Label Grid.Row="2" Text="{Binding WpmDisplay}" HorizontalOptions="Center"/>
+
+        <Button Grid.Row="2" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+            HorizontalOptions="Center" WidthRequest="200"/>
+    </Grid>
+</ContentPage>
