@@ -2,12 +2,13 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             xmlns:local="clr-namespace:LearnQuickTyping.App.Behaviors"
              x:Class="LearnQuickTyping.App.Views.TextExercise"
              x:DataType="vm:TextExerciseViewModel"
              Title="LearnQuickTyping">
 
     <Grid>
-        <ScrollView IsVisible="{Binding IsNotStartScreenVisible}">
+        <ScrollView IsVisible="{Binding IsNotTurnOverlayVisible}">
             <VerticalStackLayout
                 Padding="30,0"
                 Spacing="25" 
@@ -15,21 +16,9 @@
                 HorizontalOptions="Center">
 
                 <Label
-                    x:Name="PreviousLineLabel"
+                    x:Name="PracticeTextLabel"
                     HorizontalOptions="Center"
-                    TextColor="Transparent"
-                    MaximumWidthRequest="700"/>
-
-                <Label
-                    x:Name="CurrentLineLabel"
-                    HorizontalOptions="Center"
-                    MaximumWidthRequest="700"/>
-
-                <Label
-                    x:Name="NextLineLabel"
-                    HorizontalOptions="Center"
-                    TextColor="DimGray"
-                    MaximumWidthRequest="700"/>
+                    MaximumWidthRequest="500"/>
 
                 <Label
                     x:Name="TypedTextLabel"
@@ -43,8 +32,8 @@
                     x:Name="InputEntry"
                     TextChanged="OnTextChanged"
                     Opacity="0"
-                    Text="{Binding InputText, Mode=TwoWay}"
-                    Placeholder="Type text..."
+                    Text="{Binding InputText}"
+                    Placeholder="Copy text above and press enter when finished"
                     ReturnCommand="{Binding CompleteTypingCommand}"
                     MaximumHeightRequest="1">
                 </Entry>
@@ -65,14 +54,10 @@
                 <Label
                     Text="{Binding AccuracyDisplay}"
                     HorizontalOptions="Center"/>
-
-                <Label
-                    Text="{Binding ProgressDisplay}"
-                    HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid IsVisible="{Binding IsStartScreenVisible}"
+        <Grid IsVisible="{Binding IsTurnOverlayVisible}"
               ZIndex="1">
 
             <VerticalStackLayout 

@@ -4,9 +4,6 @@ using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
-using System.Text.RegularExpressions;
-using LearnQuickTyping.App.Views;
-
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -19,33 +16,22 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private DateTime _startTime;
     private bool _isTiming;
-    private bool _isTransitioning; // Prevent updates during sentence transition
-
-    private List<string> _sentences = new();
-    private int _currentSentenceIndex;
-
-    private int _accumulatedMistakes;
-    private int _accumulatedWords;
-    private string _allTypedText = string.Empty;
-
-    // Temporary result
-    private TextResult? _result;
 
     [ObservableProperty]
-    private string _targetText = string.Empty;
+    private string _targetText;
 
     [ObservableProperty]
-    private string _inputText = string.Empty;
+    private string _inputText;
 
     [ObservableProperty]
-    private string _typedText = string.Empty;
+    private string _typedText;
 
     [ObservableProperty]
     private string _timeDisplay = "Current time: 0,00s";
 
     [ObservableProperty]
     private string _wpmDisplay = "Current Words Per Minute: 0";
-
+    
     [ObservableProperty]
     private string _mistakeCountDisplay = "Mistakes: 0";
 
@@ -53,25 +39,23 @@ public partial class TextExerciseViewModel : BaseViewModel
     private string _accuracyDisplay = "Accuracy: 100%";
 
     [ObservableProperty]
-    private string _progressDisplay = "Sentence: 0/0";
-
-    [ObservableProperty]
-    private string _resultMessage = string.Empty;
+    private string _resultMessage;
 
     [ObservableProperty]
     private Color _resultColor = Colors.Black;
 
     [ObservableProperty]
-    private bool _isStartScreenVisible = false;
+    private bool _isTurnOverlayVisible = false;
 
     [ObservableProperty]
-    private bool _isNotStartScreenVisible = true;
+    private bool _isNotTurnOverlayVisible = true;
 
     [ObservableProperty]
-    private string _completeMessage = string.Empty;
+    private string _completeMessage;
 
-    public event Action<List<LetterStatus>>? RequestLetterUpdate;
-    public event Action<string, string, string>? OnLineChanged;
+    private bool _wasCorrect;
+
+    public event Action<List<LetterStatus>> RequestLetterUpdate;
 
     public TextExerciseViewModel(
         ITextRepository textRepository,
@@ -82,135 +66,50 @@ public partial class TextExerciseViewModel : BaseViewModel
         _statsService = statsService;
         _typeControl = typeControl;
 
-        _timer = Application.Current!.Dispatcher.CreateTimer();
-        _timer.Interval = TimeSpan.FromMilliseconds(100); // Reduced frequency: 100ms instead of 50ms
+        _timer = Application.Current.Dispatcher.CreateTimer();
+        _timer.Interval = TimeSpan.FromMilliseconds(50);
         _timer.Tick += OnTimerTick;
     }
 
     [RelayCommand]
     public void InitializeExercise()
     {
-        _isTransitioning = true;
-
         StopTimer();
         TimeDisplay = "Current time: 0,00s";
         WpmDisplay = "Current Words Per Minute: 0";
-        MistakeCountDisplay = "Mistakes: 0";
-        AccuracyDisplay = "Accuracy: 100%";
         InputText = string.Empty;
         TypedText = string.Empty;
         ResultMessage = string.Empty;
-        IsStartScreenVisible = false;
-        IsNotStartScreenVisible = true;
-
-        _accumulatedMistakes = 0;
-        _accumulatedWords = 0;
-        _allTypedText = string.Empty;
-        _statsService.ResetMistakes();
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
 
         LoadNewText();
-
-        _isTransitioning = false;
     }
 
     private void LoadNewText()
     {
-        string fullText = _textRepository.GetRandomText();
-        _sentences = SplitTextIntoSentences(fullText);
+        TargetText = _textRepository.GetRandomText();
+        _typeControl.TargetText = TargetText;
+        _typeControl.TypedText = string.Empty;
+        _statsService.ResetMistakes();
+        InputText = string.Empty;
+        TypedText = string.Empty;
 
-        if (_sentences.Count == 0)
-        {
-            _sentences.Add("Error loading text. Please try again.");
-        }
-
-        _currentSentenceIndex = 0;
-        LoadCurrentSentence();
-    }
-
-    private List<string> SplitTextIntoSentences(string text)
-    {
-        var sentences = new List<string>();
-        string pattern = @"(?<=[.!?])\s+";
-        var parts = Regex.Split(text, pattern);
-
-        foreach (var part in parts)
-        {
-            if (!string.IsNullOrWhiteSpace(part))
-                sentences.Add(part.Trim());
-        }
-        return sentences;
-    }
-
-    private void LoadCurrentSentence()
-    {
-        if (_currentSentenceIndex < _sentences.Count)
-        {
-            TargetText = _sentences[_currentSentenceIndex];
-            _typeControl.TargetText = TargetText;
-            _typeControl.TypedText = string.Empty;
-
-            string prev = _currentSentenceIndex > 0 ? _sentences[_currentSentenceIndex - 1] : "";
-            string next = _currentSentenceIndex + 1 < _sentences.Count ? _sentences[_currentSentenceIndex + 1] : "";
-
-            ProgressDisplay = $"Sentence: {_currentSentenceIndex + 1}/{_sentences.Count}";
-
-            // Notify view to update display - do this before clearing input
-            OnLineChanged?.Invoke(prev, TargetText, next);
-            RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
-        }
-        else
-        {
-            CompleteTyping();
-        }
+        RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
     }
 
     partial void OnTypedTextChanged(string value)
     {
-        // Skip processing during transitions to prevent cascading updates
-        if (_isTransitioning || string.IsNullOrEmpty(TargetText))
-            return;
-
-        string safeValue = value ?? string.Empty;
-
-        if (!_isTiming && !string.IsNullOrEmpty(safeValue))
+        if (!_isTiming && !string.IsNullOrEmpty(value))
         {
             StartTimer();
         }
 
-        _typeControl.CheckTyping(safeValue);
-        _statsService.TrackMistakes(safeValue, TargetText);
-
+        _typeControl.CheckTyping(value ?? string.Empty);
+        
+        // Track mistakes as the user types
+        _statsService.TrackMistakes(value ?? string.Empty, TargetText);
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
-
-        // Check for sentence completion
-        if (safeValue.Length >= TargetText.Length)
-        {
-            CompleteSentence();
-        }
-    }
-
-    private void CompleteSentence()
-    {
-        _isTransitioning = true;
-
-        _accumulatedMistakes += _statsService.GetMistakeCount();
-        _accumulatedWords += _textRepository.CountWords(TargetText);
-        _allTypedText += TypedText + " ";
-
-        _statsService.ResetMistakes();
-
-        _currentSentenceIndex++;
-
-        // Clear input fields before loading new sentence
-        InputText = string.Empty;
-        TypedText = string.Empty;
-
-        // Small delay to let UI settle before loading next sentence
-        Application.Current?.Dispatcher.Dispatch(() =>
-        {
-            LoadCurrentSentence();
-            _isTransitioning = false;
-        });
     }
 
     private void StartTimer()
@@ -226,88 +125,57 @@ public partial class TextExerciseViewModel : BaseViewModel
         _timer.Stop();
     }
 
-    private void OnTimerTick(object? sender, EventArgs e)
+    private void OnTimerTick(object sender, EventArgs e)
     {
-        if (!_isTiming || _isTransitioning)
-            return;
-
-        var elapsed = DateTime.Now - _startTime;
-        TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
-
-        int currentWords = _textRepository.CountWords(TypedText);
-        int totalWords = _accumulatedWords + currentWords;
-        double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
-
-        WpmDisplay = $"Current words per minute: {wpm:F2}";
-
-        int currentMistakes = _statsService.GetMistakeCount();
-        int totalMistakes = _accumulatedMistakes + currentMistakes;
-        MistakeCountDisplay = $"Mistakes: {totalMistakes}";
-
-        int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
-        int accuracy = 100;
-        if (totalChars > 0)
+        if (_isTiming)
         {
-            double errorRate = (double)totalMistakes / totalChars;
-            accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
+            var elapsed = DateTime.Now - _startTime;
+            TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
+
+            double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
+            WpmDisplay = $"Current words per minute: {wpm:F2}";
+
+            int mistakeCount = _statsService.GetMistakeCount();
+            MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+
+            int accuracy = _statsService.CalculateAccuracy();
+            AccuracyDisplay = $"Accuracy: {accuracy}%";
         }
-        AccuracyDisplay = $"Accuracy: {accuracy}%";
     }
 
     [RelayCommand]
-    private async Task CompleteTyping()
+    private void CompleteTyping()
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
+        double wpm = _statsService.CalculateWordsPerMinuteText(TypedText ?? string.Empty, elapsed);
+        int mistakeCount = _statsService.GetMistakeCount();
+        int accuracy = _statsService.CalculateAccuracy();
 
-        // Include current sentence's words in the final count
-        int currentWords = _textRepository.CountWords(TypedText);
-        int totalWords = _accumulatedWords + currentWords;
-        
-        double wpm = elapsed.TotalMinutes > 0 ? totalWords / elapsed.TotalMinutes : 0;
 
-        // Include current sentence's mistakes in the final count
-        int currentMistakes = _statsService.GetMistakeCount();
-        int totalMistakes = _accumulatedMistakes + currentMistakes;
-        
-        // Include current sentence's characters in the final count
-        int totalChars = _allTypedText.Length + (TypedText?.Length ?? 0);
-        int accuracy = 100;
-        if (totalChars > 0)
-        {
-            double errorRate = (double)totalMistakes / totalChars;
-            accuracy = Math.Max(0, (int)((1 - errorRate) * 100));
-        }
+        TimeDisplay = $"Time: {elapsed.TotalSeconds:F2} seconds";
+        WpmDisplay = $"Words Per Minute: {wpm:F2}";
+        MistakeCountDisplay = $"Mistakes: {mistakeCount}";
+        AccuracyDisplay = $"Accuracy: {accuracy}%";
 
-        // Combine all text (accumulated + current)
-        string fullTypedText = _allTypedText + (TypedText ?? string.Empty);
-        string fullOriginalText = string.Join(" ", _sentences);
+        CompleteMessage = $"Exercise Complete!\n\nTime: {elapsed.TotalSeconds:F2}s\nWPM: {wpm:F2}\nMistakes: {mistakeCount}\nAccuracy: {accuracy}%\n\nPress Enter to continue";
 
-        var result = new TextResult
-        {
-            WordsPerMinute = wpm,
-            TimeTaken = elapsed,
-            Errors = totalMistakes,
-            Accuracy = accuracy,
-            OriginalText = fullOriginalText,
-            TypedText = fullTypedText
-        };
-
-        _result = result;
-
-        var navigationParameter = new Dictionary<string, object>
-        {
-            { "Result", _result! }
-        };
-
-        await Shell.Current.GoToAsync(nameof(TextExerciseResultView), navigationParameter);
+        // Always show result overlay
+        IsTurnOverlayVisible = true;
+        IsNotTurnOverlayVisible = false;
     }
 
     [RelayCommand]
     private void StartExercise()
     {
-        IsStartScreenVisible = false;
-        IsNotStartScreenVisible = true;
-        InitializeExercise();
+        // Hide overlay
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
+
+        // Load new text for next exercise
+        LoadNewText();
+
+        _isTiming = false;
+        ResultMessage = string.Empty;
     }
 }
