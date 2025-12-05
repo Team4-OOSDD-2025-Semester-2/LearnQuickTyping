@@ -4,10 +4,6 @@ using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
-using System.Text.RegularExpressions;
-using LearnQuickTyping.App.Views;
-using Microsoft.Maui.Layouts;
-
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -20,8 +16,6 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private DateTime _startTime;
     private bool _isTiming;
-
-    public event Action? RequestInputFocus;
 
     [ObservableProperty]
     private string _targetText;
@@ -51,10 +45,10 @@ public partial class TextExerciseViewModel : BaseViewModel
     private Color _resultColor = Colors.Black;
 
     [ObservableProperty]
-    private bool _isStartScreenVisible = true;
+    private bool _isTurnOverlayVisible = false;
 
     [ObservableProperty]
-    private bool _isNotStartScreenVisible = false;
+    private bool _isNotTurnOverlayVisible = true;
 
     [ObservableProperty]
     private string _completeMessage;
@@ -86,23 +80,10 @@ public partial class TextExerciseViewModel : BaseViewModel
         InputText = string.Empty;
         TypedText = string.Empty;
         ResultMessage = string.Empty;
-
-        // Force property change to trigger focus
-        IsStartScreenVisible = false;
-        IsNotStartScreenVisible = true;
-
-        _accumulatedMistakes = 0;
-        _accumulatedWords = 0;
-        _allTypedText = string.Empty;
-        _statsService.ResetMistakes();
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
 
         LoadNewText();
-
-        // Now set it back to show the start screen and trigger PropertyChanged
-        IsStartScreenVisible = true;
-        IsNotStartScreenVisible = false;
-
-        _isTransitioning = false;
     }
 
     private void LoadNewText()
@@ -187,7 +168,14 @@ public partial class TextExerciseViewModel : BaseViewModel
     [RelayCommand]
     private void StartExercise()
     {
-        IsStartScreenVisible = false;
-        IsNotStartScreenVisible = true;
+        // Hide overlay
+        IsTurnOverlayVisible = false;
+        IsNotTurnOverlayVisible = true;
+
+        // Load new text for next exercise
+        LoadNewText();
+
+        _isTiming = false;
+        ResultMessage = string.Empty;
     }
 }

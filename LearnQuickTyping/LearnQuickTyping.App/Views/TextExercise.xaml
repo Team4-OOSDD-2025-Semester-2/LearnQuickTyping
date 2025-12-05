@@ -66,18 +66,13 @@
                 Spacing="20">
 
                 <Label 
-                    Text="Press Enter to start"
+                    Text="{Binding ResultMessage}"
                     Style="{StaticResource Headline}"
                     HorizontalTextAlignment="Center"/>
 
                 <Label 
-                    Text="The exercise will start once you start typing"
-                    Style="{StaticResource SubHeadline}"
-                    HorizontalTextAlignment="Center"/>
-
-                <Label 
-                    Text="When you are done typing, press Enter to finish the exercise"
-                    Style="{StaticResource SubHeadline}"
+                    Text="{Binding CompleteMessage}"
+                    Style="{StaticResource Headline}"
                     HorizontalTextAlignment="Center"/>
 
                 <Entry 
