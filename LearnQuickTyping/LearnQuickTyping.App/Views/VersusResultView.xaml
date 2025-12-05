@@ -24,14 +24,14 @@
             <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
                 <VerticalStackLayout Padding="15" Spacing="10">
                     <VerticalStackLayout IsVisible="{Binding IsPlayer1Winner}" HorizontalOptions="Center">
-                        <Label Text="Winner!" TextColor="Green" FontAttributes="Bold" FontSize="Large" HorizontalOptions="Center"/>
+                        <Label Text="WINNER!" TextColor="Green" FontAttributes="Bold" HorizontalOptions="Center"/>
                         <Image Source="winner.jpg" HeightRequest="100" Aspect="AspectFit"/>
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player1Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
-                    <Label Text="{Binding Player1Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player1Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
                     <Label Text="{Binding Player1Result.Errors, StringFormat='Errors: {0}'}"/>
-                    <Label Text="{Binding Player1Result.TimeTaken.TotalSeconds, StringFormat='Time: {0:F2}s'}"/>
+                    <Label Text="{Binding Player1Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
                 </VerticalStackLayout>
             </Border>
 
@@ -43,9 +43,9 @@
                     </VerticalStackLayout>
 
                     <Label Text="{Binding Player2Result.PlayerName}" Style="{StaticResource SubHeadline}"/>
-                    <Label Text="{Binding Player2Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontAttributes="Bold"/>
+                    <Label Text="{Binding Player2Result.WordsPerMinute, StringFormat='WPM: {0:F0}'}" FontAttributes="Bold"/>
                     <Label Text="{Binding Player2Result.Errors, StringFormat='Errors: {0}'}"/>
-                    <Label Text="{Binding Player2Result.TimeTaken.TotalSeconds, StringFormat='Time: {0:F2}s'}"/>
+                    <Label Text="{Binding Player2Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}"/>
                 </VerticalStackLayout>
             </Border>
         </Grid>

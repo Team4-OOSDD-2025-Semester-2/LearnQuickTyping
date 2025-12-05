@@ -24,6 +24,9 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
+        builder.Services.AddSingleton<IWordRepository, WordRepository>(); 
+        builder.Services.AddSingleton<ILyricsRepository, LyricsRepository>(); 
+        builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddSingleton<IWordRepository, WordRepository>();
         builder.Services.AddSingleton<ITextRepository, TextRepository>();
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
@@ -31,17 +34,16 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();
         builder.Services.AddTransient<IVersusScoreService, VersusScoreService>();
-        builder.Services.AddTransient<ITextEcerciseScoreService, TextExerciseScoreService>();
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
 
         builder.Services.AddTransient<TextExerciseViewModel>();
         builder.Services.AddTransient<TextExercise>();
-        
-        builder.Services.AddTransient<TextExerciseResultViewModel>();
-        builder.Services.AddTransient<TextExerciseResultView>();
 
+        builder.Services.AddTransient<LyricsExerciseViewModel>();
+        builder.Services.AddTransient<LyricsExercise>();
+        builder.Services.AddTransient<LyricsResult>();
         builder.Services.AddTransient<VersusViewModel>();
         builder.Services.AddTransient<VersusView>();
 

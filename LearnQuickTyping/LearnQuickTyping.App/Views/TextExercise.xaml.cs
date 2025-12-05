@@ -8,12 +8,6 @@ public partial class TextExercise : ContentPage
 {
     private readonly TextExerciseViewModel _viewModel;
 
-    private List<LetterStatus>? _pendingStatuses;
-    private List<Span> _currentLineSpans = new();
-    private FormattedString? _currentLineFormatted;
-    private string _currentLineText = string.Empty;
-    private bool _isUpdatingLetters; // Prevent concurrent updates
-
     public TextExercise(TextExerciseViewModel viewModel)
     {
         InitializeComponent();
@@ -21,7 +15,6 @@ public partial class TextExercise : ContentPage
         BindingContext = _viewModel;
 
         _viewModel.RequestLetterUpdate += UpdateLetterDisplay;
-        _viewModel.OnLineChanged += UpdateLineDisplay;
         _viewModel.PropertyChanged += OnViewModelPropertyChanged;
     }
 
@@ -29,172 +22,82 @@ public partial class TextExercise : ContentPage
     {
         base.OnAppearing();
         _viewModel.InitializeExerciseCommand.Execute(null);
-
-        Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(100), () =>
-        {
-            Invisible.Focus();
-        });
+        FocusEntry(InputEntry);
     }
 
-    protected override void OnDisappearing()
+    private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
-        base.OnDisappearing();
-        // Clean up event handlers to prevent memory leaks
-        _viewModel.RequestLetterUpdate -= UpdateLetterDisplay;
-        _viewModel.OnLineChanged -= UpdateLineDisplay;
-        _viewModel.PropertyChanged -= OnViewModelPropertyChanged;
-    }
-
-    private void OnViewModelPropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-        if (e.PropertyName == nameof(_viewModel.IsStartScreenVisible))
+        if (e.PropertyName == nameof(_viewModel.IsTurnOverlayVisible))
         {
-            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
+            if (_viewModel.IsTurnOverlayVisible)
             {
-                if (_viewModel.IsStartScreenVisible)
-                {
-                    Invisible.Focus();
-                }
-                else
-                {
-                    InputEntry.Focus();
-                }
-            });
+                FocusEntry(Invisible);
+            }
+            else
+            {
+                FocusEntry(InputEntry);
+            }
         }
-    }
-
-    private void UpdateLineDisplay(string prev, string curr, string next)
-    {
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            try
-            {
-                PreviousLineLabel.Text = prev;
-                NextLineLabel.Text = next;
-
-                // Store the text in our variable
-                _currentLineText = curr ?? string.Empty;
-
-                // Clear FormattedText first to ensure Text displays
-                CurrentLineLabel.FormattedText = null;
-                CurrentLineLabel.Text = _currentLineText;
-
-                TypedTextLabel.Text = string.Empty;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"UpdateLineDisplay error: {ex.Message}");
-            }
-        });
     }
 
     private void UpdateLetterDisplay(List<LetterStatus> statuses)
     {
-        if (_isUpdatingLetters) return;
-        _isUpdatingLetters = true;
+        var formattedString = new FormattedString();
 
-        MainThread.BeginInvokeOnMainThread(() =>
+        foreach (var letterStatus in statuses)
         {
-            try
+            var span = new Span
             {
-                // USE THE VARIABLE HERE, NOT THE LABEL
-                string fullText = _currentLineText;
+                Text = letterStatus.Character.ToString(),
+                FontSize = PracticeTextLabel.FontSize
+            };
 
-                if (string.IsNullOrEmpty(fullText) || statuses == null || statuses.Count == 0)
-                {
-                    // If we have text but no statuses yet, just show the plain text
-                    if (!string.IsNullOrEmpty(fullText))
-                    {
-                        CurrentLineLabel.FormattedText = null;
-                        CurrentLineLabel.Text = fullText;
-                    }
-                    return;
-                }
-
-                var newFormattedString = new FormattedString();
-
-                var currentStatus = statuses[0].Status;
-                int startIndex = 0;
-
-                for (int i = 1; i < statuses.Count; i++)
-                {
-                    if (statuses[i].Status != currentStatus)
-                    {
-                        int length = i - startIndex;
-                        // Safely extract substring
-                        if (startIndex + length <= fullText.Length)
-                        {
-                            string segment = fullText.Substring(startIndex, length);
-                            newFormattedString.Spans.Add(CreateSpan(segment, currentStatus));
-                        }
-
-                        currentStatus = statuses[i].Status;
-                        startIndex = i;
-                    }
-                }
-
-                // Add remaining text
-                if (startIndex < fullText.Length)
-                {
-                    string remainingText = fullText.Substring(startIndex);
-                    newFormattedString.Spans.Add(CreateSpan(remainingText, currentStatus));
-                }
-
-                // Apply the new formatting
-                CurrentLineLabel.Text = null; // Clear plain text
-                CurrentLineLabel.FormattedText = newFormattedString;
-            }
-            catch (Exception ex)
+            span.TextColor = letterStatus.Status switch
             {
-                System.Diagnostics.Debug.WriteLine($"UpdateLetterDisplay error: {ex.Message}");
-            }
-            finally
+                Status.Correct => Colors.Green,
+                Status.Incorrect => Colors.Red,
+                Status.Pending => Colors.Gray,
+                _ => Colors.Black
+            };
+
+            span.TextDecorations = letterStatus.Status switch
             {
-                _isUpdatingLetters = false;
-            }
+                Status.Correct => TextDecorations.None,
+                Status.Incorrect => TextDecorations.Underline,
+                _ => TextDecorations.None
+            };
+
+            formattedString.Spans.Add(span);
+        }
+
+        PracticeTextLabel.FormattedText = formattedString;
+    }
+
+    private void FocusEntry(Entry entry)
+    {
+        Dispatcher.Dispatch(async () =>
+        {
+            await Task.Delay(100); // Small delay to ensure UI is rendered
+            entry.Focus();
         });
     }
 
-    // Helper method to keep style consistent
-    private Span CreateSpan(string text, Status status)
-    {
-        var span = new Span { Text = text, FontSize = CurrentLineLabel.FontSize };
-
-        switch (status)
-        {
-            case Status.Correct:
-                span.TextColor = Colors.Green;
-                break;
-            case Status.Incorrect:
-                span.TextColor = Colors.Red;
-                span.TextDecorations = TextDecorations.Underline;
-                break;
-            default: // Pending
-                span.TextColor = Colors.Gray;
-                break;
-        }
-        return span;
-    }
-
-    private void OnTextChanged(object? sender, TextChangedEventArgs e)
+    private void OnTextChanged(object sender, TextChangedEventArgs e)
     {
         string currentText = e.NewTextValue ?? string.Empty;
         string oldText = e.OldTextValue ?? string.Empty;
 
-        // Update TypedTextLabel based on what was added
-        if (currentText.Length == 0)
+        // Check if text was added 
+        if (currentText.Length > oldText.Length)
         {
-            TypedTextLabel.Text = "";
-        }
-        else if (currentText.Length > oldText.Length)
-        {
-            // Append only the newly added characters
+            // Get the newly added characters
             string addedText = currentText.Substring(oldText.Length);
+
+            // Append to the label
             TypedTextLabel.Text += addedText;
         }
-        // Note: We don't handle deletion in TypedTextLabel since it's display-only
 
-        // Update ViewModel - this triggers the typing check
+        // Update ViewModel to compare based on TypedTextLabel content
         _viewModel.TypedText = TypedTextLabel.Text ?? string.Empty;
     }
 }
