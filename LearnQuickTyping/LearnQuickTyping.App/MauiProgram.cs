@@ -34,6 +34,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ITypingStatsService, TypingStatsService>();
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();
         builder.Services.AddTransient<IVersusScoreService, VersusScoreService>();
+        builder.Services.AddTransient<ITextEcerciseScoreService, TextExerciseScoreService>();
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
@@ -44,6 +45,10 @@ public static class MauiProgram
         builder.Services.AddTransient<LyricsExerciseViewModel>();
         builder.Services.AddTransient<LyricsExercise>();
         builder.Services.AddTransient<LyricsResult>();
+        
+        builder.Services.AddTransient<TextExerciseResultViewModel>();
+        builder.Services.AddTransient<TextExerciseResultView>();
+
         builder.Services.AddTransient<VersusViewModel>();
         builder.Services.AddTransient<VersusView>();
 

@@ -86,6 +86,9 @@
 	  </MauiXaml>
 	  <MauiXaml Update="Views\LyricsExercise.xaml">
         <Generator>MSBuild:Compile</Generator>
+      
+	  <MauiXaml Update="Views\TextExerciseResultView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\VersusResultView.xaml">
 	    <Generator>MSBuild:Compile</Generator>

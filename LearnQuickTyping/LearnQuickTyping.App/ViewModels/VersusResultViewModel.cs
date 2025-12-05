@@ -43,8 +43,8 @@ public partial class VersusResultViewModel : BaseViewModel
         if (winnerName == "Tie")
         {
             IsTie = true;
-            IsPlayer1Winner = false;
-            IsPlayer2Winner = false;
+            IsPlayer1Winner = true;
+            IsPlayer2Winner = true;
         }
         else
         {

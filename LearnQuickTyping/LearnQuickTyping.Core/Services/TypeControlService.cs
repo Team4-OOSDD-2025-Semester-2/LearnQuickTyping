@@ -15,7 +15,7 @@ public class TypeControlService : ITypeControlService
 
     public List<LetterStatus> GetLetterStatuses()
     {
-        var statuses = new List<LetterStatus>();
+        var statuses = new List<LetterStatus>(TargetText.Length);
 
         for (int i = 0; i < TargetText.Length; i++)
         {
