@@ -6,6 +6,7 @@ using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 using System.Text.RegularExpressions;
 using LearnQuickTyping.App.Views;
+using Microsoft.Maui.Layouts;
 
 
 namespace LearnQuickTyping.App.ViewModels;
@@ -30,6 +31,8 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     // Temporary result
     private TextResult? _result;
+
+    public event Action? RequestInputFocus;
 
     [ObservableProperty]
     private string _targetText = string.Empty;
@@ -62,10 +65,10 @@ public partial class TextExerciseViewModel : BaseViewModel
     private Color _resultColor = Colors.Black;
 
     [ObservableProperty]
-    private bool _isStartScreenVisible = false;
+    private bool _isStartScreenVisible = true;
 
     [ObservableProperty]
-    private bool _isNotStartScreenVisible = true;
+    private bool _isNotStartScreenVisible = false;
 
     [ObservableProperty]
     private string _completeMessage = string.Empty;
@@ -100,6 +103,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         InputText = string.Empty;
         TypedText = string.Empty;
         ResultMessage = string.Empty;
+
+        // Force property change to trigger focus
         IsStartScreenVisible = false;
         IsNotStartScreenVisible = true;
 
@@ -109,6 +114,10 @@ public partial class TextExerciseViewModel : BaseViewModel
         _statsService.ResetMistakes();
 
         LoadNewText();
+
+        // Now set it back to show the start screen and trigger PropertyChanged
+        IsStartScreenVisible = true;
+        IsNotStartScreenVisible = false;
 
         _isTransitioning = false;
     }
@@ -308,6 +317,5 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         IsStartScreenVisible = false;
         IsNotStartScreenVisible = true;
-        InitializeExercise();
     }
 }

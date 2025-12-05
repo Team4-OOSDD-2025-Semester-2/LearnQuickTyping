@@ -29,7 +29,11 @@ public partial class TextExercise : ContentPage
     {
         base.OnAppearing();
         _viewModel.InitializeExerciseCommand.Execute(null);
-        FocusEntry(InputEntry);
+
+        Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(100), () =>
+        {
+            Invisible.Focus();
+        });
     }
 
     protected override void OnDisappearing()
@@ -45,10 +49,17 @@ public partial class TextExercise : ContentPage
     {
         if (e.PropertyName == nameof(_viewModel.IsStartScreenVisible))
         {
-            if (_viewModel.IsStartScreenVisible)
-                FocusEntry(Invisible);
-            else
-                FocusEntry(InputEntry);
+            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
+            {
+                if (_viewModel.IsStartScreenVisible)
+                {
+                    Invisible.Focus();
+                }
+                else
+                {
+                    InputEntry.Focus();
+                }
+            });
         }
     }
 
@@ -163,15 +174,6 @@ public partial class TextExercise : ContentPage
                 break;
         }
         return span;
-    }
-
-    private void FocusEntry(Entry entry)
-    {
-        Dispatcher.Dispatch(async () =>
-        {
-            await Task.Delay(100);
-            entry.Focus();
-        });
     }
 
     private void OnTextChanged(object? sender, TextChangedEventArgs e)
