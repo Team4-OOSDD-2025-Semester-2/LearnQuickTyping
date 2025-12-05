@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             x:Class="LearnQuickTyping.App.Views.TextExerciseResultView"
+             x:DataType="vm:TextExerciseResultViewModel"
+             Title="Text Results"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="{StaticResource OffBlack}">
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
+    <Grid RowDefinitions="Auto, *, Auto, Auto" Padding="20" RowSpacing="20">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="10">
+            <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
+        </VerticalStackLayout>
+
+        <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
+
+            <Border Grid.Column="0" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <ScrollView MaximumHeightRequest="300">
+                    <VerticalStackLayout Padding="15" Spacing="10">
+                        <Label Text="Your Typed Text" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource White}"/>
+                        <Label FormattedText="{Binding TypedTextFormatted}" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+
+            <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="{StaticResource Black}">
+                <ScrollView MaximumHeightRequest="300">
+                    <VerticalStackLayout Padding="15" Spacing="10">
+                        <Label Text="Original Text" FontAttributes="Bold" FontSize="16" TextColor="{StaticResource White}"/>
+                        <Label FormattedText="{Binding OriginalTextFormatted}" LineBreakMode="WordWrap"/>
+                    </VerticalStackLayout>
+                </ScrollView>
+            </Border>
+        </Grid>
+
+        <HorizontalStackLayout Grid.Row="2" Spacing="20" HorizontalOptions="Center">
+            <Label Text="{Binding Result.WordsPerMinute, StringFormat='WPM: {0:F2}'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.Accuracy, StringFormat='Accuracy: {0}%'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.Errors, StringFormat='Errors: {0}'}" FontSize="16" FontAttributes="Bold"/>
+            <Label Text="{Binding Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}" FontSize="16" FontAttributes="Bold"/>
+        </HorizontalStackLayout>
+
+        <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+            HorizontalOptions="Center" WidthRequest="200"/>
+    </Grid>
+</ContentPage>
