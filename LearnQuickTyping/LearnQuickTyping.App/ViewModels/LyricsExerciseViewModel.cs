@@ -25,22 +25,22 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private TimeSpan _totalElapsedTime;
     private int _totalCharactersTyped;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private ObservableCollection<string> _lyricsTitles;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private string _selectedLyricsTitle;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private string _targetWord;
 
     [ObservableProperty]
     private string _inputText;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private string _timeDisplay = "Current time: 0.00s";
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private string _wpmDisplay = "Words per minute: 0";
 
     [ObservableProperty]
@@ -52,7 +52,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private bool _isStartButtonVisible = false;
 
-    [ObservableProperty] 
+    [ObservableProperty]
     private bool _isExerciseVisible = false;
 
     public event Action<List<LetterStatus>> RequestLetterUpdate;
@@ -130,7 +130,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         TimeDisplay = $"Current time: {elapsed.TotalSeconds:F2}s";
 
         int totalChars = _totalCharactersTyped + (InputText?.Length ?? 0);
-        double wpm = _statsService.CalculateWordsPerMinuteText(new string('a', totalChars), _totalElapsedTime + elapsed);
+        double wpm = _statsService.CalculateWordsPerMinuteText(
+            new string('a', totalChars),
+            _totalElapsedTime + elapsed);
         WpmDisplay = $"Words per minute: {wpm:F2}";
     }
 
@@ -181,7 +183,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private void ShowResult()
     {
         double accuracy = (_correctLines / (double)_totalLines) * 100;
-        double averageWpm = _statsService.CalculateWordsPerMinuteText(new string('a', _totalCharactersTyped), _totalElapsedTime);
+        double averageWpm = _statsService.CalculateWordsPerMinuteText(
+            new string('a', _totalCharactersTyped),
+            _totalElapsedTime);
 
         TimeDisplay = $"Total time: {_totalElapsedTime.TotalSeconds:F2}s";
         WpmDisplay = $"Average WPM: {averageWpm:F2}";
@@ -196,28 +200,13 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         };
 
         ResultMessage = $"Score: {_correctLines}/{_totalLines} correct ({accuracy:F1}%)\n\n{grade}";
-        ResultColor = accuracy >= 75 ? Colors.Green : accuracy >= 50 ? Colors.Orange : Colors.Red;
+        ResultColor = accuracy >= 75 ? Colors.Green :
+                      accuracy >= 50 ? Colors.Orange : Colors.Red;
     }
 
     [RelayCommand]
-    public void ContinueToNextText()
+    public async Task GoHome()
     {
-        // Reset for new exercise
-        _currentLineIndex = 0;
-        _totalElapsedTime = TimeSpan.Zero;
-        _totalCharactersTyped = 0;
-        InputText = string.Empty;
-        ResultMessage = string.Empty;
-        IsExerciseVisible = false;
-        IsStartButtonVisible = true;
-
-        if (!string.IsNullOrEmpty(SelectedLyricsTitle))
-        {
-            TargetWord = _lyricsRepository.GetLyricsByIndex(LyricsTitles.IndexOf(SelectedLyricsTitle))[0];
-            _typeControl.TargetText = TargetWord;
-            RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
-        }
-
-        ExerciseCompleted?.Invoke();
+        await Shell.Current.GoToAsync("///StartPage");
     }
 }
