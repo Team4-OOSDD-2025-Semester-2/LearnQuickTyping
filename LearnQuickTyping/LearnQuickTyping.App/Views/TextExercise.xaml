@@ -2,13 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
-             xmlns:local="clr-namespace:LearnQuickTyping.App.Behaviors"
              x:Class="LearnQuickTyping.App.Views.TextExercise"
              x:DataType="vm:TextExerciseViewModel"
              Title="LearnQuickTyping">
 
     <Grid>
-        <ScrollView IsVisible="{Binding IsNotTurnOverlayVisible}">
+        <ScrollView IsVisible="{Binding IsNotStartScreenVisible}">
             <VerticalStackLayout
                 Padding="30,0"
                 Spacing="25" 
@@ -16,9 +15,21 @@
                 HorizontalOptions="Center">
 
                 <Label
-                    x:Name="PracticeTextLabel"
+                    x:Name="PreviousLineLabel"
                     HorizontalOptions="Center"
-                    MaximumWidthRequest="500"/>
+                    TextColor="Transparent"
+                    MaximumWidthRequest="700"/>
+
+                <Label
+                    x:Name="CurrentLineLabel"
+                    HorizontalOptions="Center"
+                    MaximumWidthRequest="700"/>
+
+                <Label
+                    x:Name="NextLineLabel"
+                    HorizontalOptions="Center"
+                    TextColor="DimGray"
+                    MaximumWidthRequest="700"/>
 
                 <Label
                     x:Name="TypedTextLabel"
@@ -32,8 +43,8 @@
                     x:Name="InputEntry"
                     TextChanged="OnTextChanged"
                     Opacity="0"
-                    Text="{Binding InputText}"
-                    Placeholder="Copy text above and press enter when finished"
+                    Text="{Binding InputText, Mode=TwoWay}"
+                    Placeholder="Type text..."
                     ReturnCommand="{Binding CompleteTypingCommand}"
                     MaximumHeightRequest="1">
                 </Entry>
@@ -54,10 +65,14 @@
                 <Label
                     Text="{Binding AccuracyDisplay}"
                     HorizontalOptions="Center"/>
+
+                <Label
+                    Text="{Binding ProgressDisplay}"
+                    HorizontalOptions="Center"/>
             </VerticalStackLayout>
         </ScrollView>
 
-        <Grid IsVisible="{Binding IsTurnOverlayVisible}"
+        <Grid IsVisible="{Binding IsStartScreenVisible}"
               ZIndex="1">
 
             <VerticalStackLayout 
@@ -66,13 +81,18 @@
                 Spacing="20">
 
                 <Label 
-                    Text="{Binding ResultMessage}"
+                    Text="Press Enter to start"
                     Style="{StaticResource Headline}"
                     HorizontalTextAlignment="Center"/>
 
                 <Label 
-                    Text="{Binding CompleteMessage}"
-                    Style="{StaticResource Headline}"
+                    Text="The exercise will start once you start typing"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Label 
+                    Text="When you are done typing, press Enter to finish the exercise"
+                    Style="{StaticResource SubHeadline}"
                     HorizontalTextAlignment="Center"/>
 
                 <Entry 

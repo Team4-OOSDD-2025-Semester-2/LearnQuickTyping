@@ -16,11 +16,6 @@
             x:Name="PracticeWordLabel"
             HorizontalOptions="Center"/>
 
-        <Label
-            Text="{Binding TargetWord}"
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center" />
-
         <Entry 
             Text="{Binding InputText}"
             Placeholder="Copy text above and press enter when finished"

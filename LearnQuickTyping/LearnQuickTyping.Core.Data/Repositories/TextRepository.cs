@@ -23,7 +23,11 @@ public class TextRepository : ITextRepository
     {
         var random = new Random();
         int index = random.Next(_practiceTexts.Length);
-        return _practiceTexts[index];
+        return _practiceTexts[index]
+            .Replace("“", "\"") // Opening double quote
+            .Replace("”", "\"") // Closing double quote
+            .Replace("’", "'")  // Right single quote
+            .Replace("‘", "'"); // Left single quote
     }
     public int GetWordCount()
     {
