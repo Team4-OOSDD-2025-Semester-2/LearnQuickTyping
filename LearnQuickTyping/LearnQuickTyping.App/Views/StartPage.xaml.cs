@@ -24,6 +24,6 @@ public partial class StartPage : ContentPage
 
     private async void OnKaraokeModeClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(LyricsExercise));
+        await DisplayAlert("Info", "Not yet implemented.", "OK");
     }
 }

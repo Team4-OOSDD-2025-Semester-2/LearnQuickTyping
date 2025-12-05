@@ -69,9 +69,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Views\LyricsResult.xaml.cs">
-	    <DependentUpon>LyricsResult.xaml</DependentUpon>
-	  </Compile>
 	  <Compile Update="Views\WordExercise.xaml.cs">
 	    <DependentUpon>WordExercise.xaml</DependentUpon>
 	  </Compile>
@@ -81,12 +78,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Views\LyricsExercise.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\LyricsResult.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
 	  <MauiXaml Update="Views\TextExercise.xaml">
 		<Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
