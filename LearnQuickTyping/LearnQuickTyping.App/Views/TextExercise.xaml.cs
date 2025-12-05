@@ -22,14 +22,36 @@ public partial class TextExercise : ContentPage
     {
         base.OnAppearing();
         _viewModel.InitializeExerciseCommand.Execute(null);
-        FocusEntry(InputEntry);
+
+        Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(100), () =>
+        {
+            Invisible.Focus();
+        });
     }
 
     private void OnViewModelPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
     {
         if (e.PropertyName == nameof(_viewModel.IsTurnOverlayVisible))
         {
-            if (_viewModel.IsTurnOverlayVisible)
+            Dispatcher.DispatchDelayed(TimeSpan.FromMilliseconds(50), () =>
+            {
+                if (_viewModel.IsStartScreenVisible)
+                {
+                    Invisible.Focus();
+                }
+                else
+                {
+                    InputEntry.Focus();
+                }
+            });
+        }
+    }
+
+    private void UpdateLineDisplay(string prev, string curr, string next)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            try
             {
                 FocusEntry(Invisible);
             }
@@ -73,16 +95,7 @@ public partial class TextExercise : ContentPage
         PracticeTextLabel.FormattedText = formattedString;
     }
 
-    private void FocusEntry(Entry entry)
-    {
-        Dispatcher.Dispatch(async () =>
-        {
-            await Task.Delay(100); // Small delay to ensure UI is rendered
-            entry.Focus();
-        });
-    }
-
-    private void OnTextChanged(object sender, TextChangedEventArgs e)
+    private void OnTextChanged(object? sender, TextChangedEventArgs e)
     {
         string currentText = e.NewTextValue ?? string.Empty;
         string oldText = e.OldTextValue ?? string.Empty;
