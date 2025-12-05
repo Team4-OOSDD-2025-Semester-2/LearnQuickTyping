@@ -131,8 +131,8 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
         int totalChars = _totalCharactersTyped + (InputText?.Length ?? 0);
         double wpm = _statsService.CalculateWordsPerMinuteText(
-            new string('a', totalChars),
-            _totalElapsedTime + elapsed);
+           totalChars,
+           _totalElapsedTime + elapsed);
         WpmDisplay = $"Words per minute: {wpm:F2}";
     }
 
@@ -184,8 +184,8 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     {
         double accuracy = (_correctLines / (double)_totalLines) * 100;
         double averageWpm = _statsService.CalculateWordsPerMinuteText(
-            new string('a', _totalCharactersTyped),
-            _totalElapsedTime);
+           _totalCharactersTyped,
+           _totalElapsedTime);
 
         TimeDisplay = $"Total time: {_totalElapsedTime.TotalSeconds:F2}s";
         WpmDisplay = $"Average WPM: {averageWpm:F2}";
