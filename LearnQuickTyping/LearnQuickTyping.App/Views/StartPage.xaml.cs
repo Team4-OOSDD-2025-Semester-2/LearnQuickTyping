@@ -14,7 +14,7 @@ public partial class StartPage : ContentPage
 
     private async void OnTextPracticeClicked(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(TextExercise));
+        await Shell.Current.GoToAsync(nameof(DifficultySelectView));
     }
 
     private async void OnVersusModeClicked(object sender, EventArgs e)
