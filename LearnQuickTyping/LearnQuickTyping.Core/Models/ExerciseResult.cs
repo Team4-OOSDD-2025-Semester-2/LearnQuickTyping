@@ -12,7 +12,7 @@ public class ExerciseResult
 
     public int Accuracy { get; set; }
 
-    public TimeSpan TimeTaken { get; set; }
+    public string TimeTaken { get; set; } = string.Empty;
 
     public int Errors { get; set; }
 
