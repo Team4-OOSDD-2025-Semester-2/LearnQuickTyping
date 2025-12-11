@@ -19,7 +19,7 @@ public class TextRepository : ITextRepository
         """
     };
 
-    private readonly Dictionary<string, string[]> _difficultyTexts = new ()
+    private readonly Dictionary<string, string[]> _difficultyTexts = new()
     {
         {
             "beginner", new[]
