@@ -26,4 +26,9 @@ public partial class DifficultySelectView : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(TextExercise));
     }
+
+    private async void OnIntroductionTextClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(TextExercise));
+    }
 }
