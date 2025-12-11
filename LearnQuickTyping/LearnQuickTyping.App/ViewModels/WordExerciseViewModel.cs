@@ -13,6 +13,7 @@ public partial class WordExerciseViewModel : BaseViewModel
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
+    private readonly IExerciseResultSaveService _saveService;
 
     private DateTime _startTime;
     private bool _isTiming;
@@ -40,11 +41,13 @@ public partial class WordExerciseViewModel : BaseViewModel
     public WordExerciseViewModel(
         IWordRepository wordRepository,
         ITypingStatsService statsService,
-        ITypeControlService typeControl)
+        ITypeControlService typeControl,
+        IExerciseResultSaveService saveService)
     {
         _wordRepository = wordRepository;
         _statsService = statsService;
         _typeControl = typeControl;
+        _saveService = saveService;
 
         _timer = Application.Current.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(50);
@@ -111,7 +114,7 @@ public partial class WordExerciseViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    private void CompleteTyping()
+    private async Task CompleteTyping()
     {
         StopTimer();
         var elapsed = DateTime.Now - _startTime;
@@ -125,14 +128,53 @@ public partial class WordExerciseViewModel : BaseViewModel
             ResultMessage = "Correct!";
             ResultColor = Colors.Green;
 
+            await _saveService.SaveResultAsync(
+                wpm, 100, elapsed, 0,
+                ExerciseType.Word, DifficultyLevel.Beginner);
+
             LoadNewWord();
         }
         else
         {
             ResultMessage = "Try Again!";
             ResultColor = Colors.Red;
+
+            // Calculate errors including length difference
+            int errors = CalculateErrors(TargetWord, InputText ?? string.Empty);
+            int accuracy = CalculateAccuracy(TargetWord, InputText ?? string.Empty, errors);
+
+            await _saveService.SaveResultAsync(
+                wpm, accuracy, elapsed, errors,
+                ExerciseType.Word, DifficultyLevel.Beginner);
+
             InputText = string.Empty;
             _isTiming = false;
         }
+    }
+
+    private int CalculateErrors(string target, string typed)
+    {
+        int errors = 0;
+
+        // Count character mismatch
+        int minLength = Math.Min(target.Length, typed.Length);
+        for (int i = 0; i < minLength; i++)
+        {
+            if (target[i] != typed[i])
+                errors++;
+        }
+
+        // Count length difference as mistake
+        errors += Math.Abs(target.Length - typed.Length);
+
+        return errors;
+    }
+
+    private int CalculateAccuracy(string target, string typed, int errors)
+    {
+        if (target.Length == 0) return 0;
+
+        int correctChars = target.Length - errors;
+        return Math.Max(0, (int)((correctChars / (double)target.Length) * 100));
     }
 }

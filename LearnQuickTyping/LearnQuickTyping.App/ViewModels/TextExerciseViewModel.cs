@@ -17,6 +17,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
+    private readonly IExerciseResultSaveService _saveService;
 
     private DateTime _startTime;
     private bool _isTiming;
@@ -79,11 +80,13 @@ public partial class TextExerciseViewModel : BaseViewModel
     public TextExerciseViewModel(
         ITextRepository textRepository,
         ITypingStatsService statsService,
-        ITypeControlService typeControl)
+        ITypeControlService typeControl,
+        IExerciseResultSaveService saveService)
     {
         _textRepository = textRepository;
         _statsService = statsService;
         _typeControl = typeControl;
+        _saveService = saveService;
 
         _timer = Application.Current!.Dispatcher.CreateTimer();
         _timer.Interval = TimeSpan.FromMilliseconds(100); // Reduced frequency: 100ms instead of 50ms
@@ -304,7 +307,17 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         _result = result;
 
+        // Save result to database
+        await _saveService.SaveResultAsync(
+            wpm,
+            accuracy,
+            elapsed,
+            totalMistakes,
+            ExerciseType.Text,
+            DifficultyLevel.Intermediate);
+
         var navigationParameter = new Dictionary<string, object>
+
         {
             { "Result", _result! }
         };
