@@ -52,6 +52,8 @@ public static class MauiProgram
         builder.Services.AddTransient<LyricsResult>();
         builder.Services.AddTransient<LyricsExercise>();
 
+        builder.Services.AddTransient<DifficultySelectView>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

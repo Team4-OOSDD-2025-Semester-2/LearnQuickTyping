@@ -78,6 +78,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiXaml Update="Views\DifficultySelectView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\LyricsExercise.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
