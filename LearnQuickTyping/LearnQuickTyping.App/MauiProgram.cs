@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using LearnQuickTyping.App.Services;
 using LearnQuickTyping.App.ViewModels;
 using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Data.Database;
@@ -41,6 +42,9 @@ public static class MauiProgram
         builder.Services.AddTransient<ITypeControlService, TypeControlService>();
         builder.Services.AddTransient<IVersusScoreService, VersusScoreService>();
         builder.Services.AddTransient<ITextEcerciseScoreService, TextExerciseScoreService>();
+        builder.Services.AddSingleton<IExerciseResultSaveService, ExerciseResultSaveService>();
+        builder.Services.AddSingleton<INotificationService, ToastNotificationService>();
+
 
         builder.Services.AddTransient<WordExerciseViewModel>();
         builder.Services.AddTransient<WordExercise>();
