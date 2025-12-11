@@ -20,7 +20,7 @@ public class ExerciseResultRepository : IExerciseResultRepository
         using var cmd = conn.CreateCommand();
 
         cmd.CommandText = @"
-            INSERT INTO ExerciseResults (Date, Time, WordsPerMinute, Accuracy, TimeTaken, Errors, ExerciseType, DifficultyLevel)
+            INSERT INTO ExerciseResults (Date, Time, WordsPerMinute, Accuracy, TimeTakenExercise, Errors, ExerciseType, DifficultyLevel)
             VALUES ($date, $time, $wpm, $accuracy, $timetaken, $errors, $type, $difficulty);
             SELECT last_insert_rowid();
         ";
