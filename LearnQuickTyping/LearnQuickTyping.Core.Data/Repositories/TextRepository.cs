@@ -52,7 +52,7 @@ public class TextRepository : ITextRepository
         {
             "expert", new[]
             {
-                "The quick brown fox jumps over the lazy dog near the bank of the river while the sun sets in the west casting long shadows over the hills and valleys beyond."
+                "The quick brown fox jumps over the lazy dog near the bank of the river while the sun sets in the west casting long shadows over the hills and valleys beyond.",
                 "Eric met the thick wolf 3 times, fed it 4 berries now! The kid kicked 5 times, jumped 6 times—rested 7 minutes low. I give Ben 8 red gems <shiny>, 4 green rings, and 5 bucks ($$$). Jim tried the slow trick, bit the fox, and then danced wild! The hen bet 6 bucks; the wolf bet 7 bucks; I bet 8 bucks (crazy). He cut the vine 3 times, kicked it 4 times, buried it well. Tim hit the drum 5 times—Eric hummed 6 slow tunes <nice>. Ben drank the wine 2 times, bit the nut 9 times, and then rested? The red duck bit him 7 times @midnight; the hen bit him 10 times! I think the bit, the ox, and the slow trick funnied him.",
                 "Ben kicked the bin 3 times—Eric kicked it 4 times well! The thick red hen met Jim 5 times; bit him 6 times now. I give the kid 7 gems, 8 bucks, and 4 green slow rings <pretty>. Tim tried the old byte, cut the bit, and then rested low (tired). He bet 5 bucks; Eric bet 6 bucks; Ben bet 7 bucks now! The wolf kicked 8 times, jumped 3 times, danced 4 minutes wild. Jim hit the drum 9 times—Ben hummed the slow tune, and I danced? Eric bit the nut 2 times @sunset, drank the wine 10 times, and then rested. The kid cut the vine 5 times; the fox bit it 6 times (ouch)! I think the trick, the ox, and the old ring fumed her well.",
                 "Tim met the green fox 3 times—fed it 4 berries slow! The kid bet 5 bucks; Jim bet 6 bucks; Eric bet 7 bucks well. I give Ben 8 red gems <rare>, 4 old rings, and 5 thick nuts now! He kicked the bin 9 times, hit the drum 10 times, and then rested low (phew). The hen tried the trick 6 times, succeeded 7 times—failed 2 times @dawn? Eric cut the wolf, bit the fox, and drank the wine now yum. Ben hummed 3 slow tunes; Tim danced 4 minutes, and I rested (nice). The thick ox kicked him 5 times—the red wolf bit him 6 times! Jim buried the vine 8 times, dug the old dirt, and then rested. I think the slow byte, the bit, and the bucket fumed him well."
@@ -70,6 +70,24 @@ public class TextRepository : ITextRepository
             .Replace("’", "'")  // Right single quote
             .Replace("‘", "'"); // Left single quote
     }
+
+    public string GetRandomTextByDifficulty(string? difficulty)
+    {
+        var random = new Random();
+
+        if (string.IsNullOrEmpty(difficulty) ||
+        !_difficultyTexts.TryGetValue(difficulty.ToLowerInvariant(), out var texts))
+        {
+            return GetRandomText();
+        }
+        int index = random.Next(_practiceTexts.Length);
+        return _practiceTexts[index]
+            .Replace("“", "\"") // Opening double quote
+            .Replace("”", "\"") // Closing double quote
+            .Replace("’", "'")  // Right single quote
+            .Replace("‘", "'"); // Left single quote
+    }
+
     public int GetWordCount()
     {
         return _practiceTexts.Sum(text => CountWords(text));

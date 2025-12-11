@@ -95,6 +95,11 @@
                     Style="{StaticResource SubHeadline}"
                     HorizontalTextAlignment="Center"/>
 
+                <Label 
+                    Text="{Binding InstructionDifficulty}"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalTextAlignment="Center"/>
+
                 <Entry 
                     x:Name="Invisible"
                     Opacity="0"

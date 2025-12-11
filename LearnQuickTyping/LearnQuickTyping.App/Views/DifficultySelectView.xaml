@@ -20,23 +20,27 @@
 
             <Button
                 Text="Beginner"
-                Clicked="OnBeginnerDifficultyClicked" 
+                CommandParameter="Beginner"
+                Clicked="OnDifficultySelected" 
                 MaximumWidthRequest="800"/>
 
             <Button
                 Text="Intermediate"
-                Clicked="OnIntermediateDifficultyClicked"
+                CommandParameter="Intermediate"
+                Clicked="OnDifficultySelected" 
                 MaximumWidthRequest="800"/>
 
             <Button
                 Text="Advanced"
-                Clicked="OnAdvancedDifficultyClicked"
+                CommandParameter="Advanced"
+                Clicked="OnDifficultySelected" 
                 MaximumWidthRequest="800"/>
 
             <Button
                 Text="Expert"
-                Clicked="OnExpertDifficultyClicked"
-                MaximumWidthRequest="800"/>
+                CommandParameter="Expert"
+                Clicked="OnDifficultySelected" 
+                MaximumWidthRequest="800"/> 
 
             <Button
                 Text="Test Your Difficulty"
