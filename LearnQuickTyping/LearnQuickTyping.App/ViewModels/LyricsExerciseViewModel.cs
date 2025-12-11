@@ -14,6 +14,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private readonly ITypingStatsService _statsService;
     private readonly ITypeControlService _typeControl;
     private readonly IDispatcherTimer _timer;
+    private readonly IExerciseResultSaveService _saveService;
 
     private DateTime _startTime;
     private bool _isTiming;
@@ -24,6 +25,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     private int _totalLines;
     private TimeSpan _totalElapsedTime;
     private int _totalCharactersTyped;
+    private int _totalErrors;
 
     [ObservableProperty]
     private ObservableCollection<string> _lyricsTitles;
@@ -63,11 +65,13 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     public LyricsExerciseViewModel(
         ILyricsRepository lyricsRepository,
         ITypingStatsService statsService,
-        ITypeControlService typeControl)
+        ITypeControlService typeControl,
+        IExerciseResultSaveService saveService)
     {
         _lyricsRepository = lyricsRepository;
         _statsService = statsService;
         _typeControl = typeControl;
+        _saveService = saveService;
 
         LyricsTitles = new ObservableCollection<string>(_lyricsRepository.GetAllLyricsTitles());
 
@@ -104,6 +108,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
 
         _totalElapsedTime = TimeSpan.Zero;
         _totalCharactersTyped = 0;
+        _totalErrors = 0;
         _isTiming = false;
 
         ExerciseStarted?.Invoke();
@@ -148,7 +153,21 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         bool isCorrect = InputText == TargetWord;
         ResultMessage = isCorrect ? "Correct!" : "Incorrect - moving to next line";
         ResultColor = isCorrect ? Colors.Green : Colors.Orange;
-        if (isCorrect) _correctLines++;
+
+        if (isCorrect)
+        {
+            _correctLines++;
+        }
+        else
+        {
+            // Count errors for this line
+            string typed = InputText ?? string.Empty;
+            for (int i = 0; i < Math.Min(TargetWord.Length, typed.Length); i++)
+            {
+                if (TargetWord[i] != typed[i]) _totalErrors++;
+            }
+            _totalErrors += Math.Abs(TargetWord.Length - typed.Length);
+        }
 
         InputText = string.Empty;
         _currentLineIndex++;
@@ -180,7 +199,7 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         _timer.Stop();
     }
 
-    private void ShowResult()
+    private async Task ShowResult()
     {
         double accuracy = (_correctLines / (double)_totalLines) * 100;
         double averageWpm = _statsService.CalculateWordsPerMinuteText(
@@ -202,6 +221,15 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         ResultMessage = $"Score: {_correctLines}/{_totalLines} correct ({accuracy:F1}%)\n\n{grade}";
         ResultColor = accuracy >= 75 ? Colors.Green :
                       accuracy >= 50 ? Colors.Orange : Colors.Red;
+
+        // Save result to database
+        await _saveService.SaveResultAsync(
+            averageWpm,
+            (int)accuracy,
+            _totalElapsedTime,
+            _totalErrors,
+            ExerciseType.Lyrics,
+            DifficultyLevel.Advanced);
     }
 
     [RelayCommand]
