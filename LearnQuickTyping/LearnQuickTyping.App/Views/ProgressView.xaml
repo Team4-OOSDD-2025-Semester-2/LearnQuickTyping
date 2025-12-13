@@ -62,15 +62,17 @@
 
                 <Grid 
                     Grid.Row="0"
-                    ColumnDefinitions="*, 0.8*, 0.6*, 0.6*, 0.6*, 0.5*"
+                    ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.5*, 0.6*, 0.5*, 0.5*"
                     Padding="10,5"
                     BackgroundColor="{StaticResource Gray900}">
-                    <Label Grid.Column="0" Text="Type" FontAttributes="Bold" TextColor="{StaticResource White}"/>
-                    <Label Grid.Column="1" Text="Difficulty" FontAttributes="Bold" TextColor="{StaticResource White}"/>
-                    <Label Grid.Column="2" Text="WPM" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
-                    <Label Grid.Column="3" Text="Accuracy" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
-                    <Label Grid.Column="4" Text="Time" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
-                    <Label Grid.Column="5" Text="Errors" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="0" Text="Date" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="1" Text="Time Finished" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="2" Text="Type" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="3" Text="Difficulty" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="4" Text="WPM" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text="Accuracy" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="6" Text="Time" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="7" Text="Errors" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
                 </Grid>
 
                 <CollectionView 
@@ -81,45 +83,57 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:ExerciseResult">
                             <Grid 
-                                ColumnDefinitions="*, 0.8*, 0.6*, 0.6*, 0.6*, 0.5*"
+                                ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.5*, 0.6*, 0.5*, 0.5*"
                                 Padding="10,8"
                                 BackgroundColor="Transparent">
 
                                 <Label 
                                     Grid.Column="0" 
+                                    Text="{Binding Date}" 
+                                    TextColor="{StaticResource Gray100}" 
+                                    VerticalTextAlignment="Center"/>
+                                
+                                <Label 
+                                    Grid.Column="1" 
+                                    Text="{Binding Time}" 
+                                    TextColor="{StaticResource Gray100}" 
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="2" 
                                     Text="{Binding ExerciseType}" 
                                     TextColor="{StaticResource Gray100}"
                                     VerticalTextAlignment="Center"/>
 
                                 <Label 
-                                    Grid.Column="1" 
+                                    Grid.Column="3" 
                                     Text="{Binding DifficultyLevel}" 
                                     TextColor="{StaticResource Gray100}"
                                     VerticalTextAlignment="Center"/>
 
                                 <Label 
-                                    Grid.Column="2" 
+                                    Grid.Column="4" 
                                     Text="{Binding WordsPerMinute, StringFormat='{0:F1}'}" 
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
                                     VerticalTextAlignment="Center"/>
 
                                 <Label 
-                                    Grid.Column="3" 
+                                    Grid.Column="5" 
                                     Text="{Binding Accuracy, StringFormat='{0}%'}" 
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
                                     VerticalTextAlignment="Center"/>
 
                                 <Label 
-                                    Grid.Column="4" 
+                                    Grid.Column="6" 
                                     Text="{Binding TimeTakenDisplay}" 
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
                                     VerticalTextAlignment="Center"/>
 
                                 <Label 
-                                    Grid.Column="5" 
+                                    Grid.Column="7" 
                                     Text="{Binding Errors}" 
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
