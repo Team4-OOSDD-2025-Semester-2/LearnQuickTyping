@@ -113,7 +113,7 @@
 
                                 <Label 
                                     Grid.Column="4" 
-                                    Text="{Binding TimeTaken}" 
+                                    Text="{Binding TimeTakenDisplay}" 
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
                                     VerticalTextAlignment="Center"/>
