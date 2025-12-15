@@ -15,6 +15,7 @@
 
         <VerticalStackLayout Grid.Row="0" Spacing="10">
             <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
+            <Label Text="{Binding Difficulty}" Style="{StaticResource SubHeadline}" TextColor="{StaticResource White}"/>
         </VerticalStackLayout>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
@@ -45,7 +46,11 @@
             <Label Text="{Binding Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}" FontSize="16" FontAttributes="Bold"/>
         </HorizontalStackLayout>
 
-        <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
-            HorizontalOptions="Center" WidthRequest="200"/>
+        <HorizontalStackLayout Grid.Row="3" Spacing="20" HorizontalOptions="Center">
+            <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+                    HorizontalOptions="Center" WidthRequest="200"/>
+            <Button Text="Try again" Command="{Binding TryAgainCommand}" 
+                    HorizontalOptions="Center" WidthRequest="200"/>
+        </HorizontalStackLayout>
     </Grid>
 </ContentPage>

@@ -11,6 +11,7 @@ using Microsoft.Maui.Layouts;
 
 namespace LearnQuickTyping.App.ViewModels;
 
+[QueryProperty(nameof(Difficulty), "difficulty")]
 public partial class TextExerciseViewModel : BaseViewModel
 {
     private readonly ITextRepository _textRepository;
@@ -74,9 +75,15 @@ public partial class TextExerciseViewModel : BaseViewModel
     [ObservableProperty]
     private string _completeMessage = string.Empty;
 
+    [ObservableProperty]
+    private string _instructionDifficulty = "";
+
+    [ObservableProperty]
+    private string _difficulty;
+
     public event Action<List<LetterStatus>>? RequestLetterUpdate;
     public event Action<string, string, string>? OnLineChanged;
-
+        
     public TextExerciseViewModel(
         ITextRepository textRepository,
         ITypingStatsService statsService,
@@ -127,7 +134,7 @@ public partial class TextExerciseViewModel : BaseViewModel
 
     private void LoadNewText()
     {
-        string fullText = _textRepository.GetRandomText();
+        string fullText = _textRepository.GetRandomTextByDifficulty(Difficulty);
         _sentences = SplitTextIntoSentences(fullText);
 
         if (_sentences.Count == 0)
@@ -142,15 +149,28 @@ public partial class TextExerciseViewModel : BaseViewModel
     private List<string> SplitTextIntoSentences(string text)
     {
         var sentences = new List<string>();
-        string pattern = @"(?<=[.!?])\s+";
-        var parts = Regex.Split(text, pattern);
-
-        foreach (var part in parts)
+        if (text.Contains("|"))
         {
-            if (!string.IsNullOrWhiteSpace(part))
-                sentences.Add(part.Trim());
+            var parts = text.Split('|');
+            foreach (var part in parts)
+            {
+                if (!string.IsNullOrWhiteSpace(part))
+                    sentences.Add(part.Trim());
+            }
+            return sentences;
         }
-        return sentences;
+        else
+        {
+            string pattern = @"(?<=[.!?])\s+";
+            var parts = Regex.Split(text, pattern);
+
+            foreach (var part in parts)
+            {
+                if (!string.IsNullOrWhiteSpace(part))
+                    sentences.Add(part.Trim());
+            }
+            return sentences;
+        }
     }
 
     private void LoadCurrentSentence()
@@ -184,12 +204,7 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         string safeValue = value ?? string.Empty;
 
-        if (!_isTiming && !string.IsNullOrEmpty(safeValue))
-        {
-            StartTimer();
-        }
-
-        _typeControl.CheckTyping(safeValue);
+         _typeControl.CheckTyping(safeValue);
         _statsService.TrackMistakes(safeValue, TargetText);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
@@ -200,7 +215,7 @@ public partial class TextExerciseViewModel : BaseViewModel
             CompleteSentence();
         }
     }
-
+        
     private void CompleteSentence()
     {
         _isTransitioning = true;
@@ -230,6 +245,15 @@ public partial class TextExerciseViewModel : BaseViewModel
         _startTime = DateTime.Now;
         _isTiming = true;
         _timer.Start();
+    }
+
+    private async Task DelayStartTimer()
+    {
+        await Task.Delay(1500);
+        if (!_isTiming)
+        {
+            StartTimer();
+        }
     }
 
     private void StopTimer()
@@ -319,7 +343,8 @@ public partial class TextExerciseViewModel : BaseViewModel
         var navigationParameter = new Dictionary<string, object>
 
         {
-            { "Result", _result! }
+            { "Result", _result! },
+            { "Difficulty", Difficulty  ?? "Unknown" }
         };
 
         await Shell.Current.GoToAsync(nameof(TextExerciseResultView), navigationParameter);
@@ -330,5 +355,26 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         IsStartScreenVisible = false;
         IsNotStartScreenVisible = true;
+
+        if (!_isTiming)
+        {
+            _ = DelayStartTimer();
+        }
+    }
+
+    partial void OnDifficultyChanged(string value)
+    {
+        LoadInstructionsDifficultyText(value);
+    }
+    private void LoadInstructionsDifficultyText(string difficulty)
+    {
+        InstructionDifficulty = difficulty switch
+        {
+            "Beginner" => "The following text can be typed with your thumbs, pointer fingers and middle fingers.",
+            "Intermediate" => "The following text can be typed with your thumbs, pointer fingers, middle fingers and ring fingers.",
+            "Advanced" => "The following text can be typed with your thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
+            "Expert" => "The following text can be typed with your thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
+            _ => "Type the following text."
+        };
     }
 }

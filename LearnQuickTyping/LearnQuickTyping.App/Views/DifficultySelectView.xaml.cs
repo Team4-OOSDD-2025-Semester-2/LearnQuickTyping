@@ -7,24 +7,12 @@ public partial class DifficultySelectView : ContentPage
 		InitializeComponent();
 	}
 
-    private async void OnBeginnerDifficultyClicked(object sender, EventArgs e)
+    private async void OnDifficultySelected(object sender, EventArgs e)
     {
-        await Shell.Current.GoToAsync(nameof(TextExercise));
-    }
+        var button = (Button)sender;
+        var difficulty = button.CommandParameter as string;
 
-    private async void OnIntermediateDifficultyClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(TextExercise));
-    }
-
-    private async void OnAdvancedDifficultyClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(TextExercise));
-    }
-
-    private async void OnExpertDifficultyClicked(object sender, EventArgs e)
-    {
-        await Shell.Current.GoToAsync(nameof(TextExercise));
+        await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={difficulty}");
     }
 
     private async void OnIntroductionTextClicked(object sender, EventArgs e)

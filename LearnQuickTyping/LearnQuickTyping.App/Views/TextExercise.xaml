@@ -7,9 +7,23 @@
              Title="LearnQuickTyping">
 
     <Grid>
-        <ScrollView IsVisible="{Binding IsNotStartScreenVisible}">
+        <Grid IsVisible="{Binding IsNotStartScreenVisible}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label
+                Grid.Row="0"
+                Text="{Binding Difficulty}"
+                FontAttributes ="Bold"
+                FontSize="30"
+                HorizontalTextAlignment="Center"
+                Margin="0,50,0,0"/>
+
             <VerticalStackLayout
-                Padding="30,0"
+                Grid.Row="1"
+                Padding="0"
                 Spacing="25" 
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
@@ -70,20 +84,35 @@
                     Text="{Binding ProgressDisplay}"
                     HorizontalOptions="Center"/>
             </VerticalStackLayout>
-        </ScrollView>
+        </Grid>
 
         <Grid IsVisible="{Binding IsStartScreenVisible}"
               ZIndex="1">
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label
+                Grid.Row="0"
+                Text="{Binding Difficulty}"
+                FontAttributes ="Bold"
+                FontSize="45"
+                HorizontalTextAlignment="Center"
+                Margin="0,30,0,0"/>
+
             <VerticalStackLayout 
+                Grid.Row="1"
                 VerticalOptions="Center" 
                 HorizontalOptions="Center"
-                Spacing="20">
+                Margin="0,-125, 0,0">
 
                 <Label 
                     Text="Press Enter to start"
                     Style="{StaticResource Headline}"
-                    HorizontalTextAlignment="Center"/>
+                    HorizontalTextAlignment="Center"
+                    Margin="0,0,0,50"/>
 
                 <Label 
                     Text="The exercise will start once you start typing"
@@ -92,6 +121,11 @@
 
                 <Label 
                     Text="When you are done typing, press Enter to finish the exercise"
+                    Style="{StaticResource SubHeadline}"
+                    HorizontalTextAlignment="Center"/>
+
+                <Label 
+                    Text="{Binding InstructionDifficulty}"
                     Style="{StaticResource SubHeadline}"
                     HorizontalTextAlignment="Center"/>
 

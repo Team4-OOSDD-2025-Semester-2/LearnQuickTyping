@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
@@ -8,6 +9,7 @@ using LearnQuickTyping.Core.Models;
 namespace LearnQuickTyping.App.ViewModels
 {
     [QueryProperty(nameof(Result), "Result")]
+    [QueryProperty(nameof(Difficulty), "Difficulty")]
     public partial class TextExerciseResultViewModel : BaseViewModel
     {
         private readonly ITextEcerciseScoreService _scoreService;
@@ -15,6 +17,9 @@ namespace LearnQuickTyping.App.ViewModels
 
         [ObservableProperty]
         private TextResult? _result;
+
+        [ObservableProperty]
+        private string _difficulty = string.Empty;
 
         [ObservableProperty]
         private FormattedString _typedTextFormatted = new FormattedString();
@@ -94,6 +99,12 @@ namespace LearnQuickTyping.App.ViewModels
         private async Task GoHome()
         {
             await Shell.Current.GoToAsync("///StartPage");
+        }
+
+        [RelayCommand]
+        private async Task TryAgain()
+        {
+            await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
         }
     }
 }
