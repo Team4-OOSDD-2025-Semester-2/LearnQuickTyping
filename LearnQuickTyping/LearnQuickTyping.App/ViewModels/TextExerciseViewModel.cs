@@ -141,6 +141,11 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         _currentSentenceIndex = 0;
         LoadCurrentSentence();
+
+        if (!_isTiming)
+        {
+            _ = DelayStartTimer();
+        }
     }
 
     private List<string> SplitTextIntoSentences(string text)
@@ -201,12 +206,7 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         string safeValue = value ?? string.Empty;
 
-        if (!_isTiming && !string.IsNullOrEmpty(safeValue))
-        {
-            StartTimer();
-        }
-
-        _typeControl.CheckTyping(safeValue);
+         _typeControl.CheckTyping(safeValue);
         _statsService.TrackMistakes(safeValue, TargetText);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
@@ -217,7 +217,7 @@ public partial class TextExerciseViewModel : BaseViewModel
             CompleteSentence();
         }
     }
-
+        
     private void CompleteSentence()
     {
         _isTransitioning = true;
@@ -247,6 +247,15 @@ public partial class TextExerciseViewModel : BaseViewModel
         _startTime = DateTime.Now;
         _isTiming = true;
         _timer.Start();
+    }
+
+    private async Task DelayStartTimer()
+    {
+        await Task.Delay(1500);
+        if (!_isTiming)
+        {
+            StartTimer();
+        }
     }
 
     private void StopTimer()
