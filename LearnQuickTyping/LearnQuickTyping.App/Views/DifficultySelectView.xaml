@@ -44,6 +44,7 @@
 
             <Button
                 Text="Test Your Difficulty"
+                CommandParameter="Introduction text"
                 Clicked="OnIntroductionTextClicked"
                 MaximumWidthRequest="1200"/>
         </VerticalStackLayout>

@@ -370,6 +370,7 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         InstructionDifficulty = difficulty switch
         {
+            "Introduction" => "This is an introduction test to determine your typing level. Type the following text using all fingers you feel comfortable with.",
             "Beginner" => "The following text can be typed with your thumbs, pointer fingers and middle fingers.",
             "Intermediate" => "The following text can be typed with your thumbs, pointer fingers, middle fingers and ring fingers.",
             "Advanced" => "The following text can be typed with your thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",

@@ -57,6 +57,14 @@ public class TextRepository : ITextRepository
                 "Ben kicked the bin 3 times—Eric kicked it 4 times well! The thick red hen met Jim 5 times; bit him 6 times now. I give the kid 7 gems, 8 bucks, and 4 green slow rings <pretty>. Tim tried the old byte, cut the bit, and then rested low (tired). He bet 5 bucks; Eric bet 6 bucks; Ben bet 7 bucks now! The wolf kicked 8 times, jumped 3 times, danced 4 minutes wild. Jim hit the drum 9 times—Ben hummed the slow tune, and I danced? Eric bit the nut 2 times @sunset, drank the wine 10 times, and then rested. The kid cut the vine 5 times; the fox bit it 6 times (ouch)! I think the trick, the ox, and the old ring fumed her well.",
                 "Tim met the green fox 3 times—fed it 4 berries slow! The kid bet 5 bucks; Jim bet 6 bucks; Eric bet 7 bucks well. I give Ben 8 red gems <rare>, 4 old rings, and 5 thick nuts now! He kicked the bin 9 times, hit the drum 10 times, and then rested low (phew). The hen tried the trick 6 times, succeeded 7 times—failed 2 times @dawn? Eric cut the wolf, bit the fox, and drank the wine now yum. Ben hummed 3 slow tunes; Tim danced 4 minutes, and I rested (nice). The thick ox kicked him 5 times—the red wolf bit him 6 times! Jim buried the vine 8 times, dug the old dirt, and then rested. I think the slow byte, the bit, and the bucket fumed him well."
             }
+        },
+        {
+            "introduction text", new[]
+            {
+                "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump! Sphinx of black quartz, judge my vow.",
+                "A quick movement of the enemy will jeopardize six gunboats. The five boxing wizards jump quickly. Crazy Frederick bought many very exquisite opal jewels.",
+                "We promptly judged antique ivory buckles for the next prize. Sixty zippers were quickly picked from the woven jute bag. Jim quickly realized that the beautiful gowns are expensive."
+            }
         }
     };
 
