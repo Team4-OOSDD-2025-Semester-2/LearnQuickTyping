@@ -8,6 +8,7 @@ using LearnQuickTyping.Core.Models;
 namespace LearnQuickTyping.App.ViewModels
 {
     [QueryProperty(nameof(Result), "Result")]
+    [QueryProperty(nameof(Difficulty), "Difficulty")]
     public partial class TextExerciseResultViewModel : BaseViewModel
     {
         private readonly ITextEcerciseScoreService _scoreService;
@@ -15,6 +16,9 @@ namespace LearnQuickTyping.App.ViewModels
 
         [ObservableProperty]
         private TextResult? _result;
+
+        [ObservableProperty]
+        private string _difficulty = string.Empty;
 
         [ObservableProperty]
         private FormattedString _typedTextFormatted = new FormattedString();

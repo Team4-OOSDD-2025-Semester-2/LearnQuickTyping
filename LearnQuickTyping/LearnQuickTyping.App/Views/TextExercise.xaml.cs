@@ -97,7 +97,6 @@ public partial class TextExercise : ContentPage
         {
             try
             {
-                // USE THE VARIABLE HERE, NOT THE LABEL
                 string fullText = _currentLineText;
 
                 if (string.IsNullOrEmpty(fullText) || statuses == null || statuses.Count == 0)

@@ -335,7 +335,8 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         var navigationParameter = new Dictionary<string, object>
         {
-            { "Result", _result! }
+            { "Result", _result! },
+            { "Difficulty", Difficulty  ?? "Unknown" }
         };
 
         await Shell.Current.GoToAsync(nameof(TextExerciseResultView), navigationParameter);

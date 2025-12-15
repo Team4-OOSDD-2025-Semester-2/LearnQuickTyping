@@ -15,6 +15,7 @@
 
         <VerticalStackLayout Grid.Row="0" Spacing="10">
             <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
+            <Label Text="{Binding Difficulty}" Style="{StaticResource SubHeadline}" TextColor="{StaticResource White}"/>
         </VerticalStackLayout>
 
         <Grid Grid.Row="1" ColumnDefinitions="*,*" ColumnSpacing="15">
