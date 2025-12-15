@@ -27,6 +27,9 @@ namespace LearnQuickTyping.App.ViewModels
         [ObservableProperty]
         private FormattedString _originalTextFormatted = new FormattedString();
 
+        [ObservableProperty]
+        private bool _isThresholdMet = false;
+
         public TextExerciseResultViewModel(
             ITextEcerciseScoreService scoreService,
             ITypeControlService typeControl)
@@ -39,14 +42,16 @@ namespace LearnQuickTyping.App.ViewModels
         {
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
 
-            if (Enum.TryParse<DifficultyLevel>(Difficulty, out var difficultyLevel) && ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) || (value.WordsPerMinute >= 47 && value.Accuracy >= 85) || (value.WordsPerMinute >= 43 && value.Accuracy >= 90) || (value.WordsPerMinute >= 38 && value.Accuracy >= 95)) && difficultyLevel != DifficultyLevel.Expert)
+            if (((value.WordsPerMinute >= 50 && value.Accuracy >= 80) || (value.WordsPerMinute >= 47 && value.Accuracy >= 85) || (value.WordsPerMinute >= 43 && value.Accuracy >= 90) || (value.WordsPerMinute >= 38 && value.Accuracy >= 95)) )
             {
+                IsThresholdMet = true;
                 mainPage?.DisplayAlert(
                     "Well Done!", $"You are doing great, we suggest you move up a level!", "OK");
                 GenerateMarkedTexts(value);
             }
             else
             {
+                IsThresholdMet = false;
                 if (value != null)
                 {
                     GenerateMarkedTexts(value);
