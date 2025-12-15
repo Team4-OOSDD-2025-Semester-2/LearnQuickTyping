@@ -46,7 +46,11 @@
             <Label Text="{Binding Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}" FontSize="16" FontAttributes="Bold"/>
         </HorizontalStackLayout>
 
-        <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
-            HorizontalOptions="Center" WidthRequest="200"/>
+        <HorizontalStackLayout Grid.Row="3" Spacing="20" HorizontalOptions="Center">
+            <Button Grid.Row="3" Text="Back to Menu" Command="{Binding GoHomeCommand}" 
+                    HorizontalOptions="Center" WidthRequest="200"/>
+            <Button Text="Try again" Command="{Binding TryAgainCommand}" 
+                    HorizontalOptions="Center" WidthRequest="200"/>
+        </HorizontalStackLayout>
     </Grid>
 </ContentPage>

@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
@@ -98,6 +99,12 @@ namespace LearnQuickTyping.App.ViewModels
         private async Task GoHome()
         {
             await Shell.Current.GoToAsync("///StartPage");
+        }
+
+        [RelayCommand]
+        private async Task TryAgain()
+        {
+            await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
         }
     }
 }
