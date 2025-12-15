@@ -39,7 +39,7 @@ namespace LearnQuickTyping.App.ViewModels
         {
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
 
-            if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) || (value.WordsPerMinute >= 47 && value.Accuracy >= 85) || (value.WordsPerMinute >= 43 && value.Accuracy >= 90) || (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
+            if (Enum.TryParse<DifficultyLevel>(Difficulty, out var difficultyLevel) && ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) || (value.WordsPerMinute >= 47 && value.Accuracy >= 85) || (value.WordsPerMinute >= 43 && value.Accuracy >= 90) || (value.WordsPerMinute >= 38 && value.Accuracy >= 95)) && difficultyLevel != DifficultyLevel.Expert)
             {
                 mainPage?.DisplayAlert(
                     "Well Done!", $"You are doing great, we suggest you move up a level!", "OK");
