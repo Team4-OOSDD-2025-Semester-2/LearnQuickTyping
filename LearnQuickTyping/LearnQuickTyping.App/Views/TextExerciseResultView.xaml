@@ -53,7 +53,10 @@
                     HorizontalOptions="Center" WidthRequest="200"/>
         </HorizontalStackLayout>
 
-        <Button Grid.Row="4" Text="Go to suggested difficulty" HorizontalOptions="Center" WidthRequest="225" IsVisible="{Binding IsThresholdMet}"/>
+        <Button Grid.Row="4" Text="Go to suggested difficulty" 
+                HorizontalOptions="Center" WidthRequest="225" 
+                IsVisible="{Binding IsThresholdMet}" 
+                Command="{Binding GoToNextDifficultyCommand}"/>
 
     </Grid>
 </ContentPage>

@@ -123,5 +123,23 @@ namespace LearnQuickTyping.App.ViewModels
         {
             await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
         }
+
+        [RelayCommand]
+        private async Task GoToNextDifficulty()
+        {
+            if (Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Intermediate");
+            }
+            else if (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Advanced");
+            }
+            else if (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Expert");
+
+            }
+        }
     }
 }
