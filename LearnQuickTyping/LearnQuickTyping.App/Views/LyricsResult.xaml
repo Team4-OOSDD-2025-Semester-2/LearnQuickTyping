@@ -51,14 +51,26 @@
             Color="Gray" 
             WidthRequest="300"/>
 
-        <Button 
-            Text="Back to Start"
-            Command="{Binding GoHomeCommand}"
-            WidthRequest="250"
-            HeightRequest="50"
-            FontSize="16"
-            HorizontalOptions="Center"
-            Margin="0,20,0,0"/>
+        <HorizontalStackLayout Spacing="25">
+            <Button 
+                Text="New song"
+                Command="{Binding NewSongCommand}"
+                WidthRequest="250"
+                HeightRequest="50"
+                FontSize="16"
+                HorizontalOptions="Center"
+                Margin="0,20,0,0"/>
+
+            <Button 
+                Text="Back to Home"
+                Command="{Binding GoHomeCommand}"
+                WidthRequest="250"
+                HeightRequest="50"
+                FontSize="16"
+                HorizontalOptions="Center"
+                Margin="0,20,0,0"/>
+        </HorizontalStackLayout>
+        
     </VerticalStackLayout>
 
 </ContentPage>

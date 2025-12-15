@@ -6,6 +6,8 @@ using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 using System.Collections.ObjectModel;
 
+using System.Diagnostics;
+
 namespace LearnQuickTyping.App.ViewModels;
 
 public partial class LyricsExerciseViewModel : BaseViewModel
@@ -202,6 +204,13 @@ public partial class LyricsExerciseViewModel : BaseViewModel
         ResultMessage = $"Score: {_correctLines}/{_totalLines} correct ({accuracy:F1}%)\n\n{grade}";
         ResultColor = accuracy >= 75 ? Colors.Green :
                       accuracy >= 50 ? Colors.Orange : Colors.Red;
+    }
+
+    [RelayCommand]
+    public async Task NewSong()
+    {
+        Debug.WriteLine("Navigating to LyricsExercise");
+        await Shell.Current.GoToAsync("///LyricsExercise");
     }
 
     [RelayCommand]
