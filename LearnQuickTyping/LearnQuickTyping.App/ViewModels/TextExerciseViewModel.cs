@@ -141,11 +141,6 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         _currentSentenceIndex = 0;
         LoadCurrentSentence();
-
-        if (!_isTiming)
-        {
-            _ = DelayStartTimer();
-        }
     }
 
     private List<string> SplitTextIntoSentences(string text)
@@ -347,20 +342,25 @@ public partial class TextExerciseViewModel : BaseViewModel
     {
         IsStartScreenVisible = false;
         IsNotStartScreenVisible = true;
+
+        if (!_isTiming)
+        {
+            _ = DelayStartTimer();
+        }
     }
 
     partial void OnDifficultyChanged(string value)
     {
-        LoadIntructionsDifficultyText(value);
+        LoadInstructionsDifficultyText(value);
     }
-    private void LoadIntructionsDifficultyText(string difficulty)
+    private void LoadInstructionsDifficultyText(string difficulty)
     {
         InstructionDifficulty = difficulty switch
         {
-            "Beginner" => "The following text can be typed with you thumbs, pointer fingers and middle fingers.",
-            "Intermediate" => "The following text can be typed with you thumbs, pointer fingers, middle fingers and ring fingers.",
-            "Advanced" => "The following text can be typed with you thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
-            "Expert" => "The following text can be typed with you thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
+            "Beginner" => "The following text can be typed with your thumbs, pointer fingers and middle fingers.",
+            "Intermediate" => "The following text can be typed with your thumbs, pointer fingers, middle fingers and ring fingers.",
+            "Advanced" => "The following text can be typed with your thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
+            "Expert" => "The following text can be typed with your thumbs, pointer fingers, middle fingers, ring fingers and pinkies.",
             _ => "Type the following text."
         };
     }

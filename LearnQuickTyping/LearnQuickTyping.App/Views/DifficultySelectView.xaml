@@ -40,7 +40,7 @@
                 Text="Expert"
                 CommandParameter="Expert"
                 Clicked="OnDifficultySelected" 
-                MaximumWidthRequest="800"/> 
+                MaximumWidthRequest="800"/>
 
             <Button
                 Text="Test Your Difficulty"

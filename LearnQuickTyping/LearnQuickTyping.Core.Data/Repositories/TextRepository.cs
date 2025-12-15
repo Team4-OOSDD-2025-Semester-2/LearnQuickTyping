@@ -34,7 +34,7 @@ public class TextRepository : ITextRepository
             "intermediate", new[]
             {
                 "the green duck met ben 3 times, kicked him 4 times. jim bit the thick red fox 5 times, then rested 6 minutes. i give her 7 gems, 8 rings, and 4 bucks. eric cut the vine, kicked the bin, and then danced well. the kid bet 5 bucks, but tim bet 6 bucks, i bet 7 bucks. he tried the trick 8 times, failed 3 times, succeeded 4 times. ben hit the drum 9 times, eric hummed the tune, and jim danced. the hen bit the nut 2 times, the duck bit the fox. i think the slow wolf, the bit, and the juice fumed him. tim kicked the red bucket, then he rested in the low hut.",
-                "eric met the thick wolf 3 times, fed it 4 berries now. the kid kicked 5 times, jumped 6 times, rested 7 minutes low. i give ben 8 red gems, 4 green rings, and 5 bucks. jim tried the slow trick, bit the fox, and then danced. the hen bet 6 bucks, the wolf bet 7 bucks, i bet 8 bucks. he cut the vine 3 times, kicked it 4 times, buried it well. tim hit the drum 5 times, eric hummed 6 slow tunes. ben drank the wine, bit the nut 2 times, and then rested. the red duck bit him 7 times, the hen bit him 9 times. i think the bit, theox, and the slow trick funnied him.",
+                "eric met the thick wolf 3 times, fed it 4 berries now. the kid kicked 5 times, jumped 6 times, rested 7 minutes low. i give ben 8 red gems, 4 green rings, and 5 bucks. jim tried the slow trick, bit the fox, and then danced. the hen bet 6 bucks, the wolf bet 7 bucks, i bet 8 bucks. he cut the vine 3 times, kicked it 4 times, buried it well. tim hit the drum 5 times, eric hummed 6 slow tunes. ben drank the wine, bit the nut 2 times, and then rested. the red duck bit him 7 times, the hen bit him 9 times. i think the bit, the ox, and the slow trick funnied him.",
                 "ben kicked the bin 3 times, eric kicked it 4 times well. the thick red hen met jim 5 times, bit him 6 times now. i give the kid 7 gems, 8 bucks, and 4 green slow rings. tim tried the old byte, cut the bit, and then rested low. he bet 5 bucks, eric bet 6 bucks, ben bet 7 bucks now. the wolf kicked 8 times, jumped 3 times, danced 4 minutes. jim hit the drum 9 times, ben hummed the slow tune, and i danced. eric bit the nut 2 times, drank the wine, and then rested. the kid cut the vine 5 times, the fox bit it 6 times. i think the trick, the ox, and the old ring fumed her well.",
                 "tim met the green fox 3 times, fed it 4 berries slow. the kid bet 5 bucks, jim bet 6 bucks, eric bet 7 bucks well. i give ben 8 red gems, 4 old rings, and 5 thick nuts now. he kicked the bin 9 times, hit the drum, and then rested low. the hen tried the trick 6 times, succeeded 7 times, failed 2 times. eric cut the wolf, bit the fox, and drank the wine now. ben hummed 3 slow tunes, tim danced 4 minutes, and i rested. the thick ox kicked him 5 times, the red wolf bit him 6 times. jim buried the vine 8 times, dug the old dirt, and then rested. i think the slow byte, the bit, and the bucket fumed him well."
             }
@@ -71,7 +71,7 @@ public class TextRepository : ITextRepository
             .Replace("‘", "'"); // Left single quote
     }
 
-    public string GetRandomTextByDifficulty(string? difficulty)
+    public string GetRandomTextByDifficulty(string difficulty)
     {
         var random = new Random();
 
