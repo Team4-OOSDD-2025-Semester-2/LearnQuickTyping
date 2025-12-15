@@ -37,10 +37,22 @@ namespace LearnQuickTyping.App.ViewModels
 
         partial void OnResultChanged(TextResult? value)
         {
-            if (value != null)
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+
+            if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) || (value.WordsPerMinute >= 47 && value.Accuracy >= 85) || (value.WordsPerMinute >= 43 && value.Accuracy >= 90) || (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
             {
+                mainPage?.DisplayAlert(
+                    "Well Done!", $"You are doing great, we suggest you move up a level!", "OK");
                 GenerateMarkedTexts(value);
             }
+            else
+            {
+                if (value != null)
+                {
+                    GenerateMarkedTexts(value);
+                }
+            }
+
         }
 
         private void GenerateMarkedTexts(TextResult result)
