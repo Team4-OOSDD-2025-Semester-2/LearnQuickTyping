@@ -80,8 +80,8 @@ public class TextRepository : ITextRepository
         {
             return GetRandomText();
         }
-        int index = random.Next(_practiceTexts.Length);
-        return _practiceTexts[index]
+        int index = random.Next(texts.Length);
+        return texts[index]
             .Replace("“", "\"") // Opening double quote
             .Replace("”", "\"") // Closing double quote
             .Replace("’", "'")  // Right single quote
