@@ -14,6 +14,11 @@ public class ExerciseResult
 
     public string TimeTaken { get; set; } = string.Empty;
 
+    public string TimeTakenDisplay =>
+    TimeTaken.Split('-') is { Length: >= 2 } parts
+        ? $"{parts[0]}:{parts[1]}"
+        : "00:00";
+
     public int Errors { get; set; }
 
     public ExerciseType ExerciseType { get; set; }

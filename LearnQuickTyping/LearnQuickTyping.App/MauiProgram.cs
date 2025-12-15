@@ -67,6 +67,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<DifficultySelectView>();
 
+        builder.Services.AddTransient<ProgressViewModel>();
+        builder.Services.AddTransient<ProgressPage>();
+
 #if DEBUG
         builder.Logging.AddDebug();
 #endif

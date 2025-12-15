@@ -26,4 +26,10 @@ public partial class StartPage : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(LyricsExercise));
     }
+
+    private async void OnProgressClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(ProgressPage));
+
+    }
 }
