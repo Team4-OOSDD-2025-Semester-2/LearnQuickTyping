@@ -31,6 +31,12 @@ namespace LearnQuickTyping.App.ViewModels
         private FormattedString _originalTextFormatted = new FormattedString();
 
         [ObservableProperty]
+        private string _recommendedLevel = string.Empty;
+
+        [ObservableProperty]
+        private bool _isIntroductionTest = false;
+
+        [ObservableProperty]
         private bool _isThresholdMet = false;
 
         [ObservableProperty]
@@ -48,13 +54,11 @@ namespace LearnQuickTyping.App.ViewModels
 
         partial void OnResultChanged(TextResult? value)
         {
-            
             if (value == null || string.IsNullOrEmpty(Difficulty))
             {
                 return;
             }
 
-           
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
 
             if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
@@ -66,7 +70,6 @@ namespace LearnQuickTyping.App.ViewModels
                     (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
                     (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
                 {
-                   // Query the database for the current count async
                     Task.Run(async () =>
                     {
                         var count = await GetExerciseCountForDifficultyAsync();
@@ -79,7 +82,7 @@ namespace LearnQuickTyping.App.ViewModels
                                 IsThresholdMet = true;
                                 mainPage?.DisplayAlert(
                                     "Well Done!",
-                                    $"You are doing great, we suggest you move up a level!",
+                                    "You are doing great, we suggest you move up a level!",
                                     "OK");
                             }
                         });
@@ -95,19 +98,58 @@ namespace LearnQuickTyping.App.ViewModels
             else
             {
                 IsThresholdMet = false;
-                if (value != null)
-                {
-                    GenerateMarkedTexts(value);
-                }
+                GenerateMarkedTexts(value);
             }
         }
 
+
+
         partial void OnDifficultyChanged(string value)
         {
+            // Check if this is an introduction test (multiple variations)
+            string normalizedDifficulty = value?.Trim().ToLowerInvariant() ?? "";
+
+            IsIntroductionTest = normalizedDifficulty == "introduction text" ||
+                                normalizedDifficulty == "introduction";
+
+            if (IsIntroductionTest && Result != null)
+            {
+                // Calculate recommended level based on performance
+                string recommended = CalculateRecommendedLevel(Result);
+                RecommendedLevel = recommended;
+
+                // Show recommendation alert
+                ShowRecommendationAlert(recommended);
+            }
+            
             // If Result is already set when Difficulty arrives, trigger OnResultChanged again
             if (Result != null && !string.IsNullOrEmpty(value))
             {
                 OnResultChanged(Result);
+            }
+        }
+
+        private string CalculateRecommendedLevel(TextResult result)
+        {
+            double wpm = result.WordsPerMinute;
+            int accuracy = result.Accuracy;
+
+            if (wpm > 80 && accuracy >= 95)
+            {
+                return "Expert";
+            }
+            else if (wpm >= 60 && accuracy >= 90)
+            {
+                return "Advanced";
+            }
+            else if ((wpm <= 60 && accuracy >= 80) ||
+                    (wpm > 30 && accuracy >= 80))
+            {
+                return "Intermediate";
+            }
+            else
+            {
+                return "Beginner";
             }
         }
 
@@ -122,6 +164,46 @@ namespace LearnQuickTyping.App.ViewModels
             var count = await _exerciseResultRepository.GetCountByDifficultyAsync(ExerciseType.Text, difficultyLevel);
             return count;
         }
+
+        private async void ShowRecommendationAlert(string recommendedLevel)
+        {
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (mainPage == null) return;
+
+            string message = GetRecommendationMessage(recommendedLevel);
+            string title = "Well Done!";
+
+            bool startRecommended = await mainPage.DisplayAlert(
+                title,
+                message,
+                "View results",
+                "Go to Home");
+
+            if (startRecommended)
+            {
+                // Navigate back to result
+                return;
+            }
+            else
+            {
+                // Go back to home
+                await Shell.Current.GoToAsync("///StartPage");
+            }
+        }
+
+        private string GetRecommendationMessage(string level)
+        {
+            string recommendation = level switch
+            {
+                "Expert" => "Your suggested level is Expert.",
+                "Advanced" => "Your suggested level is Advanced.",
+                "Intermediate" => "Your suggested level is Intermediate.",
+                "Beginner" => "Your suggested level is Beginner."
+            };
+
+            return recommendation;
+        }
+
 
         private void GenerateMarkedTexts(TextResult result)
         {
@@ -185,6 +267,15 @@ namespace LearnQuickTyping.App.ViewModels
         private async Task TryAgain()
         {
             await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
+        }
+
+        [RelayCommand]
+        private async Task StartRecommendedLevel()
+        {
+            if (!string.IsNullOrEmpty(RecommendedLevel))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={RecommendedLevel}");
+            }
         }
 
         [RelayCommand]
