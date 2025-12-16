@@ -27,6 +27,12 @@ namespace LearnQuickTyping.App.ViewModels
         [ObservableProperty]
         private FormattedString _originalTextFormatted = new FormattedString();
 
+        [ObservableProperty]
+        private string _recommendedLevel = string.Empty;
+
+        [ObservableProperty]
+        private bool _isIntroductionTest = false;
+
         public TextExerciseResultViewModel(
             ITextEcerciseScoreService scoreService,
             ITypeControlService typeControl)
@@ -37,11 +43,101 @@ namespace LearnQuickTyping.App.ViewModels
 
         partial void OnResultChanged(TextResult? value)
         {
-            if (value != null)
+            if (value == null) return;
+
+            GenerateMarkedTexts(value);
+        }
+
+        partial void OnDifficultyChanged(string value)
+        {
+            // Check if this is an introduction test (multiple variations)
+            string normalizedDifficulty = value?.Trim().ToLowerInvariant() ?? "";
+
+            IsIntroductionTest = normalizedDifficulty == "introduction text" ||
+                                normalizedDifficulty == "introduction";
+
+            if (IsIntroductionTest && Result != null)
             {
-                GenerateMarkedTexts(value);
+                // Calculate recommended level based on performance
+                string recommended = CalculateRecommendedLevel(Result);
+                RecommendedLevel = recommended;
+
+                // Show recommendation alert
+                ShowRecommendationAlert(Result, recommended);
             }
         }
+
+        private string CalculateRecommendedLevel(TextResult result)
+        {
+            double wpm = result.WordsPerMinute;
+            int accuracy = result.Accuracy;
+
+            if (wpm >= 50 && accuracy >= 95)
+            {
+                return "Expert";
+            }
+            else if (wpm >= 35 && accuracy >= 90)
+            {
+                return "Advanced";
+            }
+            else if (wpm >= 20 && accuracy >= 85)
+            {
+                return "Intermediate";
+            }
+            else
+            {
+                return "Beginner";
+            }
+        }
+
+        private async void ShowRecommendationAlert(TextResult result, string recommendedLevel)
+        {
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (mainPage == null) return;
+
+            string message = GetRecommendationMessage(result, recommendedLevel);
+            string title = "Introduction Text Complete!";
+
+            bool startRecommended = await mainPage.DisplayAlert(
+                title,
+                message,
+                "Start Recommended Level",
+                "Go to Home");
+
+            if (startRecommended)
+            {
+                // Navigate to the recommended difficulty level
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={recommendedLevel}");
+            }
+            else
+            {
+                // Go back to home/difficulty selection
+                await Shell.Current.GoToAsync("///StartPage");
+            }
+        }
+
+        private string GetRecommendationMessage(TextResult result, string level)
+        {
+            double wpm = result.WordsPerMinute;
+            int accuracy = result.Accuracy;
+
+            string performanceText = $"Your performance:\n" +
+                                   $"• Speed: {wpm:F1} WPM\n" +
+                                   $"• Accuracy: {accuracy}%\n" +
+                                   $"• Errors: {result.Errors}\n\n";
+
+            string recommendation = level switch
+            {
+                "Expert" => "Excellent! You're a skilled typist. We recommend starting with the Expert level to challenge yourself further.",
+                "Advanced" => "Great job! You have strong typing skills. We recommend the Advanced level to continue developing your abilities.",
+                "Intermediate" => "Well done! You have good typing fundamentals. We recommend the Intermediate level to build upon your skills.",
+                "Beginner" => "Good start! Everyone begins somewhere. We recommend the Beginner level to develop proper typing technique and build confidence.",
+                _ => "Based on your results, we recommend starting with a level that matches your current skills."
+            };
+
+            return performanceText + recommendation;
+        }
+
 
         private void GenerateMarkedTexts(TextResult result)
         {
@@ -105,6 +201,15 @@ namespace LearnQuickTyping.App.ViewModels
         private async Task TryAgain()
         {
             await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
+        }
+
+        [RelayCommand]
+        private async Task StartRecommendedLevel()
+        {
+            if (!string.IsNullOrEmpty(RecommendedLevel))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={RecommendedLevel}");
+            }
         }
     }
 }
