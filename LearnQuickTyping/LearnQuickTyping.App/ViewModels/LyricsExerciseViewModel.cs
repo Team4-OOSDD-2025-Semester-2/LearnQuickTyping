@@ -1,12 +1,11 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 using System.Collections.ObjectModel;
-
-using System.Diagnostics;
 
 namespace LearnQuickTyping.App.ViewModels;
 
@@ -207,10 +206,9 @@ public partial class LyricsExerciseViewModel : BaseViewModel
     }
 
     [RelayCommand]
-    public async Task NewSong()
+    public async void NewSong()
     {
-        Debug.WriteLine("Navigating to LyricsExercise");
-        await Shell.Current.GoToAsync("///LyricsExercise");
+        await Shell.Current.GoToAsync(nameof(LyricsExercise));
     }
 
     [RelayCommand]
