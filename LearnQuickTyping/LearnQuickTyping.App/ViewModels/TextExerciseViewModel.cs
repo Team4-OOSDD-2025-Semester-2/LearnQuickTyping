@@ -331,6 +331,10 @@ public partial class TextExerciseViewModel : BaseViewModel
 
         _result = result;
 
+        var difficultyLevel = Enum.TryParse<DifficultyLevel>(Difficulty, true, out var parsedDifficulty)
+            ? parsedDifficulty
+            : DifficultyLevel.Intermediate;
+
         // Save result to database
         await _saveService.SaveResultAsync(
             wpm,
@@ -338,7 +342,7 @@ public partial class TextExerciseViewModel : BaseViewModel
             elapsed,
             totalMistakes,
             ExerciseType.Text,
-            DifficultyLevel.Intermediate);
+            difficultyLevel);
 
         var navigationParameter = new Dictionary<string, object>
 

@@ -131,4 +131,20 @@ public class ExerciseResultRepository : IExerciseResultRepository
 
         return results;
     }
+
+    public async Task<int> GetCountByDifficultyAsync(ExerciseType type, DifficultyLevel difficulty)
+    {
+        System.Diagnostics.Debug.WriteLine($"[REPO] GetCountByDifficultyAsync called - Type: {type} ({(int)type}), Difficulty: {difficulty} ({(int)difficulty})");
+        
+        using var conn = await _factory.CreateOpenConnectionAsync();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = @"SELECT COUNT(*) FROM ExerciseResults 
+            WHERE ExerciseType = $type AND DifficultyLevel = $difficulty
+        ";
+        cmd.Parameters.AddWithValue("$type", (int)type);
+        cmd.Parameters.AddWithValue("$difficulty", (int)difficulty);
+
+        var result = await cmd.ExecuteScalarAsync();
+        return Convert.ToInt32(result);
+    }
 }
