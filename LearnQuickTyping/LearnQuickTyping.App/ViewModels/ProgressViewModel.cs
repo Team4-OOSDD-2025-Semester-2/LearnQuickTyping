@@ -68,6 +68,32 @@ public partial class ProgressViewModel : BaseViewModel
         await Shell.Current.GoToAsync("///StartPage");
     }
 
+    [RelayCommand]
+    private async Task TryAgain(ExerciseResult result)
+    {
+        if (result == null) return;
+
+        try
+        {
+            // Navigate to the right exercise
+            string route = result.ExerciseType switch
+            {
+                ExerciseType.Word => nameof(Views.WordExercise),
+                ExerciseType.Text => $"{nameof(Views.TextExercise)}?difficulty={result.DifficultyLevel}",
+                ExerciseType.Versus => nameof(Views.VersusView),
+                ExerciseType.Lyrics => nameof(Views.LyricsExercise),
+                _ => "StartPage"
+            };
+
+            await Shell.Current.GoToAsync(route);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error loading exercise: {ex.Message}");
+            await Shell.Current.GoToAsync("///StartPage");
+        }
+    }
+
     // Helper properties for display formatting
     public static string FormatExerciseType(ExerciseType type) => type switch
     {
