@@ -63,7 +63,7 @@ namespace LearnQuickTyping.App.ViewModels
                 RecommendedLevel = recommended;
 
                 // Show recommendation alert
-                ShowRecommendationAlert(Result, recommended);
+                ShowRecommendationAlert(recommended);
             }
         }
 
@@ -72,15 +72,16 @@ namespace LearnQuickTyping.App.ViewModels
             double wpm = result.WordsPerMinute;
             int accuracy = result.Accuracy;
 
-            if (wpm >= 50 && accuracy >= 95)
+            if (wpm > 80 && accuracy >= 95)
             {
                 return "Expert";
             }
-            else if (wpm >= 35 && accuracy >= 90)
+            else if (wpm >= 60 && accuracy >= 90)
             {
                 return "Advanced";
             }
-            else if (wpm >= 20 && accuracy >= 85)
+            else if ((wpm <= 60 && accuracy >= 80) ||
+                    (wpm > 30 && accuracy >= 80))
             {
                 return "Intermediate";
             }
@@ -90,12 +91,12 @@ namespace LearnQuickTyping.App.ViewModels
             }
         }
 
-        private async void ShowRecommendationAlert(TextResult result, string recommendedLevel)
+        private async void ShowRecommendationAlert(string recommendedLevel)
         {
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
             if (mainPage == null) return;
 
-            string message = GetRecommendationMessage(result, recommendedLevel);
+            string message = GetRecommendationMessage(recommendedLevel);
             string title = "Introduction Text Complete!";
 
             bool startRecommended = await mainPage.DisplayAlert(
@@ -106,26 +107,18 @@ namespace LearnQuickTyping.App.ViewModels
 
             if (startRecommended)
             {
-                // Navigate to the recommended difficulty level
+                // Navigate back to result
                 return;
             }
             else
             {
-                // Go back to home/difficulty selection
+                // Go back to home
                 await Shell.Current.GoToAsync("///StartPage");
             }
         }
 
-        private string GetRecommendationMessage(TextResult result, string level)
+        private string GetRecommendationMessage(string level)
         {
-            double wpm = result.WordsPerMinute;
-            int accuracy = result.Accuracy;
-
-            string performanceText = $"Your performance:\n" +
-                                   $"• Speed: {wpm:F1} WPM\n" +
-                                   $"• Accuracy: {accuracy}%\n" +
-                                   $"• Errors: {result.Errors}\n\n";
-
             string recommendation = level switch
             {
                 "Expert" => "Excellent! You're a skilled typist. We recommend starting with the Expert level to challenge yourself further.",
@@ -135,7 +128,7 @@ namespace LearnQuickTyping.App.ViewModels
                 _ => "Based on your results, we recommend starting with a level that matches your current skills."
             };
 
-            return performanceText + recommendation;
+            return recommendation;
         }
 
 
