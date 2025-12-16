@@ -101,13 +101,13 @@ namespace LearnQuickTyping.App.ViewModels
             bool startRecommended = await mainPage.DisplayAlert(
                 title,
                 message,
-                "Start Recommended Level",
+                "View result",
                 "Go to Home");
 
             if (startRecommended)
             {
                 // Navigate to the recommended difficulty level
-                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={recommendedLevel}");
+                return;
             }
             else
             {
