@@ -67,36 +67,4 @@ public partial class ProgressViewModel : BaseViewModel
     {
         await Shell.Current.GoToAsync("///StartPage");
     }
-
-    // Helper properties for display formatting
-    public static string FormatExerciseType(ExerciseType type) => type switch
-    {
-        ExerciseType.Word => "Word",
-        ExerciseType.Text => "Text",
-        ExerciseType.Versus => "Versus",
-        ExerciseType.Lyrics => "Karaoke",
-        _ => type.ToString()
-    };
-
-    public static string FormatDifficulty(DifficultyLevel level) => level switch
-    {
-        DifficultyLevel.Beginner => "Beginner",
-        DifficultyLevel.Intermediate => "Intermediate",
-        DifficultyLevel.Advanced => "Advanced",
-        DifficultyLevel.Expert => "Expert",
-        _ => level.ToString()
-    };
-
-    public static string FormatTimeTaken(string timeTaken)
-    {
-        // Format: mm-ss-fff -> mm:ss
-        if (string.IsNullOrEmpty(timeTaken)) return "00:00";
-
-        var parts = timeTaken.Split('-');
-        if (parts.Length >= 2)
-        {
-            return $"{parts[0]}:{parts[1]}";
-        }
-        return timeTaken;
-    }
 }
