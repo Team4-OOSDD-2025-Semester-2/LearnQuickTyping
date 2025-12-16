@@ -35,6 +35,8 @@ namespace LearnQuickTyping.App.ViewModels
 
         [ObservableProperty]
         private bool _isIntroductionTest = false;
+
+        [ObservableProperty]
         private bool _isThresholdMet = false;
 
         [ObservableProperty]
@@ -52,10 +54,55 @@ namespace LearnQuickTyping.App.ViewModels
 
         partial void OnResultChanged(TextResult? value)
         {
-            if (value == null) return;
+            if (value == null || string.IsNullOrEmpty(Difficulty))
+            {
+                return;
+            }
 
-            GenerateMarkedTexts(value);
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+
+            if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase)))
+            {
+                if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) ||
+                    (value.WordsPerMinute >= 47 && value.Accuracy >= 85) ||
+                    (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
+                    (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
+                {
+                    Task.Run(async () =>
+                    {
+                        var count = await GetExerciseCountForDifficultyAsync();
+
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            ExerciseCount = count;
+                            if (ExerciseCount >= 5)
+                            {
+                                IsThresholdMet = true;
+                                mainPage?.DisplayAlert(
+                                    "Well Done!",
+                                    "You are doing great, we suggest you move up a level!",
+                                    "OK");
+                            }
+                        });
+                    });
+
+                    GenerateMarkedTexts(value);
+                }
+                else
+                {
+                    GenerateMarkedTexts(value);
+                }
+            }
+            else
+            {
+                IsThresholdMet = false;
+                GenerateMarkedTexts(value);
+            }
         }
+
+
 
         partial void OnDifficultyChanged(string value)
         {
@@ -103,57 +150,6 @@ namespace LearnQuickTyping.App.ViewModels
             else
             {
                 return "Beginner";
-            
-            if (value == null || string.IsNullOrEmpty(Difficulty))
-            {
-                return;
-            }
-
-           
-            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
-
-            if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
-                (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase)) ||
-                (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase)))
-            {
-                if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) ||
-                    (value.WordsPerMinute >= 47 && value.Accuracy >= 85) ||
-                    (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
-                    (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
-                {
-                   // Query the database for the current count async
-                    Task.Run(async () =>
-                    {
-                        var count = await GetExerciseCountForDifficultyAsync();
-
-                        MainThread.BeginInvokeOnMainThread(() =>
-                        {
-                            ExerciseCount = count;
-                            if (ExerciseCount >= 5)
-                            {
-                                IsThresholdMet = true;
-                                mainPage?.DisplayAlert(
-                                    "Well Done!",
-                                    $"You are doing great, we suggest you move up a level!",
-                                    "OK");
-                            }
-                        });
-                    });
-
-                    GenerateMarkedTexts(value);
-                }
-                else
-                {
-                    GenerateMarkedTexts(value);
-                }
-            }
-            else
-            {
-                IsThresholdMet = false;
-                if (value != null)
-                {
-                    GenerateMarkedTexts(value);
-                }
             }
         }
 
@@ -281,6 +277,8 @@ namespace LearnQuickTyping.App.ViewModels
                 await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={RecommendedLevel}");
             }
         }
+
+        [RelayCommand]
         private async Task GoToNextDifficulty()
         {
             if (Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase))

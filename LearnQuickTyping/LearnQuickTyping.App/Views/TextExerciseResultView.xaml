@@ -46,24 +46,26 @@
             <Label Text="{Binding Result.TimeTaken, StringFormat='Time: {0:mm\\:ss}'}" FontSize="16" FontAttributes="Bold"/>
         </HorizontalStackLayout>
 
-        </VerticalStackLayout>
         <HorizontalStackLayout Grid.Row="3" Spacing="20" HorizontalOptions="Center">
             <Button Text="Back to Menu" Command="{Binding GoHomeCommand}" 
                     HorizontalOptions="Center" WidthRequest="200"/>
             <Button Text="Try again" Command="{Binding TryAgainCommand}" 
                     HorizontalOptions="Center" WidthRequest="200"/>
         </HorizontalStackLayout>
-        
-        <Button Grid.Row="4" Text="Go to suggested difficulty"
-                Command="{Binding StartRecommendedLevelCommand}"
-                IsVisible="{Binding IsIntroductionTest}"
-                WidthRequest="420"
-                HorizontalOptions="Center"/>
 
-        <Button Grid.Row="4" Text="Go to suggested difficulty" 
-                HorizontalOptions="Center" WidthRequest="225" 
-                IsVisible="{Binding IsThresholdMet}" 
-                Command="{Binding GoToNextDifficultyCommand}"/>
+        <VerticalStackLayout Grid.Row="4" Spacing="15" HorizontalOptions="Center">
+
+            <Button Text="Go to suggested difficulty"
+            Command="{Binding StartRecommendedLevelCommand}"
+            IsVisible="{Binding IsIntroductionTest}"
+            WidthRequest="420"/>
+
+            <Button Text="Go to suggested difficulty"
+            Command="{Binding GoToNextDifficultyCommand}"
+            IsVisible="{Binding IsThresholdMet}"
+            WidthRequest="420"/>
+
+        </VerticalStackLayout>
 
         <Label Grid.Row="5" Text="{Binding ExerciseCount, StringFormat='Exercises completed at this level: {0}'}" 
                FontSize="16"
