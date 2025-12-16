@@ -11,7 +11,7 @@
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
     </Shell.BackButtonBehavior>
 
-    <Grid RowDefinitions="Auto, *, Auto, Auto, Auto" Padding="20" RowSpacing="20">
+    <Grid RowDefinitions="Auto, *, Auto, Auto, Auto, Auto" Padding="20" RowSpacing="20">
 
         <VerticalStackLayout Grid.Row="0" Spacing="10">
             <Label Text="Text Exercise Results" Style="{StaticResource Headline}" TextColor="{StaticResource White}"/>
@@ -57,6 +57,11 @@
                 HorizontalOptions="Center" WidthRequest="225" 
                 IsVisible="{Binding IsThresholdMet}" 
                 Command="{Binding GoToNextDifficultyCommand}"/>
+
+        <Label Grid.Row="5" Text="{Binding ExerciseCount, StringFormat='Exercises completed at this level: {0}'}" 
+               FontSize="16"
+               HorizontalOptions="Center"
+               Margin="0,10,0,0"/>
 
     </Grid>
 </ContentPage>

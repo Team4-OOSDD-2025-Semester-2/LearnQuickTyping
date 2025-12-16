@@ -1,7 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LearnQuickTyping.App.Views;
+using LearnQuickTyping.Core.Data.Repositories;
 using LearnQuickTyping.Core.Interfaces;
+using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 
@@ -14,6 +16,7 @@ namespace LearnQuickTyping.App.ViewModels
     {
         private readonly ITextEcerciseScoreService _scoreService;
         private readonly ITypeControlService _typeControl;
+        private readonly IExerciseResultRepository _exerciseResultRepository;
 
         [ObservableProperty]
         private TextResult? _result;
@@ -30,28 +33,56 @@ namespace LearnQuickTyping.App.ViewModels
         [ObservableProperty]
         private bool _isThresholdMet = false;
 
+        [ObservableProperty]
+        private int _exerciseCount;
+
         public TextExerciseResultViewModel(
             ITextEcerciseScoreService scoreService,
-            ITypeControlService typeControl)
+            ITypeControlService typeControl, 
+            IExerciseResultRepository exerciseResultRepository)
         {
             _scoreService = scoreService;
             _typeControl = typeControl;
+            _exerciseResultRepository = exerciseResultRepository;
         }
 
         partial void OnResultChanged(TextResult? value)
         {
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
 
-            if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) || (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase)) || (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase)))
+            if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase)))
             {
-                if (((value.WordsPerMinute >= 50 && value.Accuracy >= 80) ||
-                     (value.WordsPerMinute >= 47 && value.Accuracy >= 85) ||
-                     (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
-                     (value.WordsPerMinute >= 38 && value.Accuracy >= 95)))
+                if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) ||
+                    (value.WordsPerMinute >= 47 && value.Accuracy >= 85) ||
+                    (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
+                    (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
                 {
-                    IsThresholdMet = true;
-                    mainPage?.DisplayAlert(
-                        "Well Done!", $"You are doing great, we suggest you move up a level!", "OK");
+                    // Query the database for the current count async
+                    Task.Run(async () =>
+                    {
+                        var count = await GetExerciseCountForDifficultyAsync();
+
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            ExerciseCount = count;
+
+                            if (ExerciseCount >= 5)
+                            {
+                                IsThresholdMet = true;
+                                mainPage?.DisplayAlert(
+                                    "Well Done!",
+                                    $"You are doing great, we suggest you move up a level!",
+                                    "OK");
+                            }
+                        });
+                    });
+
+                    GenerateMarkedTexts(value);
+                }
+                else
+                {
                     GenerateMarkedTexts(value);
                 }
             }
@@ -63,7 +94,16 @@ namespace LearnQuickTyping.App.ViewModels
                     GenerateMarkedTexts(value);
                 }
             }
+        }
 
+        private async Task<int> GetExerciseCountForDifficultyAsync()
+        {
+            if (!Enum.TryParse<DifficultyLevel>(Difficulty, true, out var difficultyLevel))
+            {
+                return 0;
+            }
+
+            return await _exerciseResultRepository.GetCountByDifficultyAsync(ExerciseType.Text, difficultyLevel);
         }
 
         private void GenerateMarkedTexts(TextResult result)
@@ -147,5 +187,6 @@ namespace LearnQuickTyping.App.ViewModels
 
             }
         }
+
     }
 }
