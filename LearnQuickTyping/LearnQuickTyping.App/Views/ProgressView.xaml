@@ -62,7 +62,7 @@
 
                 <Grid 
                     Grid.Row="0"
-                    ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.5*, 0.6*, 0.5*, 0.5*"
+                    ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.6*, 0.7*, 0.5*, 0.6*, 120"
                     Padding="10,5"
                     BackgroundColor="{StaticResource Gray900}">
                     <Label Grid.Column="0" Text="Date" FontAttributes="Bold" TextColor="{StaticResource White}"/>
@@ -73,6 +73,7 @@
                     <Label Grid.Column="5" Text="Accuracy" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
                     <Label Grid.Column="6" Text="Time" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
                     <Label Grid.Column="7" Text="Errors" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="8" Text="" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
                 </Grid>
 
                 <CollectionView 
@@ -83,7 +84,7 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:ExerciseResult">
                             <Grid 
-                                ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.5*, 0.6*, 0.5*, 0.5*"
+                                ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.6*, 0.7*, 0.5*, 0.6*, 120"
                                 Padding="10,8"
                                 BackgroundColor="Transparent">
 
@@ -92,7 +93,7 @@
                                     Text="{Binding Date}" 
                                     TextColor="{StaticResource Gray100}" 
                                     VerticalTextAlignment="Center"/>
-                                
+
                                 <Label 
                                     Grid.Column="1" 
                                     Text="{Binding Time}" 
@@ -138,6 +139,15 @@
                                     TextColor="{StaticResource Gray100}"
                                     HorizontalTextAlignment="Center"
                                     VerticalTextAlignment="Center"/>
+
+                                <Button 
+                                    Grid.Column="8" 
+                                    Text="Try again"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgressViewModel}}, Path=TryAgainCommand}"
+                                    CommandParameter="{Binding .}"
+                                    FontSize="12"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center"/>
                             </Grid>
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
