@@ -228,8 +228,8 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             (int)accuracy,
             _totalElapsedTime,
             _totalErrors,
-            ExerciseType.Lyrics,
-            DifficultyLevel.Advanced);
+            ExerciseType.Karaoke,
+            DifficultyLevel.None);
     }
 
     [RelayCommand]

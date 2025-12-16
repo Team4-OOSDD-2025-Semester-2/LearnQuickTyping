@@ -31,7 +31,7 @@ public enum ExerciseType
     Word,
     Text,
     Versus,
-    Lyrics
+    Karaoke
 }
 
 public enum DifficultyLevel
@@ -39,5 +39,6 @@ public enum DifficultyLevel
     Beginner,
     Intermediate,
     Advanced,
-    Expert
+    Expert,
+    None
 }
