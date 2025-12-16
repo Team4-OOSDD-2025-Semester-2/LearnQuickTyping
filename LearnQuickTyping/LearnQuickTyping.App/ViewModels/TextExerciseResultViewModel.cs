@@ -48,6 +48,13 @@ namespace LearnQuickTyping.App.ViewModels
 
         partial void OnResultChanged(TextResult? value)
         {
+            
+            if (value == null || string.IsNullOrEmpty(Difficulty))
+            {
+                return;
+            }
+
+           
             var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
 
             if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
@@ -59,7 +66,7 @@ namespace LearnQuickTyping.App.ViewModels
                     (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
                     (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
                 {
-                    // Query the database for the current count async
+                   // Query the database for the current count async
                     Task.Run(async () =>
                     {
                         var count = await GetExerciseCountForDifficultyAsync();
@@ -67,7 +74,6 @@ namespace LearnQuickTyping.App.ViewModels
                         MainThread.BeginInvokeOnMainThread(() =>
                         {
                             ExerciseCount = count;
-
                             if (ExerciseCount >= 5)
                             {
                                 IsThresholdMet = true;
@@ -96,14 +102,25 @@ namespace LearnQuickTyping.App.ViewModels
             }
         }
 
+        partial void OnDifficultyChanged(string value)
+        {
+            // If Result is already set when Difficulty arrives, trigger OnResultChanged again
+            if (Result != null && !string.IsNullOrEmpty(value))
+            {
+                OnResultChanged(Result);
+            }
+        }
+
         private async Task<int> GetExerciseCountForDifficultyAsync()
         {
+            
             if (!Enum.TryParse<DifficultyLevel>(Difficulty, true, out var difficultyLevel))
             {
                 return 0;
             }
 
-            return await _exerciseResultRepository.GetCountByDifficultyAsync(ExerciseType.Text, difficultyLevel);
+            var count = await _exerciseResultRepository.GetCountByDifficultyAsync(ExerciseType.Text, difficultyLevel);
+            return count;
         }
 
         private void GenerateMarkedTexts(TextResult result)
