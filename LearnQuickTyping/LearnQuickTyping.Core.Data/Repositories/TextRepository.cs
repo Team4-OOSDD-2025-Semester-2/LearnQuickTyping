@@ -61,9 +61,7 @@ public class TextRepository : ITextRepository
         {
             "introduction text", new[]
             {
-                "The quick brown fox jumps over the lazy dog. Pack my box with five dozen liquor jugs. How vexingly quick daft zebras jump! Sphinx of black quartz, judge my vow.",
-                "A quick movement of the enemy will jeopardize six gunboats. The five boxing wizards jump quickly. Crazy Frederick bought many very exquisite opal jewels.",
-                "We promptly judged antique ivory buckles for the next prize. Sixty zippers were quickly picked from the woven jute bag. Jim quickly realized that the beautiful gowns are expensive."
+                "the kid met the red hen and the green duck | ben hit the drum and jim hummed the tune | the duck bit the nut and drank the juice | eric kicked the bin and then rested | tim tried the trick and danced | i give ben 5 gems and 4 rings | the hen met the kid again"
             }
         }
     };

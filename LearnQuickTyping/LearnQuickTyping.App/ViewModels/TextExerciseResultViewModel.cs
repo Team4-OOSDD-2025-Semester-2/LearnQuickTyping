@@ -97,12 +97,12 @@ namespace LearnQuickTyping.App.ViewModels
             if (mainPage == null) return;
 
             string message = GetRecommendationMessage(recommendedLevel);
-            string title = "Introduction Text Complete!";
+            string title = "Well Done!";
 
             bool startRecommended = await mainPage.DisplayAlert(
                 title,
                 message,
-                "View result",
+                "View results",
                 "Go to Home");
 
             if (startRecommended)
@@ -121,11 +121,10 @@ namespace LearnQuickTyping.App.ViewModels
         {
             string recommendation = level switch
             {
-                "Expert" => "Excellent! You're a skilled typist. We recommend starting with the Expert level to challenge yourself further.",
-                "Advanced" => "Great job! You have strong typing skills. We recommend the Advanced level to continue developing your abilities.",
-                "Intermediate" => "Well done! You have good typing fundamentals. We recommend the Intermediate level to build upon your skills.",
-                "Beginner" => "Good start! Everyone begins somewhere. We recommend the Beginner level to develop proper typing technique and build confidence.",
-                _ => "Based on your results, we recommend starting with a level that matches your current skills."
+                "Expert" => "Your suggested level is Expert.",
+                "Advanced" => "Your suggested level is Advanced.",
+                "Intermediate" => "Your suggested level is Intermediate.",
+                "Beginner" => "Your suggested level is Beginner."
             };
 
             return recommendation;
