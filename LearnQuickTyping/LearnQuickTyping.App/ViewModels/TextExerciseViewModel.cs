@@ -203,8 +203,13 @@ public partial class TextExerciseViewModel : BaseViewModel
             return;
 
         string safeValue = value ?? string.Empty;
+        
+        if (!_isTiming)
+        {
+            StartTimer();
+        }
 
-         _typeControl.CheckTyping(safeValue);
+        _typeControl.CheckTyping(safeValue);
         _statsService.TrackMistakes(safeValue, TargetText);
 
         RequestLetterUpdate?.Invoke(_typeControl.GetLetterStatuses());
