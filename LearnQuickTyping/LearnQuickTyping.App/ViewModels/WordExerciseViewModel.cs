@@ -130,7 +130,7 @@ public partial class WordExerciseViewModel : BaseViewModel
 
             await _saveService.SaveResultAsync(
                 wpm, 100, elapsed, 0,
-                ExerciseType.Word, DifficultyLevel.Beginner);
+                ExerciseType.Word, DifficultyLevel.None);
 
             LoadNewWord();
         }
@@ -145,7 +145,7 @@ public partial class WordExerciseViewModel : BaseViewModel
 
             await _saveService.SaveResultAsync(
                 wpm, accuracy, elapsed, errors,
-                ExerciseType.Word, DifficultyLevel.Beginner);
+                ExerciseType.Word, DifficultyLevel.None);
 
             InputText = string.Empty;
             _isTiming = false;
