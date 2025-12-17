@@ -81,7 +81,7 @@ public partial class ProgressViewModel : BaseViewModel
                 ExerciseType.Word => nameof(Views.WordExercise),
                 ExerciseType.Text => $"{nameof(Views.TextExercise)}?difficulty={result.DifficultyLevel}",
                 ExerciseType.Versus => nameof(Views.VersusView),
-                ExerciseType.Lyrics => nameof(Views.LyricsExercise),
+                ExerciseType.Karaoke => nameof(Views.LyricsExercise),
                 _ => "StartPage"
             };
 
@@ -100,7 +100,7 @@ public partial class ProgressViewModel : BaseViewModel
         ExerciseType.Word => "Word",
         ExerciseType.Text => "Text",
         ExerciseType.Versus => "Versus",
-        ExerciseType.Lyrics => "Karaoke",
+        ExerciseType.Karaoke => "Karaoke",
         _ => type.ToString()
     };
 
