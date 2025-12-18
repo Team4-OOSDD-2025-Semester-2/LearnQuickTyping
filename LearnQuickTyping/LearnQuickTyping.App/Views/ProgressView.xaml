@@ -5,7 +5,7 @@
              xmlns:models="clr-namespace:LearnQuickTyping.Core.Models;assembly=LearnQuickTyping.Core"
              x:Class="LearnQuickTyping.App.Views.ProgressPage"
              x:DataType="vm:ProgressViewModel"
-             Title="Voortgang"
+             Title="Progress"
              BackgroundColor="{StaticResource OffBlack}">
 
     <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="15">
