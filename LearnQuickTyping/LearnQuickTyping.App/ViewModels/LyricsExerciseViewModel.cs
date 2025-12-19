@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
 using LearnQuickTyping.Core.Interfaces;
 using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
@@ -230,6 +231,12 @@ public partial class LyricsExerciseViewModel : BaseViewModel
             _totalErrors,
             ExerciseType.Karaoke,
             DifficultyLevel.None);
+    }
+
+    [RelayCommand]
+    public async void NewSong()
+    {
+        await Shell.Current.GoToAsync(nameof(LyricsExercise));
     }
 
     [RelayCommand]
