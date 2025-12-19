@@ -180,6 +180,13 @@ public partial class TextExercise : ContentPage
         string currentText = e.NewTextValue ?? string.Empty;
         string oldText = e.OldTextValue ?? string.Empty;
 
+        // Prevent whole text deletions using shortcuts
+        if (currentText.Length < oldText.Length)
+        {
+            // Don't update anything; ignore the deletion attempt
+            return;
+        }
+
         // Update TypedTextLabel based on what was added
         if (currentText.Length == 0)
         {
@@ -191,7 +198,6 @@ public partial class TextExercise : ContentPage
             string addedText = currentText.Substring(oldText.Length);
             TypedTextLabel.Text += addedText;
         }
-        // Note: We don't handle deletion in TypedTextLabel since it's display-only
 
         // Update ViewModel - this triggers the typing check
         _viewModel.TypedText = TypedTextLabel.Text ?? string.Empty;
