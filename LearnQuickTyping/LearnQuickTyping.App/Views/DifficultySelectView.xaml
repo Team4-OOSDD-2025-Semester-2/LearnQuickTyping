@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="LearnQuickTyping.App.Views.DifficultySelectView">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Spacing="20"
+            Padding="20"
+            VerticalOptions="Center">
+
+            <Label
+                Text="Choose difficulty"
+                Style="{StaticResource Headline}" />
+
+            <Label 
+                Text="Choose a difficulty to get started"
+                Style="{StaticResource SubHeadline}"
+                HorizontalOptions="Center" />
+
+            <Button
+                Text="Beginner"
+                CommandParameter="Beginner"
+                Clicked="OnDifficultySelected" 
+                MaximumWidthRequest="800"/>
+
+            <Button
+                Text="Intermediate"
+                CommandParameter="Intermediate"
+                Clicked="OnDifficultySelected" 
+                MaximumWidthRequest="800"/>
+
+            <Button
+                Text="Advanced"
+                CommandParameter="Advanced"
+                Clicked="OnDifficultySelected" 
+                MaximumWidthRequest="800"/>
+
+            <Button
+                Text="Expert"
+                CommandParameter="Expert"
+                Clicked="OnDifficultySelected" 
+                MaximumWidthRequest="800"/>
+
+            <Button
+                Text="Test Your Difficulty"
+                CommandParameter="Introduction text"
+                Clicked="OnIntroductionTextClicked"
+                MaximumWidthRequest="1200"/>
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

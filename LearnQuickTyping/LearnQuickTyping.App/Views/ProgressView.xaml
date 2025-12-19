@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:LearnQuickTyping.App.ViewModels"
+             xmlns:models="clr-namespace:LearnQuickTyping.Core.Models;assembly=LearnQuickTyping.Core"
+             x:Class="LearnQuickTyping.App.Views.ProgressPage"
+             x:DataType="vm:ProgressViewModel"
+             Title="Progress"
+             BackgroundColor="{StaticResource OffBlack}">
+
+    <Grid RowDefinitions="Auto, *, Auto" Padding="20" RowSpacing="15">
+
+        <VerticalStackLayout Grid.Row="0" Spacing="5">
+            <Label 
+                Text="Progress Overview" 
+                Style="{StaticResource Headline}" 
+                TextColor="{StaticResource White}"/>
+            <Label 
+                Text="10 most recent exercises"
+                Style="{StaticResource SubHeadline}"
+                TextColor="{StaticResource Gray300}"/>
+        </VerticalStackLayout>
+
+        <ActivityIndicator 
+            Grid.Row="1"
+            IsRunning="{Binding IsLoading}"
+            IsVisible="{Binding IsLoading}"
+            Color="{StaticResource Primary}"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"/>
+
+        <VerticalStackLayout 
+            Grid.Row="1"
+            IsVisible="{Binding NoResults}"
+            VerticalOptions="Center"
+            HorizontalOptions="Center"
+            Spacing="10">
+            <Label 
+                Text="📊"
+                FontSize="48"
+                HorizontalOptions="Center"/>
+            <Label 
+                Text="{Binding NoResultsMessage}"
+                FontSize="18"
+                TextColor="{StaticResource Gray300}"
+                HorizontalOptions="Center"/>
+            <Label 
+                Text="Finish an exercise to track progress."
+                FontSize="14"
+                TextColor="{StaticResource Gray500}"
+                HorizontalOptions="Center"/>
+        </VerticalStackLayout>
+
+        <Border 
+            Grid.Row="1"
+            IsVisible="{Binding HasResults}"
+            StrokeShape="RoundRectangle 10"
+            BackgroundColor="{StaticResource Black}"
+            Padding="10">
+
+            <Grid RowDefinitions="Auto, *">
+
+                <Grid 
+                    Grid.Row="0"
+                    ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.6*, 0.7*, 0.5*, 0.6*, 120"
+                    Padding="10,5"
+                    BackgroundColor="{StaticResource Gray900}">
+                    <Label Grid.Column="0" Text="Date" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="1" Text="Time Finished" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="2" Text="Type" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="3" Text="Difficulty" FontAttributes="Bold" TextColor="{StaticResource White}"/>
+                    <Label Grid.Column="4" Text="WPM" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="5" Text="Accuracy" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="6" Text="Time" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="7" Text="Errors" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                    <Label Grid.Column="8" Text="" FontAttributes="Bold" TextColor="{StaticResource White}" HorizontalTextAlignment="Center"/>
+                </Grid>
+
+                <CollectionView 
+                    Grid.Row="1"
+                    ItemsSource="{Binding RecentResults}"
+                    SelectionMode="None">
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:ExerciseResult">
+                            <Grid 
+                                ColumnDefinitions="*, 0.8*, 0.6*, 0.8*, 0.6*, 0.7*, 0.5*, 0.6*, 120"
+                                Padding="10,8"
+                                BackgroundColor="Transparent">
+
+                                <Label 
+                                    Grid.Column="0" 
+                                    Text="{Binding Date}" 
+                                    TextColor="{StaticResource Gray100}" 
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="1" 
+                                    Text="{Binding Time}" 
+                                    TextColor="{StaticResource Gray100}" 
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="2" 
+                                    Text="{Binding ExerciseType}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="3" 
+                                    Text="{Binding DifficultyLevel}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="4" 
+                                    Text="{Binding WordsPerMinute, StringFormat='{0:F1}'}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="5" 
+                                    Text="{Binding Accuracy, StringFormat='{0}%'}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="6" 
+                                    Text="{Binding TimeTakenDisplay}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Label 
+                                    Grid.Column="7" 
+                                    Text="{Binding Errors}" 
+                                    TextColor="{StaticResource Gray100}"
+                                    HorizontalTextAlignment="Center"
+                                    VerticalTextAlignment="Center"/>
+
+                                <Button 
+                                    Grid.Column="8" 
+                                    Text="Try again"
+                                    Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProgressViewModel}}, Path=TryAgainCommand}"
+                                    CommandParameter="{Binding .}"
+                                    FontSize="12"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center"/>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </Grid>
+        </Border>
+
+        <Button 
+            Grid.Row="2"
+            Text="Back to startpage"
+            Command="{Binding GoHomeCommand}"
+            HorizontalOptions="Center"
+            WidthRequest="200"/>
+    </Grid>
+</ContentPage>

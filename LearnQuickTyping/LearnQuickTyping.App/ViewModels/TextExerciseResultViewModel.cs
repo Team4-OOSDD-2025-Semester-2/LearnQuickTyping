@@ -1,6 +1,9 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LearnQuickTyping.App.Views;
+using LearnQuickTyping.Core.Data.Repositories;
 using LearnQuickTyping.Core.Interfaces;
+using LearnQuickTyping.Core.Interfaces.Repositories;
 using LearnQuickTyping.Core.Interfaces.Services;
 using LearnQuickTyping.Core.Models;
 
@@ -8,13 +11,18 @@ using LearnQuickTyping.Core.Models;
 namespace LearnQuickTyping.App.ViewModels
 {
     [QueryProperty(nameof(Result), "Result")]
+    [QueryProperty(nameof(Difficulty), "Difficulty")]
     public partial class TextExerciseResultViewModel : BaseViewModel
     {
         private readonly ITextEcerciseScoreService _scoreService;
         private readonly ITypeControlService _typeControl;
+        private readonly IExerciseResultRepository _exerciseResultRepository;
 
         [ObservableProperty]
         private TextResult? _result;
+
+        [ObservableProperty]
+        private string _difficulty = string.Empty;
 
         [ObservableProperty]
         private FormattedString _typedTextFormatted = new FormattedString();
@@ -22,21 +30,180 @@ namespace LearnQuickTyping.App.ViewModels
         [ObservableProperty]
         private FormattedString _originalTextFormatted = new FormattedString();
 
+        [ObservableProperty]
+        private string _recommendedLevel = string.Empty;
+
+        [ObservableProperty]
+        private bool _isIntroductionTest = false;
+
+        [ObservableProperty]
+        private bool _isThresholdMet = false;
+
+        [ObservableProperty]
+        private int _exerciseCount;
+
         public TextExerciseResultViewModel(
             ITextEcerciseScoreService scoreService,
-            ITypeControlService typeControl)
+            ITypeControlService typeControl, 
+            IExerciseResultRepository exerciseResultRepository)
         {
             _scoreService = scoreService;
             _typeControl = typeControl;
+            _exerciseResultRepository = exerciseResultRepository;
         }
 
         partial void OnResultChanged(TextResult? value)
         {
-            if (value != null)
+            if (value == null || string.IsNullOrEmpty(Difficulty))
             {
+                return;
+            }
+
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+
+            if ((Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase)) ||
+                (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase)))
+            {
+                if ((value.WordsPerMinute >= 50 && value.Accuracy >= 80) ||
+                    (value.WordsPerMinute >= 47 && value.Accuracy >= 85) ||
+                    (value.WordsPerMinute >= 43 && value.Accuracy >= 90) ||
+                    (value.WordsPerMinute >= 38 && value.Accuracy >= 95))
+                {
+                    Task.Run(async () =>
+                    {
+                        var count = await GetExerciseCountForDifficultyAsync();
+
+                        MainThread.BeginInvokeOnMainThread(() =>
+                        {
+                            ExerciseCount = count;
+                            if (ExerciseCount >= 5)
+                            {
+                                IsThresholdMet = true;
+                                mainPage?.DisplayAlert(
+                                    "Well Done!",
+                                    "You are doing great, we suggest you move up a level!",
+                                    "OK");
+                            }
+                        });
+                    });
+
+                    GenerateMarkedTexts(value);
+                }
+                else
+                {
+                    GenerateMarkedTexts(value);
+                }
+            }
+            else
+            {
+                IsThresholdMet = false;
                 GenerateMarkedTexts(value);
             }
         }
+
+
+
+        partial void OnDifficultyChanged(string value)
+        {
+            // Check if this is an introduction test (multiple variations)
+            string normalizedDifficulty = value?.Trim().ToLowerInvariant() ?? "";
+
+            IsIntroductionTest = normalizedDifficulty == "introduction text" ||
+                                normalizedDifficulty == "introduction";
+
+            if (IsIntroductionTest && Result != null)
+            {
+                // Calculate recommended level based on performance
+                string recommended = CalculateRecommendedLevel(Result);
+                RecommendedLevel = recommended;
+
+                // Show recommendation alert
+                ShowRecommendationAlert(recommended);
+            }
+            
+            // If Result is already set when Difficulty arrives, trigger OnResultChanged again
+            if (Result != null && !string.IsNullOrEmpty(value))
+            {
+                OnResultChanged(Result);
+            }
+        }
+
+        private string CalculateRecommendedLevel(TextResult result)
+        {
+            double wpm = result.WordsPerMinute;
+            int accuracy = result.Accuracy;
+
+            if (wpm > 80 && accuracy >= 95)
+            {
+                return "Expert";
+            }
+            else if (wpm >= 60 && accuracy >= 90)
+            {
+                return "Advanced";
+            }
+            else if ((wpm <= 60 && accuracy >= 80) ||
+                    (wpm > 30 && accuracy >= 80))
+            {
+                return "Intermediate";
+            }
+            else
+            {
+                return "Beginner";
+            }
+        }
+
+        private async Task<int> GetExerciseCountForDifficultyAsync()
+        {
+            
+            if (!Enum.TryParse<DifficultyLevel>(Difficulty, true, out var difficultyLevel))
+            {
+                return 0;
+            }
+
+            var count = await _exerciseResultRepository.GetCountByDifficultyAsync(ExerciseType.Text, difficultyLevel);
+            return count;
+        }
+
+        private async void ShowRecommendationAlert(string recommendedLevel)
+        {
+            var mainPage = Application.Current?.Windows.FirstOrDefault()?.Page;
+            if (mainPage == null) return;
+
+            string message = GetRecommendationMessage(recommendedLevel);
+            string title = "Well Done!";
+
+            bool startRecommended = await mainPage.DisplayAlert(
+                title,
+                message,
+                "View results",
+                "Go to Home");
+
+            if (startRecommended)
+            {
+                // Navigate back to result
+                return;
+            }
+            else
+            {
+                // Go back to home
+                await Shell.Current.GoToAsync("///StartPage");
+            }
+        }
+
+        private string GetRecommendationMessage(string level)
+        {
+            string recommendation = level switch
+            {
+                "Expert" => "Your suggested level is Expert.",
+                "Advanced" => "Your suggested level is Advanced.",
+                "Intermediate" => "Your suggested level is Intermediate.",
+                "Beginner" => "Your suggested level is Beginner."
+            };
+
+            return recommendation;
+        }
+
 
         private void GenerateMarkedTexts(TextResult result)
         {
@@ -95,5 +262,39 @@ namespace LearnQuickTyping.App.ViewModels
         {
             await Shell.Current.GoToAsync("///StartPage");
         }
+
+        [RelayCommand]
+        private async Task TryAgain()
+        {
+            await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={Difficulty}");
+        }
+
+        [RelayCommand]
+        private async Task StartRecommendedLevel()
+        {
+            if (!string.IsNullOrEmpty(RecommendedLevel))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty={RecommendedLevel}");
+            }
+        }
+
+        [RelayCommand]
+        private async Task GoToNextDifficulty()
+        {
+            if (Difficulty.Equals("Beginner", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Intermediate");
+            }
+            else if (Difficulty.Equals("Intermediate", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Advanced");
+            }
+            else if (Difficulty.Equals("Advanced", StringComparison.OrdinalIgnoreCase))
+            {
+                await Shell.Current.GoToAsync($"{nameof(TextExercise)}?difficulty=Expert");
+
+            }
+        }
+
     }
 }

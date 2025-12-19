@@ -35,6 +35,15 @@
                 Text="Karaoke Mode"
                 Clicked="OnKaraokeModeClicked" />
 
+            <BoxView 
+                HeightRequest="1" 
+                Color="{StaticResource Gray500}" 
+                Margin="0,10"/>
+
+            <Button
+                Text="Progress"
+                Clicked="OnProgressClicked" />
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

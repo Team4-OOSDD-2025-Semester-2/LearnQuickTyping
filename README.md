@@ -15,11 +15,11 @@ This project follows standard C# naming conventions:
 - **Constants/Readonly Fields**: `PracticeWords`
 
 ### **camelCase** - Used for:
-- **Private Fields**: `startTime`, `isTiming`, `elapsedTime`
 - **Method Parameters**: `sender`, `e`, `characterCount`
 - **Local Variables**: `random`, `index`, `currentElapsed`
 
 ### **Other Conventions:**
+- **Private Fields**: `startTime`, `isTiming`, `elapsedTime` (hybrid camelCase with underscore "_camelCase")
 - **Boolean Prefix**: `isTiming` (using "is" prefix for boolean fields)
 - **Code Regions**: `#region Time Related Methods` (for code organization)
 - **Modern Hungarian Notation**: `realTimeTimer` (limited use for UI controls)
